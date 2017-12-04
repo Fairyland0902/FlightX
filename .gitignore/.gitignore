@@ -1,0 +1,17 @@
+*
+# Codes
+!*.h
+!*.cpp
+# Shaders
+!*.vert
+!*.frag
+!*.vs
+!*.fs
+# Models
+!*.obj
+!*.mtl
+!*.3ds
+# Textures
+!*.jpeg
+!*.jpg
+!*.png
