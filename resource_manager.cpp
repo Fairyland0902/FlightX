@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include "stb_image.h"
 
 // Instantiate static variables.
 std::map<std::string, Shader>    ResourceManager::Shaders;
@@ -20,7 +21,7 @@ std::map<std::string, GLuint>    ResourceManager::VAOmap;
 std::map<std::string, int>       ResourceManager::VAOSizeMap;
 std::map<std::string, glm::vec3> ResourceManager::modelSizeMap;
 
-Shader ResourceManager::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile,
+Shader ResourceManager::LoadShader(const string& vShaderFile, const string& fShaderFile, const string& gShaderFile,
                                    std::string name)
 {
     Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
@@ -40,7 +41,7 @@ void ResourceManager::Clear()
 }
 
 Shader
-ResourceManager::loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile)
+ResourceManager::loadShaderFromFile(const string& vShaderFile, const string& fShaderFile, const string& gShaderFile)
 {
     // 1. Retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
@@ -62,7 +63,7 @@ ResourceManager::loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fSh
         vertexCode = vShaderStream.str();
         fragmentCode = fShaderStream.str();
         // If geometry shader path is present, also load a geometry shader
-        if (gShaderFile != nullptr)
+        if (gShaderFile.empty())
         {
             std::ifstream geometryShaderFile(gShaderFile);
             std::stringstream gShaderStream;
@@ -75,16 +76,16 @@ ResourceManager::loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fSh
     {
         std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
     }
-    const GLchar *vShaderCode = vertexCode.c_str();
-    const GLchar *fShaderCode = fragmentCode.c_str();
-    const GLchar *gShaderCode = geometryCode.c_str();
+    const string& vShaderCode = vertexCode.c_str();
+    const string& fShaderCode = fragmentCode.c_str();
+    const string& gShaderCode = geometryCode.c_str();
     // 2. Now create shader object from source code
     Shader shader;
-    shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
+    shader.Compile(vShaderCode.c_str(), fShaderCode.c_str(), gShaderFile.empty() ? gShaderCode.c_str() : nullptr);
     return shader;
 }
 
-Texture2D ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
+Texture2D ResourceManager::LoadTexture(const string& file, GLboolean alpha, std::string name)
 {
     Textures[name] = loadTextureFromFile(file, alpha);
     return Textures[name];
@@ -99,7 +100,7 @@ Texture2D ResourceManager::GetTexture(std::string name)
 ResourceManager::ResourceManager()
 {}
 
-Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
+Texture2D ResourceManager::loadTextureFromFile(const string& file, GLboolean alpha)
 {
     // Create Texture object
     Texture2D texture;
@@ -110,12 +111,12 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alp
     }
     // Load image
     int width, height;
-    unsigned char *image = SOIL_load_image(file, &width, &height, 0,
-                                           texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+    unsigned char *image = stbi_load(file.c_str(), &width, &height, 0,
+                                           texture.Image_Format == GL_RGBA ? STBI_rgb_alpha : STBI_rgb);
     // Now generate texture
     texture.Generate(width, height, image);
     // And finally free image data
-    SOIL_free_image_data(image);
+    stbi_image_free(image);
     return texture;
 }
 
@@ -129,7 +130,7 @@ void ResourceManager::LoadModel(const std::string objModelFile, std::string name
 //    if (name == "sphere") str = "models/sphere.obj";
 //    if (name == "gun") str = "models/portal/portalgun1.obj";
 //    if (name == "building") str = "models/eastern ancient casttle/eastern ancient casttle.obj";
-//    GLchar *path = new char[str.length()];
+//    string& path = new char[str.length()];
 //    memcpy(path, str.c_str(), str.length() + 1);
 //    puts("adding");
 //    if (!LoadedModels.count(name))

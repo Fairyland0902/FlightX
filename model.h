@@ -5,27 +5,14 @@
 #ifndef _MODEL_H
 #define _MODEL_H
 
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <sstream>
 #include <string>
 #include <vector>
-
-using namespace std;
-
 #include <GL/glew.h>
-#include <SOIL.h>
 #include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "mesh.h"
 #include "shader.h"
-
-
 GLint TextureFromFile(const char *path, string directory);
 
 class Model
