@@ -5,10 +5,13 @@
 #include <GLFW/glfw3.h>
 // GLM
 #include <glm/glm.hpp>
+<<<<<<< HEAD
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 // Game
 #include "game.h"
+=======
+>>>>>>> 11a224ee057affa6d268103a139d7a75e1c44961
 
 // Function prototypes.
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -47,8 +50,9 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-    glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE);
-
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE);
+#endif
     // Create a "Windowed full screen" window in the primary monitor.
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode *mode = glfwGetVideoMode(monitor);
