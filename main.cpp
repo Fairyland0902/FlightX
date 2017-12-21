@@ -7,6 +7,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+// Game
+#include "game.h"
 
 // Function prototypes.
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
@@ -17,8 +19,21 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 
 void do_movement();
 
-// Keyboard
+// Window size.
+int WIDTH, HEIGHT;
+
+// Keyboard.
 bool keys[1024];
+
+// Mouse.
+GLfloat lastX = WIDTH / 2, lastY = HEIGHT / 2;
+bool firstMouse = true;
+
+GLfloat deltaTime = 0.0f;
+GLfloat lastFrame = 0.0f;
+
+// Game.
+Game game;
 
 // Start our application and run our game loop.
 int main()
@@ -46,8 +61,8 @@ int main()
 
     // Set the required callback functions.
     glfwSetKeyCallback(window, key_callback);
-//    glfwSetCursorPosCallback(window, mouse_callback);
-//    glfwSetScrollCallback(window, scroll_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions.
     glewExperimental = GL_TRUE;
@@ -55,7 +70,6 @@ int main()
     glewInit();
 
     // Define the viewport dimensions.
-    int WIDTH, HEIGHT;
     glfwGetFramebufferSize(window, &WIDTH, &HEIGHT);
     std::cout << "window width = " << WIDTH << " pixels" << std::endl;
     std::cout << "window height = " << HEIGHT << " pixels" << std::endl;
@@ -67,27 +81,27 @@ int main()
     // Input Options.
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // Build and compile our shader program.
-//    environment.loadShaders();
+    // Do some initialization for our game (include loading shaders, models, etc.(
+    game.Init();
 
     // Game loop.
     while (!glfwWindowShouldClose(window))
     {
         // Calculate deltatime of current frame.
-//        GLfloat currentFrame = glfwGetTime();
-//        deltaTime = currentFrame - lastFrame;
-//        lastFrame = currentFrame;
+        GLfloat currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
-        // Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions.
+        // Check if any events have been activated (key pressed, mouse moved etc.) and call corresponding response functions.
         glfwPollEvents();
-//        do_movement();
+        do_movement();
 
         // Clear the color buffer.
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(67 / 256.0f, 128 / 256.0f, 183 / 256.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Render the virtual environment.
-//        environment.Draw(WIDTH, HEIGHT);
+        // Render.
+        game.Render(WIDTH, HEIGHT, currentFrame);
 
         // Swap the screen buffers.
         glfwSwapBuffers(window);
@@ -109,4 +123,39 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
         else if (action == GLFW_RELEASE)
             keys[key] = false;
     }
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    GLfloat xoffset = xpos - lastX;
+    GLfloat yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    game.camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void do_movement()
+{
+    // Camera control.
+    if (keys[GLFW_KEY_W])
+        game.camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (keys[GLFW_KEY_S])
+        game.camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (keys[GLFW_KEY_A])
+        game.camera.ProcessKeyboard(LEFT, deltaTime);
+    if (keys[GLFW_KEY_D])
+        game.camera.ProcessKeyboard(RIGHT, deltaTime);
+}
+
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+    game.camera.ProcessMouseScroll(yoffset);
 }

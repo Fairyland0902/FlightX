@@ -121,26 +121,6 @@ Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alp
 
 void ResourceManager::LoadModel(const std::string objModelFile, std::string name)
 {
-//    std::string str = "models/" + name + ".obj";
-//    if (name == "cube") str = "models/stone.3ds";
-//    if (name == "player") str = "models/rectangle.obj";
-//    if (name == "rocket") str = "models/rocket3.obj";
-//    if (name == "cannon") str = "models/Naval/cannon.obj";
-//    if (name == "sphere") str = "models/sphere.obj";
-//    if (name == "gun") str = "models/portal/portalgun1.obj";
-//    if (name == "building") str = "models/eastern ancient casttle/eastern ancient casttle.obj";
-//    GLchar *path = new char[str.length()];
-//    memcpy(path, str.c_str(), str.length() + 1);
-//    puts("adding");
-//    if (!LoadedModels.count(name))
-//    {
-//        // std::cout << path << std::endl;
-//        Model *m = new Model(path);
-//        // std::cout << path << std::endl;
-//        LoadedModels[name] = m;
-////        modelSizeMap[name] = m->size;
-//        puts("done");
-//    }
     if (!Models.count(name))
     {
         Model *m = new Model(objModelFile);
