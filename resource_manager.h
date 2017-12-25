@@ -8,7 +8,9 @@
 #include "texture.h"
 #include "shader.h"
 #include "model.h"
+
 using std::string;
+
 // A static singleton ResourceManager class that hosts several
 // functions to load Textures and Shaders. Each loaded texture
 // and/or shader is also stored for future reference by string
@@ -19,7 +21,8 @@ class ResourceManager
 public:
     // Resource storage
     static std::map<string, Shader> Shaders;
-    static std::map<string, Texture2D> Textures;
+    static std::map<string, Texture2D> Texture2Ds;
+    static std::map<string, Texture3D> Texture3Ds;
     static std::map<string, Model *> Models;
     static std::map<string, GLuint> VAOmap;
     static std::map<string, int> VAOSizeMap;
@@ -27,7 +30,9 @@ public:
 
     // Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader.
     static Shader
-    LoadShader(const string& vShaderFile, const string& fShaderFile, const string& gShaderFile, string name);
+    LoadShader(const string &vShaderFile, const string &fShaderFile, const string &gShaderFile, string name,
+               const GLchar **transformFeedbackVaryings = nullptr, unsigned int numTransformFeedbackVaryings = 0,
+               bool interleavedTransformFeedbackAttribs = true);
 
     // Retrieves a stored shader.
     static Shader GetShader(string name);
@@ -35,10 +40,14 @@ public:
     // Properly de-allocates all loaded resources.
     static void Clear();
 
-    static Texture2D LoadTexture(const string& file, GLboolean alpha, string name);
+    static Texture2D LoadTexture2D(const string &file, GLboolean alpha, string name);
+
+    static Texture3D LoadTexture3D(const string &file, string name);
 
     // Retrieves a stored texture.
-    static Texture2D GetTexture(string name);
+    static Texture2D GetTexture2D(string name);
+
+    static Texture3D GetTexture3D(string name);
 
     // Load a model from a .obj file.
     static void LoadModel(string objModelFile, string name);
@@ -52,9 +61,13 @@ private:
 
     // Loads and generates a shader from file
     static Shader
-    loadShaderFromFile(const string& vShaderFile, const string& fShaderFile, const string& gShaderFile = nullptr);
+    loadShaderFromFile(const string &vShaderFile, const string &fShaderFile, const string &gShaderFile = nullptr,
+                       const GLchar **transformFeedbackVaryings = nullptr,
+                       unsigned int numTransformFeedbackVaryings = 0, bool interleavedTransformFeedbackAttribs = true);
 
-    static Texture2D loadTextureFromFile(const string& file, GLboolean alpha);
+    static Texture2D loadTexture2DFromFile(const string &file, GLboolean alpha);
+
+    static Texture3D loadTexture3DFromFile(const string &file);
 };
 
 #endif

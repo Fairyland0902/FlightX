@@ -1,4 +1,4 @@
-/* Adapted from the online tuturials by Joey de Vries found at 'http://learnopengl.com/'
+/* Adapted from the online tutorials by Joey de Vries found at 'http://learnopengl.com/'
  * Loads Models
  */
 
@@ -13,6 +13,7 @@
 #include <glm/glm.hpp>
 #include "mesh.h"
 #include "shader.h"
+
 GLint TextureFromFile(const char *path, string directory);
 
 class Model

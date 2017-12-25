@@ -2,8 +2,10 @@
 #include "stb_image.h"
 #include <iostream>
 #include <assimp/postprocess.h>
+
 using std::cout;
-using std::endl;;
+using std::endl;
+
 GLint TextureFromFile(const char *path, string directory)
 {
     // Generate texture ID and load texture data.
@@ -202,7 +204,7 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
             texture.path = str;
             textures.push_back(texture);
             this->textures_loaded.push_back(
-                    texture); // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+                    texture); // Store it as texture loaded for entire model, to ensure we won't unnecessary load duplicate textures.
         }
     }
     return textures;

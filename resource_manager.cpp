@@ -15,16 +15,19 @@
 
 // Instantiate static variables.
 std::map<std::string, Shader>    ResourceManager::Shaders;
-std::map<std::string, Texture2D> ResourceManager::Textures;
+std::map<std::string, Texture2D> ResourceManager::Texture2Ds;
+std::map<std::string, Texture3D> ResourceManager::Texture3Ds;
 std::map<std::string, Model *>   ResourceManager::Models;
 std::map<std::string, GLuint>    ResourceManager::VAOmap;
 std::map<std::string, int>       ResourceManager::VAOSizeMap;
 std::map<std::string, glm::vec3> ResourceManager::modelSizeMap;
 
-Shader ResourceManager::LoadShader(const string& vShaderFile, const string& fShaderFile, const string& gShaderFile,
-                                   std::string name)
+Shader ResourceManager::LoadShader(const string &vShaderFile, const string &fShaderFile, const string &gShaderFile,
+                                   std::string name, const GLchar **transformFeedbackVaryings,
+                                   unsigned int numTransformFeedbackVaryings, bool interleavedTransformFeedbackAttribs)
 {
-    Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
+    Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile, transformFeedbackVaryings,
+                                       numTransformFeedbackVaryings, interleavedTransformFeedbackAttribs);
     return Shaders[name];
 }
 
@@ -41,7 +44,9 @@ void ResourceManager::Clear()
 }
 
 Shader
-ResourceManager::loadShaderFromFile(const string& vShaderFile, const string& fShaderFile, const string& gShaderFile)
+ResourceManager::loadShaderFromFile(const string &vShaderFile, const string &fShaderFile, const string &gShaderFile,
+                                    const GLchar **transformFeedbackVaryings, unsigned int numTransformFeedbackVaryings,
+                                    bool interleavedTransformFeedbackAttribs)
 {
     // 1. Retrieve the vertex/fragment source code from filePath
     std::string vertexCode;
@@ -51,19 +56,24 @@ ResourceManager::loadShaderFromFile(const string& vShaderFile, const string& fSh
     {
         // Open files
         std::ifstream vertexShaderFile(vShaderFile);
-        std::ifstream fragmentShaderFile(fShaderFile);
-        std::stringstream vShaderStream, fShaderStream;
+        std::stringstream vShaderStream;
         // Read file's buffer contents into streams
         vShaderStream << vertexShaderFile.rdbuf();
-        fShaderStream << fragmentShaderFile.rdbuf();
         // close file handlers
         vertexShaderFile.close();
-        fragmentShaderFile.close();
         // Convert stream into string
         vertexCode = vShaderStream.str();
-        fragmentCode = fShaderStream.str();
+        // If fragment shader path is present, load a fragment shader
+        if (!fShaderFile.empty())
+        {
+            std::ifstream fragmentShaderFile(fShaderFile);
+            std::stringstream fShaderStream;
+            fShaderStream << fragmentShaderFile.rdbuf();
+            fragmentShaderFile.close();
+            fragmentCode = fShaderStream.str();
+        }
         // If geometry shader path is present, also load a geometry shader
-        if (gShaderFile.empty())
+        if (!gShaderFile.empty())
         {
             std::ifstream geometryShaderFile(gShaderFile);
             std::stringstream gShaderStream;
@@ -76,31 +86,44 @@ ResourceManager::loadShaderFromFile(const string& vShaderFile, const string& fSh
     {
         std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
     }
-    const string& vShaderCode = vertexCode.c_str();
-    const string& fShaderCode = fragmentCode.c_str();
-    const string& gShaderCode = geometryCode.c_str();
+    const string &vShaderCode = vertexCode.c_str();
+    const string &fShaderCode = fragmentCode.c_str();
+    const string &gShaderCode = geometryCode.c_str();
     // 2. Now create shader object from source code
     Shader shader;
-    shader.Compile(vShaderCode.c_str(), fShaderCode.c_str(), gShaderFile.empty() ? gShaderCode.c_str() : nullptr);
+    shader.Compile(vShaderCode.c_str(), fShaderFile.empty() ? nullptr : fShaderCode.c_str(),
+                   gShaderFile.empty() ? nullptr : gShaderCode.c_str(), transformFeedbackVaryings,
+                   numTransformFeedbackVaryings, interleavedTransformFeedbackAttribs);
     return shader;
 }
 
-Texture2D ResourceManager::LoadTexture(const string& file, GLboolean alpha, std::string name)
+Texture2D ResourceManager::LoadTexture2D(const string &file, GLboolean alpha, std::string name)
 {
-    Textures[name] = loadTextureFromFile(file, alpha);
-    return Textures[name];
+    Texture2Ds[name] = loadTexture2DFromFile(file, alpha);
+    return Texture2Ds[name];
 }
 
-Texture2D ResourceManager::GetTexture(std::string name)
+Texture3D ResourceManager::LoadTexture3D(const string &file, string name)
 {
-    return Textures[name];
+    Texture3Ds[name] = loadTexture3DFromFile(file);
+    return Texture3Ds[name];
+}
+
+Texture2D ResourceManager::GetTexture2D(std::string name)
+{
+    return Texture2Ds[name];
+}
+
+Texture3D ResourceManager::GetTexture3D(string name)
+{
+    return Texture3Ds[name];
 }
 
 // Private constructor, that is we do not want any actual resource manager objects. Its members and functions should be publicly available (static).
 ResourceManager::ResourceManager()
 {}
 
-Texture2D ResourceManager::loadTextureFromFile(const string& file, GLboolean alpha)
+Texture2D ResourceManager::loadTexture2DFromFile(const string &file, GLboolean alpha)
 {
     // Create Texture object
     Texture2D texture;
@@ -112,7 +135,7 @@ Texture2D ResourceManager::loadTextureFromFile(const string& file, GLboolean alp
     // Load image
     int width, height;
     unsigned char *image = stbi_load(file.c_str(), &width, &height, 0,
-                                           texture.Image_Format == GL_RGBA ? STBI_rgb_alpha : STBI_rgb);
+                                     texture.Image_Format == GL_RGBA ? STBI_rgb_alpha : STBI_rgb);
     // Now generate texture
     texture.Generate(width, height, image);
     // And finally free image data
@@ -120,31 +143,48 @@ Texture2D ResourceManager::loadTextureFromFile(const string& file, GLboolean alp
     return texture;
 }
 
+Texture3D ResourceManager::loadTexture3DFromFile(const string &file)
+{
+    // Create Texture object
+    Texture3D texture;
+
+    // Load image from .ex5 file.
+    FILE *fp = fopen(file.c_str(), "r");
+
+    if (fp == NULL)
+    {
+        std::cout << "Can not open .ex5 file." << std::endl;
+    }
+
+    // Read header.
+    int width, height, depth;
+    fscanf(fp, "%d", &width);
+    fscanf(fp, "%d", &height);
+    fscanf(fp, "%d", &depth);
+
+    // Create image.
+    unsigned char *image = (unsigned char *) malloc(width * height * depth * 4 * sizeof(unsigned char));
+
+    // Read image.
+    int i = 0;
+    uint32_t pixel;
+    while (fscanf(fp, "%d", &pixel) == 1)
+    {
+        image[i++] = pixel >> 24;
+        image[i++] = pixel >> 16;
+        image[i++] = pixel >> 8;
+        image[i++] = pixel >> 0;
+    }
+
+    // Now generate texture.
+    texture.Generate(width, height, depth, image);
+    // And finally free image data.
+    free(image);
+    return texture;
+}
+
 void ResourceManager::LoadModel(const std::string objModelFile, std::string name)
 {
-<<<<<<< HEAD
-=======
-//    std::string str = "models/" + name + ".obj";
-//    if (name == "cube") str = "models/stone.3ds";
-//    if (name == "player") str = "models/rectangle.obj";
-//    if (name == "rocket") str = "models/rocket3.obj";
-//    if (name == "cannon") str = "models/Naval/cannon.obj";
-//    if (name == "sphere") str = "models/sphere.obj";
-//    if (name == "gun") str = "models/portal/portalgun1.obj";
-//    if (name == "building") str = "models/eastern ancient casttle/eastern ancient casttle.obj";
-//    string& path = new char[str.length()];
-//    memcpy(path, str.c_str(), str.length() + 1);
-//    puts("adding");
-//    if (!LoadedModels.count(name))
-//    {
-//        // std::cout << path << std::endl;
-//        Model *m = new Model(path);
-//        // std::cout << path << std::endl;
-//        LoadedModels[name] = m;
-////        modelSizeMap[name] = m->size;
-//        puts("done");
-//    }
->>>>>>> 11a224ee057affa6d268103a139d7a75e1c44961
     if (!Models.count(name))
     {
         Model *m = new Model(objModelFile);

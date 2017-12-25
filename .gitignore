@@ -19,3 +19,10 @@
 !*.png
 # README
 !*.md
+# Folders
+!cloud/
+!screenshots
+!shaders/
+!textures/
+
+

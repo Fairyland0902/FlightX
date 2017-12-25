@@ -1,5 +1,6 @@
 #include "mesh.h"
 #include <sstream>
+
 // Default constructor.
 Mesh::Mesh()
 {}
@@ -27,7 +28,7 @@ void Mesh::Draw(Shader shader)
     {
         glActiveTexture(GL_TEXTURE0 + i); // Active proper texture unit before binding
         // Retrieve texture number (the N in diffuse_textureN)
-	    std::stringstream ss;
+        std::stringstream ss;
         string number;
         string name = this->textures[i].type;
         if (name == "texture_diffuse")

@@ -19,9 +19,13 @@
 ## Extra
 
 - [ ] [4 分]漫游时可实时碰撞检测（**不包括 AABB**）
-
 - [ ] [4 分]光照明模型细化，可任选实现实时阴影、Caustics、位移纹理、全局 光照明（光子跟踪）、辐射度、AO 叠加等
-
 - [ ] [8 分（不依赖现有引擎）/ 4 分（依赖现有引擎）]采用 WebGL/iOS/Android 平台实现
-
 - [ ] [7 分]与增强现实应用结合
+
+# Features
+
+1. 现在实现了一个还看得过去的云层渲染
+
+[](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/1.png)
+
