@@ -27,5 +27,5 @@
 
 1. 现在实现了一个还看得过去的云层渲染
 
-[](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/1.png)
+![](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/1.png)
 
