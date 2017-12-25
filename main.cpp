@@ -1,6 +1,4 @@
 #include <iostream>
-#include <sstream>
-#include <iomanip>
 // GLEW
 #include <GL/glew.h>
 // GLFW
@@ -61,7 +59,6 @@ int main()
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-    GLuint winWidth = 400, winHeight = 300;
     GLFWwindow *window = glfwCreateWindow(mode->width, mode->height, "FlightX", monitor, nullptr);
 #else
     GLuint width = 1280, height = 720;

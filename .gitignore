@@ -7,6 +7,7 @@
 # Shaders
 !*.vert
 !*.frag
+!*.geom
 !*.vs
 !*.fs
 # Models
