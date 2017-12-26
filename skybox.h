@@ -1,9 +1,11 @@
 #ifndef _SKYBOX_H
 #define _SKYBOX_H
 
+#include <vector>
 #include <GL/glew.h>
-#include "cloud/screenAlignedTriangle.h"
+#include "camera.h"
 #include "shader.h"
+#include "cloud/screenAlignedTriangle.h"
 
 class SkyBox
 {
@@ -15,10 +17,13 @@ public:
     void Draw();
 
 private:
-    ScreenAlignedTriangle screenAlignedTriangle;
-    Shader skyShader;
+    GLuint loadCubemap(std::vector<std::string> faces);
 
-    GLuint cubeMap;
+    Shader skyboxShader;
+
+    ScreenAlignedTriangle screenAlignedTriangle;
+
+    GLuint cubemapTexture;
 };
 
 #endif

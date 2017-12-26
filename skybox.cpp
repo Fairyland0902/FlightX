@@ -1,66 +1,75 @@
+#include <iostream>
 #include "skybox.h"
 #include "stb_image.h"
 #include "resource_manager.h"
 
 SkyBox::SkyBox()
 {
-    skyShader = ResourceManager::GetShader("skybox");
-    GLuint blockIndex = glGetUniformBlockIndex(skyShader.ID, "View");
+    // Shader configuration.
+    skyboxShader = ResourceManager::GetShader("skybox");
+    skyboxShader.Use();
+    skyboxShader.SetInteger("skybox", 0);
+
     // View binding = 1
-    glUniformBlockBinding(skyShader.ID, blockIndex, 1);
-    /*backgroundShader->useProgram();
-    glUniform1i(glGetUniformLocation(backgroundShader->getProgram(), "cubeTexture"), 0);
+    GLuint blockIndex = glGetUniformBlockIndex(skyboxShader.ID, "View");
+    glUniformBlockBinding(skyboxShader.ID, blockIndex, 1);
 
-
-    glGenTextures(1, &cubeMap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
-
-    int TexSizeX, TexSizeY;
-    stbi_uc* textureData = stbi_load("Textures\\positive_x.png", &TexSizeX, &TexSizeY, NULL, 4);
-    if(!textureData) Log::get() << "Error while loading texture positive_x.png\n";
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB8, TexSizeX, TexSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-    stbi_image_free(textureData);
-
-    textureData = stbi_load("Textures\\positive_y.png", &TexSizeX, &TexSizeY, NULL, 4);
-    if(!textureData) Log::get() << "Error while loading texture positive_y.png\n";
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB8, TexSizeX, TexSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-    stbi_image_free(textureData);
-
-    textureData = stbi_load("Textures\\positive_z.png", &TexSizeX, &TexSizeY, NULL, 4);
-    if(!textureData) Log::get() << "Error while loading texture positive_z.png\n";
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB8, TexSizeX, TexSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-    stbi_image_free(textureData);
-
-    textureData = stbi_load("Textures\\negative_x.png", &TexSizeX, &TexSizeY, NULL, 4);
-    if(!textureData) Log::get() << "Error while loading texture negative_x.png\n";
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB8, TexSizeX, TexSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-    stbi_image_free(textureData);
-
-    textureData = stbi_load("Textures\\negative_y.png", &TexSizeX, &TexSizeY, NULL, 4);
-    if(!textureData) Log::get() << "Error while loading texture negative_y.png\n";
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB8, TexSizeX, TexSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-    stbi_image_free(textureData);
-
-    textureData = stbi_load("Textures\\negative_z.png", &TexSizeX, &TexSizeY, NULL, 4);
-    if(!textureData) Log::get() << "Error while loading texture negative_z.png\n";
-    glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB8, TexSizeX, TexSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
-    stbi_image_free(textureData);
-
-    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);*/
+    // Load textures.
+    std::vector<std::string> faces
+            {
+                    "../textures/skybox/TropicalSunnyDayRight.png",
+                    "../textures/skybox/TropicalSunnyDayLeft.png",
+                    "../textures/skybox/TropicalSunnyDayUp.png",
+                    "../textures/skybox/TropicalSunnyDayDown.png",
+                    "../textures/skybox/TropicalSunnyDayBack.png",
+                    "../textures/skybox/TropicalSunnyDayFront.png"
+            };
+    cubemapTexture = loadCubemap(faces);
 }
 
 SkyBox::~SkyBox()
 {
-    glDeleteTextures(1, &cubeMap);
+    glDeleteTextures(1, &cubemapTexture);
 }
 
 void SkyBox::Draw()
 {
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap);
-    skyShader.Use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+    skyboxShader.Use();
     screenAlignedTriangle.Draw();
-    //glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
+GLuint SkyBox::loadCubemap(std::vector<std::string> faces)
+{
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+    int width, height, nrChannels;
+    for (unsigned int i = 0; i < faces.size(); i++)
+    {
+        unsigned char *data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+        if (data)
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+            );
+            stbi_image_free(data);
+        } else
+        {
+            std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+            stbi_image_free(data);
+        }
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    return textureID;
 }

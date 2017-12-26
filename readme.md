@@ -29,3 +29,6 @@
 
 ![](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/1.png)
 
+2. 增加天空盒
+
+   ![](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/2.png)

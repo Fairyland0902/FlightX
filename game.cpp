@@ -11,6 +11,7 @@ Game::Game() :
 Game::~Game()
 {
     delete cloudRender;
+    delete skyBox;
 }
 
 void Game::Init(int width, int height)
