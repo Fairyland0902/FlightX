@@ -15,8 +15,9 @@ class Aircraft :
 	float getLength(const glm::vec3&);
 	glm::vec3 getAcceleration();
 public:
-	Aircraft(string modelname);
+	Aircraft();
 	~Aircraft();
+	void loadModel(string path) override;
 	void Update(float deltaTime);
 	const glm::vec3&& getAirspeed();
 	void setAirspeed(const glm::vec3&);

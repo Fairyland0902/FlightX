@@ -5,7 +5,7 @@
 #include "resource_manager.h"
 
 Game::Game() :
-        camera(glm::vec3(0.0f, 50.0f, 0.0f))
+	camera(glm::vec3(0.0f, 50.0f, 0.0f))
 {}
 
 Game::~Game()
@@ -27,12 +27,14 @@ void Game::Init(int width, int height)
 
     // Initialize sky box.
     skyBox = new SkyBox();
+	aircraft.loadModel("model/f16/f16.obj");
 }
 
 void Game::Render(int width, int height, float deltaTime)
 {
     skyBox->Draw();
     cloudRender->Draw(deltaTime);
+	aircraft.Draw();
 }
 
 void Game::loadShaders()

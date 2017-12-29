@@ -14,7 +14,7 @@ glm::vec3 Aircraft::getAcceleration() {
 	return acc;
 }
 
-Aircraft::Aircraft(string modelfile) :Model(modelfile),Camera(),inAir(false)
+Aircraft::Aircraft() :Model(),Camera(),inAir(false)
 {
 	Position = glm::vec3(0.0f);
 	WorldUp = glm::vec3(0, 1, 0);
@@ -29,6 +29,11 @@ Aircraft::~Aircraft()
 {
 
 }
+
+void Aircraft::loadModel(string path) {
+	Model::loadModel(path);
+}
+
 void WorldUpRotate(glm::vec3& v,double val) {
 	double cosv = cos(val), sinv=sin(val);
 	float vx = v.x, vz = v.z;

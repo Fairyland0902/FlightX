@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "cloud/cloudRender.h"
 #include "skybox.h"
+#include "aircraft.h"
 
 class Game
 {
@@ -13,7 +14,7 @@ public:
     ~Game();
 
     Camera camera;
-
+	Aircraft aircraft;
     void Init(int width, int height);
 
     void Render(int width, int height, float deltaTime);
