@@ -40,13 +40,13 @@ void Game::loadShaders()
     const GLchar *transformFeedbackVaryings[] = {"vs_out_position", "vs_out_size_time_rand", "vs_out_depthclipspace"};
     std::cout << "Loading shaders ............. ";
 
-    ResourceManager::LoadShader("../shaders/cloudMove.vert", "", "", "cloud move", transformFeedbackVaryings, 3, false);
-    ResourceManager::LoadShader("../shaders/cloudPassThrough.vert", "../shaders/cloudFOM.frag",
-                                "../shaders/cloudFOM.geom", "FOM");
-    ResourceManager::LoadShader("../shaders/screenTri.vert", "../shaders/cloudFOMBlur.frag", "", "FOM filter");
-    ResourceManager::LoadShader("../shaders/cloudPassThrough.vert", "../shaders/cloudRendering.frag",
-                                "../shaders/cloudRendering.geom", "cloud render");
-    ResourceManager::LoadShader("../shaders/screenTri.vert", "../shaders/skybox.frag", "", "skybox");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/cloudMove.vert", "", "", "cloud move", transformFeedbackVaryings, 3, false);
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/cloudPassThrough.vert", _SHADER_PREFIX_"/cloudFOM.frag",
+		_SHADER_PREFIX_"/cloudFOM.geom", "FOM");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/screenTri.vert", _SHADER_PREFIX_"/cloudFOMBlur.frag", "", "FOM filter");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/cloudPassThrough.vert", _SHADER_PREFIX_"/cloudRendering.frag",
+		_SHADER_PREFIX_"/cloudRendering.geom", "cloud render");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/screenTri.vert", _SHADER_PREFIX_"/skybox.frag", "", "skybox");
 
     std::cout << "Done" << std::endl;
 }

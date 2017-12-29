@@ -8,7 +8,13 @@
 #include "texture.h"
 #include "shader.h"
 #include "model.h"
-
+#ifdef _WIN32
+#define _SHADER_PREFIX_ "shaders"
+#define _TEXTURE_PREFIX_ "textures"
+#else
+#define _SHADER_PREFIX_ "../shaders"
+#define _TEXTURE_PREFIX_ "../textures"
+#endif
 using std::string;
 
 // A static singleton ResourceManager class that hosts several

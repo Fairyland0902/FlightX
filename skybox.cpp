@@ -17,12 +17,12 @@ SkyBox::SkyBox()
     // Load textures.
     std::vector<std::string> faces
             {
-                    "../textures/skybox/TropicalSunnyDayRight.png",
-                    "../textures/skybox/TropicalSunnyDayLeft.png",
-                    "../textures/skybox/TropicalSunnyDayUp.png",
-                    "../textures/skybox/TropicalSunnyDayDown.png",
-                    "../textures/skybox/TropicalSunnyDayBack.png",
-                    "../textures/skybox/TropicalSunnyDayFront.png"
+				_TEXTURE_PREFIX_"/skybox/TropicalSunnyDayRight.png",
+				_TEXTURE_PREFIX_"/skybox/TropicalSunnyDayLeft.png",
+				_TEXTURE_PREFIX_"/skybox/TropicalSunnyDayUp.png",
+				_TEXTURE_PREFIX_"/skybox/TropicalSunnyDayDown.png",
+				_TEXTURE_PREFIX_"/skybox/TropicalSunnyDayBack.png",
+				_TEXTURE_PREFIX_"/skybox/TropicalSunnyDayFront.png"
             };
     cubemapTexture = loadCubemap(faces);
 }

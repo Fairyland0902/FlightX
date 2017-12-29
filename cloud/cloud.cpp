@@ -259,7 +259,7 @@ void Cloud::noise_init()
     glBindTexture(GL_TEXTURE_2D, 0);*/
 
     int TexSizeX, TexSizeY;
-    stbi_uc *TextureData = stbi_load("../textures/particle.png", &TexSizeX, &TexSizeY, NULL, 4);
+    stbi_uc *TextureData = stbi_load(_TEXTURE_PREFIX_"/particle.png", &TexSizeX, &TexSizeY, NULL, 4);
     if (!TextureData)
         std::cout << "Error while loading texture `particle.png`" << std::endl;
 
