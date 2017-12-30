@@ -24,7 +24,7 @@ public:
     Model(string path);
 
     // Draws the model, and thus all its meshes
-    void Draw(Shader shader);
+    virtual void Draw(Shader& shader);
 
     Mesh returnVertices();
 

@@ -17,7 +17,7 @@ Mesh::Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> text
 }
 
 // Render the mesh.
-void Mesh::Draw(Shader shader)
+void Mesh::Draw(const Shader& shader)
 {
     // Bind appropriate textures
     GLuint diffuseNr = 1;

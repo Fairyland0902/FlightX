@@ -3,7 +3,7 @@
 #include "cloudRender.h"
 
 CloudRender::CloudRender(int width, int height, Camera &camera) :
-        camera(camera)
+        camera(&camera)
 {
     backBufferResolutionX = width;
     backBufferResolutionY = height;
@@ -26,6 +26,12 @@ CloudRender::~CloudRender()
     glDeleteBuffers(1, &screenUBO);
     glDeleteBuffers(1, &viewUBO);
     glDeleteBuffers(1, &timingsUBO);
+}
+
+void CloudRender::ChangeCamera(Camera& camera) {
+	this->camera = &camera;
+	projectionMatrix = glm::perspective(camera.Zoom, (float)backBufferResolutionX / (float)backBufferResolutionY, camera.NearClippingPlaneDistance,
+		camera.FarClippingPlaneDistance);
 }
 
 void CloudRender::ubo_init()
@@ -61,7 +67,7 @@ void CloudRender::Draw(float deltaTime)
 {
     // Update global matrices.
     int offset = 0;
-    glm::mat4 viewMatrix = camera.GetViewMatrix();
+    glm::mat4 viewMatrix = camera->GetViewMatrix();
     glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
     glm::mat4 inverseViewProjection = glm::inverse(viewProjectionMatrix);
 
@@ -72,7 +78,7 @@ void CloudRender::Draw(float deltaTime)
     offset += sizeof(float) * 4 * 4;
     glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float) * 4 * 4, glm::value_ptr(inverseViewProjection));
     offset += sizeof(float) * 4 * 4;
-    glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float) * 3, glm::value_ptr(camera.Position));
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float) * 3, glm::value_ptr(camera->Position));
     offset += sizeof(float) * 4;
     glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(float) * 3,
                     glm::value_ptr(glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0])));
@@ -93,5 +99,5 @@ void CloudRender::Draw(float deltaTime)
     glm::vec3 lightDirection(1.0f, -1.0f, 0.0f);
     lightDirection = glm::normalize(lightDirection);
 
-    clouds->Draw(inverseViewProjection, viewMatrix, camera.Position, camera.Front, lightDirection);
+    clouds->Draw(inverseViewProjection, viewMatrix, camera->Position, camera->Front, lightDirection);
 }

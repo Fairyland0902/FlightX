@@ -3,10 +3,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "game.h"
 #include "resource_manager.h"
-
+extern bool keys[1024];
 Game::Game() :
-	camera(glm::vec3(0.0f, 50.0f, 0.0f))
-{}
+	camera(glm::vec3(0.0f, 0.0f, 0.0f)) {
+	currentcamera = &camera;
+}
 
 Game::~Game()
 {
@@ -28,13 +29,15 @@ void Game::Init(int width, int height)
     // Initialize sky box.
     skyBox = new SkyBox();
 	aircraft.loadModel("model/f16/f16.obj");
+	aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
 }
 
 void Game::Render(int width, int height, float deltaTime)
 {
-    skyBox->Draw();
+    //skyBox->Draw();
     cloudRender->Draw(deltaTime);
-	aircraft.Draw();
+	aircraft.Draw(ResourceManager::GetShader("aircraft"));
+	aircraft.Update(deltaTime);
 }
 
 void Game::loadShaders()
@@ -49,8 +52,19 @@ void Game::loadShaders()
     ResourceManager::LoadShader(_SHADER_PREFIX_"/cloudPassThrough.vert", _SHADER_PREFIX_"/cloudRendering.frag",
 		_SHADER_PREFIX_"/cloudRendering.geom", "cloud render");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/screenTri.vert", _SHADER_PREFIX_"/skybox.frag", "", "skybox");
-
+	ResourceManager::LoadShader(_SHADER_PREFIX_"/aircraft.vert", _SHADER_PREFIX_"/aircraft.frag", "", "aircraft");
     std::cout << "Done" << std::endl;
+}
+
+void Game::CameraControl() {
+	if (currentcamera != &aircraft&&keys[GLFW_KEY_1]) {
+		currentcamera = &aircraft;
+		cloudRender->ChangeCamera(*currentcamera);
+	}
+	if (currentcamera != &camera&&keys[GLFW_KEY_2]) {
+		currentcamera = &camera;
+		cloudRender->ChangeCamera(*currentcamera);
+	}
 }
 
 void Game::loadTextures()

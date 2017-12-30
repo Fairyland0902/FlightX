@@ -15,7 +15,7 @@ public:
     CloudRender(int width, int height, Camera &camera);
 
     ~CloudRender();
-
+	void ChangeCamera(Camera & camera);
     void Draw(float deltaTime);
 
 private:
@@ -31,7 +31,7 @@ private:
     GLuint timingsUBO;
 
     // Camera matrix.
-    Camera &camera;
+    Camera *camera;
 
     glm::mat4 projectionMatrix;
 

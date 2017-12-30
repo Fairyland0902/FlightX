@@ -39,6 +39,7 @@ void SkyBox::Draw()
     skyboxShader.Use();
     screenAlignedTriangle.Draw();
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	
 }
 
 GLuint SkyBox::loadCubemap(std::vector<std::string> faces)

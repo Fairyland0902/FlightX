@@ -33,7 +33,7 @@ bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
-
+Camera* currentcamera;
 // Game.
 Game game;
 
@@ -90,7 +90,9 @@ int main()
     std::cout << "WINDOW HEIGHT               : " << HEIGHT << std::endl;
 
     // Setup some OpenGL options.
-    glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glfwSwapInterval(1);
 
     // Input Options.
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -153,23 +155,25 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    game.camera.ProcessMouseMovement(xoffset, yoffset);
+    currentcamera->ProcessMouseMovement(xoffset, yoffset);
 }
 
 void do_movement()
 {
+	game.CameraControl();
+	game.aircraft.KeyBoardControl(keys, deltaTime);
     // Camera control.
     if (keys[GLFW_KEY_W])
-        game.camera.ProcessKeyboard(FORWARD, deltaTime);
+        currentcamera->ProcessKeyboard(FORWARD, deltaTime);
     if (keys[GLFW_KEY_S])
-        game.camera.ProcessKeyboard(BACKWARD, deltaTime);
+        currentcamera->ProcessKeyboard(BACKWARD, deltaTime);
     if (keys[GLFW_KEY_A])
-        game.camera.ProcessKeyboard(LEFT, deltaTime);
+        currentcamera->ProcessKeyboard(LEFT, deltaTime);
     if (keys[GLFW_KEY_D])
-        game.camera.ProcessKeyboard(RIGHT, deltaTime);
+        currentcamera->ProcessKeyboard(RIGHT, deltaTime);
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
-    game.camera.ProcessMouseScroll(yoffset);
+    currentcamera->ProcessMouseScroll(yoffset);
 }

@@ -41,7 +41,7 @@ public:
                bool interleavedTransformFeedbackAttribs = true);
 
     // Retrieves a stored shader.
-    static Shader GetShader(string name);
+    static Shader& GetShader(string name);
 
     // Properly de-allocates all loaded resources.
     static void Clear();

@@ -47,7 +47,7 @@ public:
     Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> textures);
 
     // Render the mesh.
-    void Draw(Shader shader);
+    void Draw(const Shader& shader);
 
 private:
     /*  Render data  */
