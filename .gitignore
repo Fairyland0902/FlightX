@@ -23,6 +23,7 @@
 !*.md
 # Folders
 !cloud/
+!flare/
 !screenshots
 !shaders
 !shaders/sky

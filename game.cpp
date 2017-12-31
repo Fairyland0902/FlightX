@@ -4,9 +4,13 @@
 #include "game.h"
 #include "resource_manager.h"
 
+extern bool keys[1024];
+
 Game::Game() :
-        camera(glm::vec3(0.0f, 50.0f, 0.0f))
-{}
+        camera(glm::vec3(0.0f, 0.0f, 0.0f))
+{
+    currentcamera = &camera;
+}
 
 Game::~Game()
 {
@@ -25,12 +29,18 @@ void Game::Init(int width, int height)
     // Initialize flare render.
     flareRender = new FlareRender(width, height, &camera);
     flareRender->Init();
+
+//    aircraft.loadModel("model/f16/f16.obj");
+    aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
 }
 
 void Game::Render(int width, int height, float deltaTime)
 {
     flareRender->Draw();
     cloudRender->Draw(deltaTime);
+
+    aircraft.Draw(ResourceManager::GetShader("aircraft"));
+    aircraft.Update(deltaTime);
 }
 
 void Game::loadShaders()
@@ -38,30 +48,80 @@ void Game::loadShaders()
     const GLchar *transformFeedbackVaryings[] = {"vs_out_position", "vs_out_size_time_rand", "vs_out_depthclipspace"};
     std::cout << "Loading shaders ............. ";
 
-    ResourceManager::LoadShader("../shaders/sky/cloudMove.vert", "", "", "cloud move", transformFeedbackVaryings, 3,
-                                false);
-    ResourceManager::LoadShader("../shaders/sky/cloudPassThrough.vert", "../shaders/sky/cloudFOM.frag",
-                                "../shaders/sky/cloudFOM.geom", "FOM");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/sky/cloudFOMBlur.frag", "", "FOM filter");
-    ResourceManager::LoadShader("../shaders/sky/cloudPassThrough.vert", "../shaders/sky/cloudRendering.frag",
-                                "../shaders/sky/cloudRendering.geom", "cloud render");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/sky/skybox.frag", "", "skybox");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/lens flare/brightpass.frag", "",
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/cloudMove.vert",
+                                "",
+                                "",
+                                "cloud move", transformFeedbackVaryings, 3, false);
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/cloudPassThrough.vert",
+                                _SHADER_PREFIX_"/sky/cloudFOM.frag",
+                                _SHADER_PREFIX_"/sky/cloudFOM.geom",
+                                "FOM");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/sky/cloudFOMBlur.frag",
+                                "",
+                                "FOM filter");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/cloudPassThrough.vert",
+                                _SHADER_PREFIX_"/sky/cloudRendering.frag",
+                                _SHADER_PREFIX_"/sky/cloudRendering.geom",
+                                "cloud render");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/sky/skybox.frag", "",
+                                "skybox");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/lens flare/brightpass.frag",
+                                "",
                                 "brightpass");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/lens flare/lensflare.frag", "",
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/lens flare/lensflare.frag",
+                                "",
                                 "lensflare");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/lens flare/blur.frag", "", "blur");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/lens flare/rgbshift.frag", "",
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/lens flare/blur.frag",
+                                "",
+                                "blur");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/lens flare/rgbshift.frag",
+                                "",
                                 "rgbshift");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/lens flare/radialnoise.frag", "",
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/lens flare/radialnoise.frag",
+                                "",
                                 "radialnoise");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/lens flare/compose.frag", "",
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/lens flare/compose.frag",
+                                "",
                                 "compose");
-    ResourceManager::LoadShader("../shaders/sky/screenTri.vert", "../shaders/lens flare/default.frag", "",
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/lens flare/default.frag",
+                                "",
                                 "default");
-    ResourceManager::LoadShader("../shaders/lens flare/cubemap.vert", "../shaders/lens flare/cubemap.frag", "",
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/lens flare/cubemap.vert",
+                                _SHADER_PREFIX_"/lens flare/cubemap.frag",
+                                "",
                                 "cubemap");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/aircraft.vert",
+                                _SHADER_PREFIX_"/aircraft.frag",
+                                "",
+                                "aircraft");
 
     std::cout << "Done" << std::endl;
 }
 
+void Game::CameraControl()
+{
+    if (currentcamera != &aircraft && keys[GLFW_KEY_1])
+    {
+        currentcamera = &aircraft;
+        cloudRender->ChangeCamera(*currentcamera);
+    }
+    if (currentcamera != &camera && keys[GLFW_KEY_2])
+    {
+        currentcamera = &camera;
+        cloudRender->ChangeCamera(*currentcamera);
+    }
+}
+
+void Game::loadTextures()
+{
+//    ResourceManager::LoadTexture3D("../noisegen/noise3.ex5", "cloud");
+}

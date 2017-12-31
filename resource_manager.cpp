@@ -31,7 +31,7 @@ Shader ResourceManager::LoadShader(const string &vShaderFile, const string &fSha
     return Shaders[name];
 }
 
-Shader ResourceManager::GetShader(std::string name)
+Shader& ResourceManager::GetShader(std::string name)
 {
     return Shaders[name];
 }
@@ -91,11 +91,13 @@ ResourceManager::loadShaderFromFile(const string &vShaderFile, const string &fSh
     const string &gShaderCode = geometryCode.c_str();
     // 2. Now create shader object from source code
     Shader shader;
+//	std::cout << "Loading [" << vShaderFile << "][" << fShaderFile << "][" << gShaderFile << "]" << std::endl;
     shader.Compile(vShaderCode.c_str(), fShaderFile.empty() ? nullptr : fShaderCode.c_str(),
                    gShaderFile.empty() ? nullptr : gShaderCode.c_str(), transformFeedbackVaryings,
                    numTransformFeedbackVaryings, interleavedTransformFeedbackAttribs);
     return shader;
 }
+
 
 Texture2D ResourceManager::LoadTexture2D(const string &file, GLboolean alpha, std::string name)
 {

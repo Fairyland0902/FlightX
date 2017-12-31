@@ -1,15 +1,16 @@
 #include "camera.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+extern int WIDTH, HEIGHT;
 // Constructor with vectors
 Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) :
-        Front(glm::vec3(0.0f, 0.0f, -1.0f)),
-        MovementSpeed(SPEED),
-        MouseSensitivity(SENSITIVTY),
-        Zoom(ZOOM),
-        NearClippingPlaneDistance(NEAR),
-        FarClippingPlaneDistance(FAR)
+	Front(glm::vec3(0.0f, 0.0f, -1.0f)),
+	MovementSpeed(SPEED),
+	MouseSensitivity(SENSITIVTY),
+	Zoom(ZOOM),
+	NearClippingPlaneDistance(NEAR),
+	FarClippingPlaneDistance(FAR),
+	Offset(0, 0, 0)
 {
     this->Position = position;
     this->WorldUp = up;
@@ -26,7 +27,8 @@ Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat up
         MouseSensitivity(SENSITIVTY),
         Zoom(ZOOM),
         NearClippingPlaneDistance(NEAR),
-        FarClippingPlaneDistance(FAR)
+        FarClippingPlaneDistance(FAR),
+		Offset(0,0,0)
 {
     this->Position = glm::vec3(posX, posY, posZ);
     this->WorldUp = glm::vec3(upX, upY, upZ);
@@ -36,9 +38,13 @@ Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat up
 }
 
 // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-glm::mat4 Camera::GetViewMatrix()
+glm::mat4 Camera::GetViewMatrix() const
 {
-    return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
+	glm::vec3 offset;
+	offset += Front * Offset.x;
+	offset += Up * Offset.y;
+	offset += Right * Offset.z;
+    return glm::lookAt(this->Position+offset, this->Position+offset + this->Front, this->Up);
 }
 
 // Return the position of the camera.
