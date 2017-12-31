@@ -51,7 +51,6 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-#undef FULL_SCREEN
 #ifdef FULL_SCREEN
     // Create a "Windowed full screen" window in the primary monitor.
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();

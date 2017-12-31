@@ -140,11 +140,11 @@ void Cloud::fbo_init()
 
         glBindTexture(GL_TEXTURE_2D, fourierOpacityMap_Textures[i][0]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, fourierOpacityMapSize, fourierOpacityMapSize, 0, GL_RGBA, GL_FLOAT,
-                     0);
+                     NULL);
 
         glBindTexture(GL_TEXTURE_2D, fourierOpacityMap_Textures[i][1]);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, fourierOpacityMapSize, fourierOpacityMapSize, 0, GL_RGBA, GL_FLOAT,
-                     0);
+                     NULL);
 
         // FBO
         glGenFramebuffers(1, &fourierOpacityMap_FBO[i]);
@@ -266,6 +266,11 @@ void Cloud::noise_init()
     glGenTextures(1, &noiseTexture);
     glBindTexture(GL_TEXTURE_2D, noiseTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, TexSizeX, TexSizeX, 0, GL_RGBA, GL_UNSIGNED_BYTE, TextureData);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
     stbi_image_free(TextureData);
@@ -365,7 +370,8 @@ Cloud::renderFOM(const glm::mat4 &inverseViewProjection, const glm::vec3 &camera
     // Noise is always on 0; the FOM textures are on 1 and 2.
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, noiseTexture);
-    glBindSampler(0, linearSampler_MipMaps);
+    // FIXME: Uncomment this will cause the flare to disappear.
+//    glBindSampler(0, linearSampler_MipMaps);
 
     // Matrix setup.
     createLightMatrices(lightView, lightProjection, lightFarPlane, glm::inverse(inverseViewProjection), cameraDirection,
@@ -453,7 +459,8 @@ void Cloud::renderClouds(const glm::vec3 &lightDir, const glm::mat4 &viewMatrix)
     // Noise is always on 0; the FOM textures are on 1 and 2.
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, noiseTexture);
-    glBindSampler(0, linearSampler_MipMaps);
+    // FIXME: Uncomment this will cause the flare to disappear.
+//    glBindSampler(0, linearSampler_MipMaps);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, fourierOpacityMap_Textures[0][0]);
     glActiveTexture(GL_TEXTURE2);
@@ -511,4 +518,6 @@ void Cloud::Draw(const glm::mat4 &inverseViewProjection, const glm::mat4 &view, 
     swap(vbo_cloudParticleBuffer_Read[0], vbo_cloudParticleBuffer_Write[0]);
     swap(vbo_cloudParticleBuffer_Read[1], vbo_cloudParticleBuffer_Write[1]);
     swap(vbo_cloudParticleBuffer_Read[2], vbo_cloudParticleBuffer_Write[2]);
+
+    glEnable(GL_DEPTH_TEST);
 }

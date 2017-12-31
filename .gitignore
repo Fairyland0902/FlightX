@@ -18,12 +18,16 @@
 !*.jpeg
 !*.jpg
 !*.png
+!*.hdr
 # README
 !*.md
 # Folders
 !cloud/
+!flare/
 !screenshots
-!shaders/
+!shaders
+!shaders/sky
+!shaders/lens flare
 !textures/
 !textures/skybox
 !model/

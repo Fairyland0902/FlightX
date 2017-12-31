@@ -3,9 +3,11 @@
 
 #include "camera.h"
 #include "cloud/cloudRender.h"
-#include "skybox.h"
+#include "flare/flareRender.h"
 #include "aircraft.h"
+
 extern Camera* currentcamera;
+
 class Game
 {
 public:
@@ -21,11 +23,11 @@ public:
 	void CameraControl();
 private:
     CloudRender *cloudRender;
-    SkyBox *skyBox;
+    FlareRender *flareRender;
 
     // Build and compile our shader program.
     void loadShaders();
-	
+
     // Load textures.
     void loadTextures();
 };
