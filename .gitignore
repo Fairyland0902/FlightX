@@ -26,5 +26,8 @@
 !shaders/
 !textures/
 !textures/skybox
+!model/
+!model/f16/
+!model/f16/*
 
 
