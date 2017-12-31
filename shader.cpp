@@ -139,6 +139,12 @@ void Shader::SetMatrix4(const string &name, const glm::mat4 &matrix, GLboolean u
     glUniformMatrix4fv(glGetUniformLocation(this->ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
+void Shader::SetTexture(const string &name, const Texture2D *texture, GLboolean useShader)
+{
+    if (useShader)
+        this->Use();
+    glUniform1i(glGetUniformLocation(this->ID, name.c_str()), texture->Index);
+}
 
 void Shader::checkCompileErrors(GLuint object, std::string type)
 {

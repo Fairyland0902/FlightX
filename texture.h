@@ -18,10 +18,11 @@ class Texture2D
 public:
     // Holds the ID of the texture object, used for all texture operations to reference to this particular texture
     GLuint ID;
+    GLuint Index;
     // Texture image dimensions
     GLuint Width, Height; // Width and height of loaded image in pixels
     // Texture Format
-    GLuint Internal_Format; // Format of texture object
+    GLint Internal_Format; // Format of texture object
     GLuint Image_Format; // Format of loaded image
     // Texture configuration
     GLuint Wrap_S; // Wrapping mode on S axis
@@ -29,13 +30,28 @@ public:
     GLuint Filter_Min; // Filtering mode if texture pixels < screen pixels
     GLuint Filter_Max; // Filtering mode if texture pixels > screen pixels
     // Constructor (sets default texture modes)
-    Texture2D();
+    Texture2D(GLuint index = 0);
+
+    // Constructor (this constructor is used for frame buffer).
+    Texture2D(GLuint width, GLuint height, GLint internalFormat, GLuint imageFormat, GLuint index = 0);
 
     // Generates texture from image data
     void Generate(GLuint width, GLuint height, unsigned char *data);
 
     // Binds the texture as the current active GL_TEXTURE_2D texture object
     void Bind() const;
+
+    void Unbind() const;
+
+    void Resize(int width_, int height_);
+
+    void SetTextureIndex(GLuint index);
+
+    // Overloaded operator.
+    bool operator==(Texture2D &texture)
+    {
+        return this->ID == texture.ID;
+    }
 };
 
 // Texture3D is designed to store cloud textures from .ex5 files.

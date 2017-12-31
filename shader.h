@@ -12,6 +12,7 @@
 #include <string>
 #include <GL/glew.h>
 #include <glm/gtc/type_ptr.hpp>
+#include "texture.h"
 
 using std::string;
 
@@ -55,6 +56,8 @@ public:
     void SetVector4f(const string &name, const glm::vec4 &value, GLboolean useShader = false);
 
     void SetMatrix4(const string &name, const glm::mat4 &matrix, GLboolean useShader = false);
+
+    void SetTexture(const string &name, const Texture2D *texture, GLboolean useShader = false);
 
 private:
     // Checks if compilation or linking failed and if so, print the error logs

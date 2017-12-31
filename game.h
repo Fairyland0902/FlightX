@@ -3,7 +3,7 @@
 
 #include "camera.h"
 #include "cloud/cloudRender.h"
-#include "skybox.h"
+#include "flare/flareRender.h"
 
 class Game
 {
@@ -20,13 +20,10 @@ public:
 
 private:
     CloudRender *cloudRender;
-    SkyBox *skyBox;
+    FlareRender *flareRender;
 
     // Build and compile our shader program.
     void loadShaders();
-
-    // Load textures.
-    void loadTextures();
 };
 
 #endif

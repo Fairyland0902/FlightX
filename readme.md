@@ -25,10 +25,9 @@
 
 # Features
 
-1. 现在实现了一个还看得过去的云层渲染
+1. 比较完整的天空部分的实现，主要包括：
+   - 实时云层渲染
+   - 天空盒以及一个写在 shader 里的太阳
+   - lens flare 效果
 
-![](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/1.png)
-
-2. 增加天空盒
-
-   ![](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/2.png)
+![](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/5.png)
