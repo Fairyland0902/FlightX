@@ -30,7 +30,7 @@ void Game::Init(int width, int height)
     flareRender = new FlareRender(width, height, &camera);
     flareRender->Init();
 
-//    aircraft.loadModel("model/f16/f16.obj");
+    aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
 }
 

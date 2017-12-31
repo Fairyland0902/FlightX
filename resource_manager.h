@@ -11,9 +11,11 @@
 #ifdef _WIN32
 #define _SHADER_PREFIX_ "shaders"
 #define _TEXTURE_PREFIX_ "textures"
+#define _MODEL_PREFIX_ "models"
 #else
 #define _SHADER_PREFIX_ "../shaders"
 #define _TEXTURE_PREFIX_ "../textures"
+#define _MODEL_PREFIX_ "../models"
 #endif
 using std::string;
 

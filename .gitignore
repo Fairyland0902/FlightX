@@ -4,6 +4,7 @@
 # Codes
 !*.h
 !*.cpp
+!*.c
 # Shaders
 !*.vert
 !*.frag
@@ -18,6 +19,7 @@
 !*.jpeg
 !*.jpg
 !*.png
+!*.bmp
 !*.hdr
 # README
 !*.md
@@ -30,8 +32,7 @@
 !shaders/lens flare
 !textures/
 !textures/skybox
-!model/
-!model/f16/
-!model/f16/*
+!models/
+!models/f16/
 
 

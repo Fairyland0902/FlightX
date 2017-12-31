@@ -3,11 +3,11 @@ Ka 0.3 0.3 0.3
 Kd 1.0 1.0 1.0
 Ks 1.0 1.0 1.0
 Ns 16
-map_Kd F16s.bmp
+map_Kd F16s.png
 
 newmtl F16t
 Ka 0.3 0.3 0.3
 Kd 1.0 1.0 1.0
 Ks 1.0 1.0 1.0
 Ns 16
-map_Kd F16t.bmp
+map_Kd F16t.png
