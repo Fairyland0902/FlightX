@@ -75,6 +75,7 @@ void FlareRender::Init()
 
 void FlareRender::Draw()
 {
+    glDisable(GL_DEPTH_TEST);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     skyFBO->Start();
@@ -97,6 +98,7 @@ void FlareRender::Draw()
     triangle->Draw();
 
     glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
 }
 
 void FlareRender::lensFlarePass()
