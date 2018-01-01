@@ -27,8 +27,8 @@ void Game::Init(int width, int height)
     cloudRender = new CloudRender(width, height, camera);
 
     // Initialize flare render.
-    flareRender = new FlareRender(width, height, &camera);
-    flareRender->Init();
+    //flareRender = new FlareRender(width, height, &camera);
+    //flareRender->Init();
 
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
@@ -36,7 +36,7 @@ void Game::Init(int width, int height)
 
 void Game::Render(int width, int height, float deltaTime)
 {
-    flareRender->Draw();
+    //flareRender->Draw();
     cloudRender->Draw(deltaTime);
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"));

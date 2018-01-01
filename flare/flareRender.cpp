@@ -33,7 +33,7 @@ void FlareRender::Init()
     skyBox = new SkyBox();
 
     // Initialize hdr cube map.
-    hdrTextureCube = new HDRTextureCube("../textures/uffizi_cross.hdr");
+    hdrTextureCube = new HDRTextureCube(_TEXTURE_PREFIX_"/uffizi_cross.hdr");
 
     // Initialize a full-screen triangle.
     triangle = new ScreenAlignedTriangle();

@@ -57,7 +57,7 @@ void Texture2D::Resize(int width_, int height_)
     Height = height_;
 
     Bind();
-    glTexImage2D(GL_TEXTURE_2D, 0, Internal_Format, Width, Height, 0, Image_Format, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, Internal_Format, Width, Height, 0, Image_Format, GL_UNSIGNED_BYTE, nullptr);
 }
 
 void Texture2D::SetTextureIndex(GLuint index)
