@@ -8,15 +8,14 @@ extern Camera* currentcamera;
 float Aircraft::getLength(const glm::vec3& v) {
 	return sqrt(v.x*v.x + v.y*v.y + v.z + v.z);
 }
-
+void WorldUpRotate(glm::vec3& v, double val) {
+	double cosv = cos(val), sinv = sin(val);
+	float vx = v.x, vz = v.z;
+	v.x = vx * cosv + vz * sinv;
+	v.z = -vx * sinv + vz * cosv;
+}
 glm::vec3 Aircraft::getAcceleration() {
-	glm::vec3 acc(-airspeed*0.3f+ thrust*Front*0.015f);
-	acc.y -= 0.5;
-	acc += Up * ias*ias*0.05f;
-	if(!inAir) {
-		if (acc.y < 0)acc.y = 0;
-	}
-	return acc;
+	return glm::vec3(0);
 }
 
 Aircraft::Aircraft() :Model(),Camera(),inAir(1),target_thrust(20),thrust(20),controlx(0),controly(0)
@@ -40,20 +39,24 @@ void Aircraft::loadModel(string path) {
 	Offset = glm::vec3(-2.0f, 0.3f, 0);
 }
 
-void WorldUpRotate(glm::vec3& v,double val) {
-	double cosv = cos(val), sinv=sin(val);
-	float vx = v.x, vz = v.z;
-	v.x = vx * cosv - vz * sinv;
-	v.z = vx * sinv + vz * cosv;
-}
+
 void Aircraft::Update(float dt) {
-	glm::vec3  a = getAcceleration();
-	auto yaw=glm::dot(a, Right)/(ias+0.05)*dt;
+	glm::vec3 acc(-airspeed * 0.3f + thrust * Front*0.015f);
+	acc += Up * ias*ias*0.05f;
+	auto yaw = glm::dot(acc, Right) / (ias>0.5 ? ias : 0.5)/5*dt;
 	WorldUpRotate(Up, yaw);
 	WorldUpRotate(Front, yaw);
 	WorldUpRotate(Right, yaw);
+	acc.y -= 0.5;
+	if (!inAir) {
+		if (acc.y < 0)acc.y = 0;
+	}
+	Front =glm::normalize(Front+ 0.03f*controly*Up);
+	Up += 0.03f*controlx*Right;
+	Up = glm::normalize(Up-glm::dot(Up, Front)*Front);
+	Right = glm::cross(Front, Up);
 	Position += airspeed * dt;
-	airspeed += a * dt;
+	airspeed += acc * dt;
 	thrust += ((target_thrust>20?target_thrust:20) - thrust) *dt *0.45 ;
 	ias = glm::dot(airspeed, Front);
 }
@@ -80,9 +83,7 @@ void Aircraft::Draw(Shader& shader) {
 void Aircraft::setAirspeed(const glm::vec3& v) {
 	airspeed = v;
 }
-void Aircraft::ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime) {
-	
-}
+void Aircraft::ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime) {}
 
 void Aircraft::KeyBoardControl(bool* keys, GLfloat deltaTime) {
 	if (keys[GLFW_KEY_R])Position = glm::vec3(-10.0f, 0, 0);
@@ -90,9 +91,11 @@ void Aircraft::KeyBoardControl(bool* keys, GLfloat deltaTime) {
 	if (keys[GLFW_KEY_F4])target_thrust+=1.0f;
 	if (target_thrust > 100)target_thrust = 100;
 	if (target_thrust <0)target_thrust = 0;
-	std::cout << ias <<" "<<thrust << std::endl;
 }
-void Aircraft::ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboolean constrainPitch ) {}
+void Aircraft::ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLfloat xpos, GLfloat ypos, GLboolean constrainPitch) {
+	controlx = xpos / WIDTH - 0.5;
+	controly = ypos / HEIGHT - 0.5;
+}
 void Aircraft::ProcessMouseScroll(GLfloat yoffset) {
-	airspeed *= 1 + yoffset/3;
+	//airspeed *= 1 + yoffset/3;
 }

@@ -25,7 +25,7 @@ public:
 	void setAirspeed(const glm::vec3&);
 	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)override;
 	void KeyBoardControl(bool *keys, GLfloat deltaTime);
-	void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboolean constrainPitch = true)override;
+	void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLfloat xpos, GLfloat ypos, GLboolean constrainPitch = true)override;
 	void ProcessMouseScroll(GLfloat yoffset)override;
 };
 

@@ -116,7 +116,7 @@ void Game::CameraControl()
     }
     if (currentcamera != &camera && keys[GLFW_KEY_2])
     {
-        currentcamera = &camera;
+		currentcamera = &camera;
         cloudRender->ChangeCamera(*currentcamera);
     }
 }

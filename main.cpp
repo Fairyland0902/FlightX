@@ -50,7 +50,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
+#undef FULL_SCREEN
 #ifdef FULL_SCREEN
     // Create a "Windowed full screen" window in the primary monitor.
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -154,7 +154,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    currentcamera->ProcessMouseMovement(xoffset, yoffset);
+    currentcamera->ProcessMouseMovement(xoffset, yoffset,xpos,ypos);
 }
 
 void do_movement()

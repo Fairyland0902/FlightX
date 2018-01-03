@@ -63,7 +63,7 @@ public:
 	virtual void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime);
 
     // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-	virtual void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLboolean constrainPitch = true);
+	virtual void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLfloat xpos, GLfloat ypos, GLboolean constrainPitch = true);
 
     // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     virtual void ProcessMouseScroll(GLfloat yoffset);
