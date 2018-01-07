@@ -41,6 +41,8 @@ void Game::Render(int width, int height, float deltaTime)
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"));
     aircraft.Update(deltaTime);
+	//For Test:
+	aircraft.DrawHUD();
 }
 
 void Game::loadShaders()
@@ -67,6 +69,9 @@ void Game::loadShaders()
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/sky/skybox.frag", "",
                                 "skybox");
+	ResourceManager::LoadShader(_SHADER_PREFIX_"/hudline.vert",
+		_SHADER_PREFIX_"/hudline.frag", "",
+		"hudline");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/lens flare/brightpass.frag",
                                 "",

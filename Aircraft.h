@@ -13,6 +13,7 @@ class Aircraft :
 	glm::vec3 airspeed;
 	float ias;
 	float controlx, controly;
+	GLuint HUDVAO;
 	float getLength(const glm::vec3&);
 	glm::vec3 getAcceleration();
 public:
@@ -27,5 +28,6 @@ public:
 	void KeyBoardControl(bool *keys, GLfloat deltaTime);
 	void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLfloat xpos, GLfloat ypos, GLboolean constrainPitch = true)override;
 	void ProcessMouseScroll(GLfloat yoffset)override;
+	void DrawHUD();
 };
 
