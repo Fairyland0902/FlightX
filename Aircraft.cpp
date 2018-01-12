@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "resource_manager.h"
+extern int width, height;
 extern int WIDTH, HEIGHT;
 extern bool keys[1024];
 extern Camera* currentcamera;
@@ -95,8 +96,8 @@ void Aircraft::KeyBoardControl(bool* keys, GLfloat deltaTime) {
 	if (target_thrust <0)target_thrust = 0;
 }
 void Aircraft::ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLfloat xpos, GLfloat ypos, GLboolean constrainPitch) {
-	controlx = xpos / WIDTH - 0.5;
-	controly = ypos / HEIGHT - 0.5;
+	controlx = xpos / width - 0.5;
+	controly = ypos / height - 0.5;
 }
 void Aircraft::ProcessMouseScroll(GLfloat yoffset) {
 	//airspeed *= 1 + yoffset/3;

@@ -23,6 +23,7 @@ void do_movement();
 
 // Window size.
 int WIDTH, HEIGHT;
+GLuint width = 1280, height = 720;
 
 // Keyboard.
 bool keys[1024];
@@ -61,7 +62,6 @@ int main()
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
     GLFWwindow *window = glfwCreateWindow(mode->width, mode->height, "FlightX", monitor, nullptr);
 #else
-    GLuint width = 1280, height = 720;
     GLFWwindow *window = glfwCreateWindow(width, height, "FlightX", nullptr, nullptr);
 #endif
     glfwMakeContextCurrent(window);
