@@ -4,9 +4,10 @@
 #include "camera.h"
 #include "cloud/cloudRender.h"
 #include "flare/flareRender.h"
-#include "aircraft.h"
+#include "Aircraft.h"
+#include "plane.h"
 
-extern Camera* currentcamera;
+extern Camera *currentcamera;
 
 class Game
 {
@@ -16,14 +17,18 @@ public:
     ~Game();
 
     Camera camera;
-	Aircraft aircraft;
+    Aircraft aircraft;
+
     void Init(int width, int height);
 
     void Render(int width, int height, float deltaTime);
-	void CameraControl();
+
+    void CameraControl();
+
 private:
     CloudRender *cloudRender;
     FlareRender *flareRender;
+    Plane *plane;
 
     // Build and compile our shader program.
     void loadShaders();

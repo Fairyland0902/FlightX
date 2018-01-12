@@ -30,17 +30,34 @@ void Game::Init(int width, int height)
     flareRender = new FlareRender(width, height, &camera);
     flareRender->Init();
 
+    plane = new Plane();
+
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
 }
 
 void Game::Render(int width, int height, float deltaTime)
 {
-    flareRender->Draw();
-    cloudRender->Draw(deltaTime);
+//    flareRender->Draw();
+//    cloudRender->Draw(deltaTime);
+//
+//    aircraft.Draw(ResourceManager::GetShader("aircraft"));
+//    aircraft.Update(deltaTime);
 
-    aircraft.Draw(ResourceManager::GetShader("aircraft"));
-    aircraft.Update(deltaTime);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    Shader planeShader = ResourceManager::GetShader("plane");
+    planeShader.Use();
+
+    glm::mat4 trans;
+    glm::mat4 view = currentcamera->GetViewMatrix();
+    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
+                                            currentcamera->NearClippingPlaneDistance,
+                                            currentcamera->FarClippingPlaneDistance);
+    planeShader.SetMatrix4("model", trans);
+    planeShader.SetMatrix4("view", view);
+    planeShader.SetMatrix4("projection", projection);
+
+    plane->Draw();
 }
 
 void Game::loadShaders()
@@ -103,6 +120,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/aircraft.frag",
                                 "",
                                 "aircraft");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/plane.vert",
+                                _SHADER_PREFIX_"/plane.frag",
+                                "",
+                                "plane");
 
     std::cout << "Done" << std::endl;
 }
@@ -116,7 +137,7 @@ void Game::CameraControl()
     }
     if (currentcamera != &camera && keys[GLFW_KEY_2])
     {
-		currentcamera = &camera;
+        currentcamera = &camera;
         cloudRender->ChangeCamera(*currentcamera);
     }
 }

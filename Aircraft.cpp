@@ -1,4 +1,4 @@
-#include "aircraft.h"
+#include "Aircraft.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
