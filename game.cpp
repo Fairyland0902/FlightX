@@ -7,7 +7,7 @@
 extern bool keys[1024];
 
 Game::Game() :
-        camera(glm::vec3(0.0f, -95.0f, 0.0f))
+        camera(glm::vec3(0.0f, -195.0f, 0.0f))
 {
     currentcamera = &camera;
 }

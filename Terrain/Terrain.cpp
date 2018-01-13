@@ -14,8 +14,8 @@ void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::v
 
     for (int  i = 0; i < n; i++)
         for (int j = 0; j < n; j++){
-            vertices.emplace_back(i * slice * (2000) - 1000, -500, j * slice * (2000) - 1000);
-            uvs.emplace_back(i * slice, j * slice);
+            vertices.emplace_back(i * slice * (2000) - 1000, -200, j * slice * (2000) - 1000);
+            uvs.emplace_back(i % 2,j % 2);
             if (i < n - 1 && j < n - 1) {
                 indices.emplace_back(i * n + j);
                 indices.emplace_back(i * n + n + j);
@@ -29,12 +29,7 @@ void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::v
 }
 
 Terrain::Terrain(int width, int height) : width(width), height(height) {
-    texture = ResourceManager::LoadTexture2D("textures/grass.jpg", 0, "grass");
-
-//    GLuint indices[] = {
-//            0, 1, 3,
-//            1, 2, 3
-//    };
+    texture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass.jpg", 0, "grass");
 
     generateCoord(vertices, uvs, indices);
 //
@@ -67,38 +62,6 @@ void Terrain::Draw() {
     setShader();
     setMVP();
 
-//    std::vector<glm::vec3> vertices = {
-//            glm::vec3(1000.0f, -500.0f, 1000.0f),
-//            glm::vec3(1000.0f, -500.0f, -1000.0f),
-//            glm::vec3(-1000.0f, -500.0f, -1000.0f),
-//            glm::vec3(-1000.0f, -500.0f, 1000.0f)
-//    };
-//
-//
-//    std::vector<GLuint> indices = {
-//            0, 1, 3,
-//            1, 2, 3
-//    };
-
-//    GLfloat vertices[] = {
-//            1000.0f, -500.0f, 1000.0f,
-//            1000.0f, -500.0f, -1000.0f,
-//            -1000.0f, -500.0f, -1000.0f,
-//            -1000.0f, -500.0f, 1000.0f
-//    };
-//
-//    GLuint indices[] = {
-//            0, 1, 3,
-//            1, 2, 3
-//    };
-
-//    std::vector<glm::vec2> uvs{
-//            glm::vec2(0.1, 0.81),
-//            glm::vec2(0.81, 0.1),
-//            glm::vec2(0.1, 0.1),
-//            glm::vec2(0.1, 0.81)
-//    };
-
     // Set the objects we need in the rendering process (namely, VAO, VBO and EBO).
     GLuint UV, VBO, EBO;
     glGenBuffers(1, &VBO);
@@ -114,8 +77,7 @@ void Terrain::Draw() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
 //    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE0, texture.ID);
+    glBindTexture(GL_TEXTURE_2D, texture.ID);
     glUniform1i(glGetUniformLocation(shader.ID, "grassTexture"), 0);
 
 
