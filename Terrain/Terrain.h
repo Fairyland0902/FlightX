@@ -5,12 +5,13 @@
 #ifndef FLIGHTX_TERRAIN_H
 #define FLIGHTX_TERRAIN_H
 
-#include "camera.h"
+#include <camera.h>
 #include <shader.h>
 
 extern Camera *currentcamera;
 
-class Terrain {
+class Terrain
+{
 public:
     Terrain(int width, int height);
 

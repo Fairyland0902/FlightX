@@ -3,8 +3,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "cloud.h"
-#include "../resource_manager.h"
-#include "../stb_image.h"
+#include <resource_manager.h>
+#include <stb_image.h>
 
 const unsigned int Cloud::maxNumCloudParticles = 10000;// 16384;
 const unsigned int Cloud::fourierOpacityMapSize = 1024;

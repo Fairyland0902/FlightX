@@ -1,7 +1,7 @@
 #include <iostream>
 #include "hdrTextureCube.h"
 #include "rgbe.h"
-#include "../resource_manager.h"
+#include <resource_manager.h>
 
 HDRTextureCube::HDRTextureCube(std::string path)
 {

@@ -1,7 +1,7 @@
 #include <iostream>
 #include "skybox.h"
-#include "../stb_image.h"
-#include "../resource_manager.h"
+#include <stb_image.h>
+#include <resource_manager.h>
 
 SkyBox::SkyBox()
 {

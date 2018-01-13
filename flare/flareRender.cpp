@@ -4,7 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "flareRender.h"
-#include "../resource_manager.h"
+#include <resource_manager.h>
 
 FlareRender::FlareRender(int width_, int height_, Camera *camera_) :
         width(width_),

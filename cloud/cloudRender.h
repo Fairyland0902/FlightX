@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include "../camera.h"
+#include <camera.h>
 #include "screenAlignedTriangle.h"
 #include "cloud.h"
 
@@ -15,7 +15,9 @@ public:
     CloudRender(int width, int height, Camera &camera);
 
     ~CloudRender();
-	void ChangeCamera(Camera & camera);
+
+    void ChangeCamera(Camera &camera);
+
     void Draw(float deltaTime);
 
 private:

@@ -3,8 +3,8 @@
 
 #include <string>
 #include <GL/glew.h>
-#include "../shader.h"
-#include "../cloud/screenAlignedTriangle.h"
+#include <shader.h>
+#include <cloud/screenAlignedTriangle.h>
 
 struct Face
 {
