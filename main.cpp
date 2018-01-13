@@ -34,7 +34,7 @@ bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
-Camera* currentcamera;
+Camera *currentcamera;
 // Game.
 Game game;
 
@@ -51,6 +51,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 #undef FULL_SCREEN
 #ifdef FULL_SCREEN
     // Create a "Windowed full screen" window in the primary monitor.
@@ -89,9 +90,11 @@ int main()
     std::cout << "WINDOW HEIGHT               : " << HEIGHT << std::endl;
 
     // Setup some OpenGL options.
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-	glfwSwapInterval(1);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    // Anti-aliasing.
+    glEnable(GL_MULTISAMPLE);
+    glfwSwapInterval(1);
 
     // Input Options.
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -154,13 +157,13 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    currentcamera->ProcessMouseMovement(xoffset, yoffset,xpos,ypos);
+    currentcamera->ProcessMouseMovement(xoffset, yoffset, xpos, ypos);
 }
 
 void do_movement()
 {
-	game.CameraControl();
-	game.aircraft.KeyBoardControl(keys, deltaTime);
+    game.CameraControl();
+    game.aircraft.KeyBoardControl(keys, deltaTime);
     // Camera control.
     if (keys[GLFW_KEY_W])
         currentcamera->ProcessKeyboard(FORWARD, deltaTime);

@@ -489,6 +489,7 @@ void Cloud::renderClouds(const glm::vec3 &lightDir, const glm::mat4 &viewMatrix)
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glActiveTexture(GL_TEXTURE0);
 }
 
 void Cloud::Draw(const glm::mat4 &inverseViewProjection, const glm::mat4 &view, const glm::vec3 &cameraDirection,

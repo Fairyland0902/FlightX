@@ -24,8 +24,13 @@ private:
 
     void generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices);
 
-    Texture2D texture;
-	GLuint VAO;
+    Texture2D grassAlbedo;
+    Texture2D grassNormal;
+    Texture2D grassMetallic;
+    Texture2D grassRoughness;
+    Texture2D grassAO;
+
+    GLuint VAO;
     GLuint UV, VBO, EBO;
     int width;
     int height;

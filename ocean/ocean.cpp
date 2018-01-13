@@ -23,7 +23,7 @@ Ocean::Ocean(int width, int height) :
     // Wind speed
     V = 10;
     // Wind direction
-    omega = glm::vec2(0.0f, 1.0f);
+    omega = glm::vec2(0.01f, 0.0f);
 
     heightMax = 0;
     heightMin = 0;

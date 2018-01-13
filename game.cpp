@@ -51,6 +51,7 @@ void Game::Render(int width, int height, float deltaTime)
     ocean->Draw(deltaTime);
 
     terrain->Draw();
+
     //For Test:
     aircraft.DrawHUD();
 }
@@ -131,6 +132,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/plane.frag",
                                 "",
                                 "plane");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/PBR.vert",
+                                _SHADER_PREFIX_ "/PBR.frag",
+                                "",
+                                "PBR");
 
     std::cout << "Done" << std::endl;
 }
