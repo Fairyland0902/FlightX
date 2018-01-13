@@ -43,6 +43,7 @@ Terrain::Terrain(int width, int height) : width(width), height(height) {
 //    for (GLushort i : indices) {
 //        std::cout << i << std::endl;
 //    }
+	glGenVertexArrays(1, &VAO);
 }
 
 void Terrain::setMVP() {
@@ -61,7 +62,7 @@ void Terrain::setMVP() {
 void Terrain::Draw() {
     setShader();
     setMVP();
-
+	glBindVertexArray(VAO);
     // Set the objects we need in the rendering process (namely, VAO, VBO and EBO).
     GLuint UV, VBO, EBO;
     glGenBuffers(1, &VBO);
@@ -93,6 +94,9 @@ void Terrain::Draw() {
 
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glBindVertexArray(0);
 }
 
 void Terrain::setShader() {

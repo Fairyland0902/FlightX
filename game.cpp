@@ -45,11 +45,10 @@ void Game::Render(int width, int height, float deltaTime)
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"));
     aircraft.Update(deltaTime);
-    //For Test:
-	aircraft.DrawHUD();
-
+   
     terrain->Draw();
-	
+	//For Test:
+	aircraft.DrawHUD();
 }
 
 void Game::loadShaders()
