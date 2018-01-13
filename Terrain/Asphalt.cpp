@@ -13,6 +13,8 @@ Asphalt::Asphalt(int width, int height) : Terrain(width, height) {
     texture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/asphalt.jpg", 0, "asphalt");
     paint = new Paint(width, height);
     paint->init();
+    cross = new Cross(width, height);
+    cross->init();
 }
 
 void Asphalt::Draw() {
@@ -36,5 +38,7 @@ void Asphalt::Draw() {
         glBindVertexArray(0);
         paint->setMVP(trans, view, projection);
         paint->Draw();
+        cross->setMVP(trans, view, projection);
+        cross->Draw();
     }
 }
