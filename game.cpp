@@ -47,26 +47,12 @@ void Game::Render(int width, int height, float deltaTime)
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"));
     aircraft.Update(deltaTime);
-    //For Test:
-    aircraft.DrawHUD();
 
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//    Shader planeShader = ResourceManager::GetShader("plane");
-//    planeShader.Use();
-//
-//    glm::mat4 trans;
-//    glm::mat4 view = currentcamera->GetViewMatrix();
-//    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
-//                                            currentcamera->NearClippingPlaneDistance,
-//                                            currentcamera->FarClippingPlaneDistance);
-//    planeShader.SetMatrix4("model", trans);
-//    planeShader.SetMatrix4("view", view);
-//    planeShader.SetMatrix4("projection", projection);
-//
-//    plane->Draw();
     ocean->Draw(deltaTime);
 
     terrain->Draw();
+    //For Test:
+    aircraft.DrawHUD();
 }
 
 void Game::loadShaders()

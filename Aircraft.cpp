@@ -234,4 +234,5 @@ void Aircraft::DrawHUD() {
 	glDrawArrays(GL_LINES, 0, vpos.size());
 	glDisableVertexAttribArray(0);
 	glEnable(GL_DEPTH_TEST);
+	glBindVertexArray(0);
 }
