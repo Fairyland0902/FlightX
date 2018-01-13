@@ -201,3 +201,4 @@ Model *ResourceManager::GetModel(std::string name)
 
 GLuint util::genVAO() { GLuint a; glGenVertexArrays(1, &a); return a; }
 GLuint util::genBuf() { GLuint a; glGenBuffers(1, &a); return a; }
+

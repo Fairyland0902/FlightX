@@ -41,10 +41,9 @@ void Aircraft::loadModel(string path) {
 	Offset = glm::vec3(-2.0f, 0.3f, 0);
 }
 
-
 void Aircraft::Update(float dt) {
-	glm::vec3 acc(-airspeed * 0.3f + thrust * Front*0.025f*(Position.y>0?(Position.y>500?0.0f:1.0f-Position.y/500):1.0f));
-	acc += Up * ias*ias*0.05f;
+	glm::vec3 acc(-airspeed * 0.4f*glm::clamp(abs(glm::dot(Up,WorldUp)),0.3f,0.75f) + thrust * Front*0.025f*glm::clamp(1.0f-Position.y/300.0f,0.1f,1.0f)); 
+	acc += Up * ias*glm::clamp(ias,0.0f,4.0f)*glm::clamp(glm::dot(Up,WorldUp),0.1f,1.0f)*0.05f;
 	auto yaw = glm::dot(acc, Right) / (ias>0.5 ? ias : 0.5)/5*dt;
 	WorldUpRotate(Up, yaw);
 	WorldUpRotate(Front, yaw);
@@ -53,8 +52,9 @@ void Aircraft::Update(float dt) {
 	if (!inAir) {
 		if (acc.y < 0)acc.y = 0;
 	}
-	Front =glm::normalize(Front+ 0.03f*controly*Up);
-	Up += 0.03f*controlx*Right;
+	float controlval = 0.005f * (4.0f + ias * 1.1f);
+	Front =glm::normalize(Front+ controlval *controly*Up);
+	Up += controlval *controlx*Right;
 	Up = glm::normalize(Up-glm::dot(Up, Front)*Front);
 	Right = glm::cross(Front, Up);
 	Position += airspeed * dt;
@@ -105,7 +105,7 @@ void Aircraft::ProcessMouseScroll(GLfloat yoffset) {
 	//airspeed *= 1 + yoffset/3;
 }
 
-
+inline void _AIRCRAFT_UTIL_push_line(float xStart, float yStart, float xEnd, float yEnd, std::vector<glm::vec2>&pos) { pos.emplace_back(xStart, yStart); pos.emplace_back(xEnd, yEnd);}
 inline void _AIRCRAFT_UTIL_push_line_display(float xStart,float yStart, float xEnd, float yEnd, float xLeft, float xRight, float yUp, float yDown, std::vector<glm::vec2>& pos) {
 	pos.emplace_back(xStart*xRight + xLeft * (1 - xStart), yStart*yUp + yDown * (1 - yStart));
 	pos.emplace_back(xEnd*xRight + xLeft * (1 - xEnd), yEnd*yUp + yDown * (1 - yEnd));
@@ -185,6 +185,21 @@ void _AIRCRAFT_UTIL_push_digit_display(int digit,float xLeft,float xRight,float 
 		break;
 	}
 }
+void _AIRCRAFT_UTIL_show_number(int value,float xRight,float yCenter,float width,float height,std::vector<glm::vec2>&pos,int displayoption=0) {
+	if (value >= 0)displayoption &= 0xfffe;
+	else if(displayoption&1) value = -value;
+	else value = 0;
+	float xptr = xRight;
+	while (value>0 || xptr == xRight) {
+		_AIRCRAFT_UTIL_push_digit_display(value % 10, xptr - width, xptr, yCenter+height/2, yCenter-height/2,pos );
+		xptr -= width;
+		value /= 10;
+	}
+	if(displayoption&1) {
+		pos.emplace_back(xptr - 0.9*width, yCenter);
+		pos.emplace_back(xptr - 0.1*width, yCenter);
+	}
+}
 void Aircraft::DrawHUD() {
 	static GLuint VAO = util::genVAO();
 	static GLuint vert_buf = util::genBuf();
@@ -192,38 +207,38 @@ void Aircraft::DrawHUD() {
 	glDisable(GL_DEPTH_TEST);
 	ResourceManager::GetShader("hudline").Use();
 	std::vector<glm::vec2> vpos;
-	vpos.emplace_back(-0.5, -0.5);
-	vpos.emplace_back(-0.5, 0.5);
-	vpos.emplace_back(0.5, -0.5);
-	vpos.emplace_back(0.5, 0.5);
-	for(int i=0;i<10;++i)
-	_AIRCRAFT_UTIL_push_digit_display(i, -1+i*0.05, -0.95+i*0.05, -0.8, -1, vpos);
-	int displayias= int(ias * 60),displayalt=Position.y*100+10000,displayvs=airspeed.y*6000;
-	if (displayias <= 0)displayias = 0;
-	if (displayalt <= 0)displayalt = 0;
-	float ptr = -0.6f;
-	while(displayias>0||ptr==-0.6f) {
-		_AIRCRAFT_UTIL_push_digit_display(displayias % 10, ptr - 0.05, ptr, 0.1, -0.1, vpos);
-		ptr -= 0.05;
-		displayias /= 10;
+	// Two major lines
+	_AIRCRAFT_UTIL_push_line(-0.5, -0.5, -0.5, 0.5,vpos);
+	_AIRCRAFT_UTIL_push_line(0.5, -0.5, 0.5, 0.5,vpos);
+	_AIRCRAFT_UTIL_push_line(-0.5, 0, -0.6, 0,vpos);
+	_AIRCRAFT_UTIL_push_line(0.5, 0, 0.6, 0, vpos);
+	// Airspeed and its block
+	_AIRCRAFT_UTIL_show_number(ias * 60, -0.61f, 0, 0.05, 0.2, vpos,0);
+	_AIRCRAFT_UTIL_push_line(-0.85, 0.11, -0.6, 0.11,vpos);
+	_AIRCRAFT_UTIL_push_line(-0.6, -0.11, -0.6, 0.11,vpos);
+	_AIRCRAFT_UTIL_push_line(-0.6, -0.11, -0.85, -0.11,vpos);
+	float iasd = ias > 0 ? ias * 3: 0;
+	for (int i = iasd  - 2; i <= iasd + 3;++i) {
+		if (i < 0)continue;
+		float position = (i - iasd)/6;
+		_AIRCRAFT_UTIL_push_line(-0.54, position, -0.5, position, vpos);
+		_AIRCRAFT_UTIL_show_number(i * 20, -0.54, position, 0.015, 0.06, vpos);
 	}
-	ptr = 0.85f;
-	while (displayalt>0||ptr==0.85f) {
-		_AIRCRAFT_UTIL_push_digit_display(displayalt % 10, ptr - 0.05, ptr, 0.1, -0.1, vpos);
-		ptr -= 0.05;
-		displayalt /= 10;
+	//Alt and its block
+	_AIRCRAFT_UTIL_show_number(Position.y * 100 + 20000, 0.86f, 0, 0.05, 0.2, vpos,1);
+	_AIRCRAFT_UTIL_push_line(0.85, 0.11, 0.6, 0.11, vpos);
+	_AIRCRAFT_UTIL_push_line(0.6, -0.11, 0.6, 0.11, vpos);
+	_AIRCRAFT_UTIL_push_line(0.6, -0.11, 0.85, -0.11, vpos);
+	for (int i = Position.y - 6; i <= Position.y + 5; ++i) {
+		float position = (i - Position.y) / 11;
+		if(position<-0.5)continue;
+		_AIRCRAFT_UTIL_push_line(0.52, position, 0.5, position, vpos);
+		_AIRCRAFT_UTIL_show_number(i * 100+20000, 0.60, position, 0.015, 0.06, vpos,1);
 	}
-	ptr = 0.68f;
-	bool vsneg = displayvs < 0; if (vsneg)displayvs = -displayvs;
-	while (displayvs!=0 || ptr == 0.62f) {
-		_AIRCRAFT_UTIL_push_digit_display(displayvs % 10, ptr - 0.02, ptr, -0.50, -0.58, vpos);
-		ptr -= 0.02;
-		displayvs /= 10;
-	}
-	if(vsneg) {
-		vpos.emplace_back(ptr - 0.018, -0.54);
-		vpos.emplace_back(ptr - 0.002, -0.54);
-	}
+	_AIRCRAFT_UTIL_show_number(airspeed.y * 6000, 0.48f, -0.54, 0.02, 0.08, vpos, 1);
+
+	
+
 	int tgtthr = target_thrust, thr = thrust;
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vert_buf);

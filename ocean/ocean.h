@@ -1,6 +1,5 @@
 #ifndef _OCEAN_H
 #define _OCEAN_H
-
 #include <string>
 #include <vector>
 #include <GL/glew.h>

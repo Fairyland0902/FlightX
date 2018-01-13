@@ -1,5 +1,6 @@
 #include "wave.h"
 #include <fftw3.h>
+#include <ctime>
 
 Wave::Wave(int N, int M, float L_x, float L_z, glm::vec2 omega, float V, float A, float lambda) :
         N(N), M(M),
