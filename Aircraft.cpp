@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "resource_manager.h"
-extern int width, height;
+extern GLuint width, height;
 extern int WIDTH, HEIGHT;
 extern bool keys[1024];
 extern Camera* currentcamera;
@@ -68,7 +68,9 @@ const glm::vec3&& Aircraft::getAirspeed() {
 }
 
 void Aircraft::Draw(Shader& shader) {
-	glm::mat4 vp = glm::perspective(0.8f, float(WIDTH) / HEIGHT, .001f, 100.0f) 
+	glm::mat4 vp = glm::perspective(currentcamera->Zoom, (float)width / (float)height,
+		currentcamera->NearClippingPlaneDistance,
+		currentcamera->FarClippingPlaneDistance)
 	*currentcamera->GetViewMatrix();
 //	if (currentcamera == this)DrawHUD();
 	glm::mat4 model = {
