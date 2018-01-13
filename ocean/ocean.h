@@ -15,6 +15,15 @@
 
 extern Camera *currentcamera;
 
+struct frame_buffer
+{
+    glm::vec2 Size;
+    GLuint NumAttachments;
+    GLuint FBO;
+    GLuint DepthBufferID;
+    GLuint BufferIDs[MAX_FBO_ATTACHMENTS];
+};
+
 class Ocean
 {
 public:
@@ -46,7 +55,6 @@ private:
     GLuint VAO, VBO, EBO;
     int indexSize;
 
-    Camera *camera;
     int width;
     int height;
     float lastTime;

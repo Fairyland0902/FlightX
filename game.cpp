@@ -115,6 +115,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/lens flare/cubemap.frag",
                                 "",
                                 "cubemap");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
+                                _SHADER_PREFIX_"/ocean/ggxIntegrate.frag",
+                                "",
+                                "GGX");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/ocean/ocean.vert",
                                 _SHADER_PREFIX_"/ocean/ocean.frag",
                                 "",

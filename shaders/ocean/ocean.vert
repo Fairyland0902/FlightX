@@ -1,20 +1,27 @@
-#version 330 core
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 normal;
-layout(location = 2) in vec2 texCoords;
+#version 400
 
-out vec3 Normal;
-out vec3 FragPos;
+layout(location = 0) in vec3 in_position;
+layout(location = 1) in vec3 in_normal;
+layout(location = 2) in vec3 in_texcoord;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 ProjMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ModelMatrix;
+uniform vec3 SunDirection;
 
-uniform float time;
+out vec3 v_position;
+out vec2 v_texcoord;
+out vec3 v_normal;
+out vec3 v_sundirection;
 
 void main()
 {
-    FragPos = vec3(model * vec4(position, 1.0f));
-    gl_Position = projection * view * model * vec4(position, 1.0f);
-    Normal = mat3(transpose(inverse(model))) * normal;
+    vec4 world_position = ModelMatrix * vec4(in_position, 1.0);
+
+    v_position = world_position.xyz;
+    v_texcoord = in_texcoord.xy;
+    v_normal = inverse(transpose(mat3(ModelMatrix))) * in_normal;
+    v_sundirection = SunDirection;
+
+    gl_Position = ProjMatrix * ViewMatrix * world_position;
 }

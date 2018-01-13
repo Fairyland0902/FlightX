@@ -31,3 +31,9 @@
    - lens flare 效果
 
 ![](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/5.png)
+
+2. 比较真实的海平面渲染，主要包括：
+   - 基于 FFT 实现的海面 Simulation
+   - 基于 GGX 实现的海面 Rendering
+
+![](https://github.com/Fairyland0902/FlightX/raw/master/screenshots/6.png)
