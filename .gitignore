@@ -26,10 +26,12 @@
 # Folders
 !cloud/
 !flare/
+!ocean/
 !screenshots
 !shaders
 !shaders/sky
 !shaders/lens flare
+!shaders/ocean
 !textures/
 !textures/skybox
 !models/

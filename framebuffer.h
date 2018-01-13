@@ -1,8 +1,8 @@
 #ifndef _FRAMEBUFFER_H
 #define _FRAMEBUFFER_H
 
-#include "../texture.h"
-#include "../shader.h"
+#include "texture.h"
+#include "shader.h"
 
 class Framebuffer
 {
@@ -33,6 +33,9 @@ public:
 
     Texture2D *GetRenderTexture() const;
 
+    GLuint id;
+    GLuint depthId;
+
 private:
     void ScaleRenderTarget(float ratio);
 
@@ -40,8 +43,6 @@ private:
     Texture2D *renderTexture;
     string textureName;
     bool depth;
-    GLuint id;
-    GLuint depthId;
     float currentSampleRatio;
 };
 

@@ -23,7 +23,7 @@ const GLfloat SPEED = 1.0f;
 const GLfloat SENSITIVTY = 0.25f;
 const GLfloat ZOOM = 45.0f;
 const GLfloat NEAR = 0.1f;
-const GLfloat FAR = 300.0f;
+const GLfloat FAR = 3000.0f;
 
 
 // An abstract camera class that processes input and calculates the corresponding Eular Angles, Vectors and Matrices for use in OpenGL

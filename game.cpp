@@ -7,7 +7,7 @@
 extern bool keys[1024];
 
 Game::Game() :
-        camera(glm::vec3(0.0f, 0.0f, 0.0f))
+        camera(glm::vec3(0.0f, 10.0f, 0.0f))
 {
     currentcamera = &camera;
 }
@@ -30,6 +30,10 @@ void Game::Init(int width, int height)
     flareRender = new FlareRender(width, height, &camera);
     flareRender->Init();
 
+    // Initialize ocean.
+    ocean = new Ocean(width, height, &camera);
+    ocean->Init();
+
     plane = new Plane();
 
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
@@ -38,28 +42,29 @@ void Game::Init(int width, int height)
 
 void Game::Render(int width, int height, float deltaTime)
 {
-//    flareRender->Draw();
-//    cloudRender->Draw(deltaTime);
-//
-//    aircraft.Draw(ResourceManager::GetShader("aircraft"));
-//    aircraft.Update(deltaTime);
-//    //For Test:
-//    aircraft.DrawHUD();
+    flareRender->Draw();
+    cloudRender->Draw(deltaTime);
+
+    aircraft.Draw(ResourceManager::GetShader("aircraft"));
+    aircraft.Update(deltaTime);
+    //For Test:
+    aircraft.DrawHUD();
 
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    Shader planeShader = ResourceManager::GetShader("plane");
-    planeShader.Use();
-
-    glm::mat4 trans;
-    glm::mat4 view = currentcamera->GetViewMatrix();
-    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
-                                            currentcamera->NearClippingPlaneDistance,
-                                            currentcamera->FarClippingPlaneDistance);
-    planeShader.SetMatrix4("model", trans);
-    planeShader.SetMatrix4("view", view);
-    planeShader.SetMatrix4("projection", projection);
-
-    plane->Draw();
+//    Shader planeShader = ResourceManager::GetShader("plane");
+//    planeShader.Use();
+//
+//    glm::mat4 trans;
+//    glm::mat4 view = currentcamera->GetViewMatrix();
+//    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
+//                                            currentcamera->NearClippingPlaneDistance,
+//                                            currentcamera->FarClippingPlaneDistance);
+//    planeShader.SetMatrix4("model", trans);
+//    planeShader.SetMatrix4("view", view);
+//    planeShader.SetMatrix4("projection", projection);
+//
+//    plane->Draw();
+    ocean->Draw(deltaTime);
 }
 
 void Game::loadShaders()
@@ -86,9 +91,10 @@ void Game::loadShaders()
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/sky/skybox.frag", "",
                                 "skybox");
-	ResourceManager::LoadShader(_SHADER_PREFIX_"/hudline.vert",
-		_SHADER_PREFIX_"/hudline.frag", "",
-		"hudline");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/hudline.vert",
+                                _SHADER_PREFIX_"/hudline.frag",
+                                "",
+                                "hudline");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/lens flare/brightpass.frag",
                                 "",
@@ -121,6 +127,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/lens flare/cubemap.frag",
                                 "",
                                 "cubemap");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/ocean/ocean.vert",
+                                _SHADER_PREFIX_"/ocean/ocean.frag",
+                                "",
+                                "ocean");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/aircraft.vert",
                                 _SHADER_PREFIX_"/aircraft.frag",
                                 "",

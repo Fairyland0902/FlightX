@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "cloud/cloudRender.h"
 #include "flare/flareRender.h"
+#include "ocean/ocean.h"
 #include "Aircraft.h"
 #include "plane.h"
 
@@ -28,6 +29,7 @@ public:
 private:
     CloudRender *cloudRender;
     FlareRender *flareRender;
+    Ocean *ocean;
     Plane *plane;
 
     // Build and compile our shader program.

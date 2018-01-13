@@ -4,7 +4,7 @@
 #include "../camera.h"
 #include "../cloud/screenAlignedTriangle.h"
 #include "hdrTextureCube.h"
-#include "framebuffer.h"
+#include "../framebuffer.h"
 #include "skybox.h"
 
 #define MAX_DOWNSCALE_FBO 4
