@@ -1,7 +1,12 @@
 #version 330 core
-out vec4 FragColor;
+out vec3 color;
+
+in vec2 UV;
+
+uniform sampler2D grassTexture;
 
 void main()
 {
-    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+//    color = vec3(1.0f, 0.5f, 0.2f);
+    color = texture(grassTexture, UV).rgb;
 }

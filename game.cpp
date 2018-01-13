@@ -35,18 +35,6 @@ void Game::Init(int width, int height)
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
 
-//    Shader planeShader = ResourceManager::GetShader("plane");
-//    planeShader.Use();
-//
-//    glm::mat4 trans;
-//    glm::mat4 view = currentcamera->GetViewMatrix();
-//    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
-//                                            currentcamera->NearClippingPlaneDistance,
-//                                            currentcamera->FarClippingPlaneDistance);
-//    planeShader.SetMatrix4("model", trans);
-//    planeShader.SetMatrix4("view", view);
-//    planeShader.SetMatrix4("projection", projection);
-//
     terrain->Draw();
 }
 
@@ -60,19 +48,6 @@ void Game::Render(int width, int height, float deltaTime)
     //For Test:
     aircraft.DrawHUD();
 
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//    Shader planeShader = ResourceManager::GetShader("plane");
-//    planeShader.Use();
-//
-//    glm::mat4 trans;
-//    glm::mat4 view = currentcamera->GetViewMatrix();
-//    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
-//                                            currentcamera->NearClippingPlaneDistance,
-//                                            currentcamera->FarClippingPlaneDistance);
-//    planeShader.SetMatrix4("model", trans);
-//    planeShader.SetMatrix4("view", view);
-//    planeShader.SetMatrix4("projection", projection);
-//
     terrain->Draw();
 }
 

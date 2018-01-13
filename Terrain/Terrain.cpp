@@ -5,9 +5,50 @@
 #include <glm/glm.hpp>
 #include <resource_manager.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 #include "Terrain.h"
 
-Terrain::Terrain(int width, int height): width(width), height(height) {}
+void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices) {
+
+    const float slice = 1.0 / (float) (n - 1);
+
+    for (int  i = 0; i < n; i++)
+        for (int j = 0; j < n; j++){
+            vertices.emplace_back(i * slice * (2000) - 1000, -500, j * slice * (2000) - 1000);
+            uvs.emplace_back(i * slice, j * slice);
+            if (i < n - 1 && j < n - 1) {
+                indices.emplace_back(i * n + j);
+                indices.emplace_back(i * n + n + j);
+                indices.emplace_back(i * n + n + j + 1);
+
+                indices.emplace_back(i * n + j);
+                indices.emplace_back(i * n + 1 + j);
+                indices.emplace_back(i * n + n + j + 1);
+            }
+        }
+}
+
+Terrain::Terrain(int width, int height) : width(width), height(height) {
+    texture = ResourceManager::LoadTexture2D("textures/grass.jpg", 0, "grass");
+
+//    GLuint indices[] = {
+//            0, 1, 3,
+//            1, 2, 3
+//    };
+
+    generateCoord(vertices, uvs, indices);
+//
+//    for (glm::vec3 i : vertices) {
+//        std::cout << i.x << ' ' << i.y << ' ' << i.z << std::endl;
+//    }
+//
+//    for (glm::vec2 i : uvs) {
+//        std::cout << i.x << ' ' << i.y  << std::endl;
+//    }
+//    for (GLushort i : indices) {
+//        std::cout << i << std::endl;
+//    }
+}
 
 void Terrain::setMVP() {
     glm::mat4 trans;
@@ -20,45 +61,81 @@ void Terrain::setMVP() {
     shader.SetMatrix4("projection", projection);
 }
 
+
+
 void Terrain::Draw() {
     setShader();
     setMVP();
-    GLfloat vertices[] = {
-            1000.0f, -500.0f, 1000.0f,
-            1000.0f, -500.0f, -1000.0f,
-            -1000.0f, -500.0f, -1000.0f,
-            -1000.0f, -500.0f, 1000.0f
-    };
 
-    GLuint indices[] = {
-            0, 1, 3,
-            1, 2, 3
-    };
+//    std::vector<glm::vec3> vertices = {
+//            glm::vec3(1000.0f, -500.0f, 1000.0f),
+//            glm::vec3(1000.0f, -500.0f, -1000.0f),
+//            glm::vec3(-1000.0f, -500.0f, -1000.0f),
+//            glm::vec3(-1000.0f, -500.0f, 1000.0f)
+//    };
+//
+//
+//    std::vector<GLuint> indices = {
+//            0, 1, 3,
+//            1, 2, 3
+//    };
+
+//    GLfloat vertices[] = {
+//            1000.0f, -500.0f, 1000.0f,
+//            1000.0f, -500.0f, -1000.0f,
+//            -1000.0f, -500.0f, -1000.0f,
+//            -1000.0f, -500.0f, 1000.0f
+//    };
+//
+//    GLuint indices[] = {
+//            0, 1, 3,
+//            1, 2, 3
+//    };
+
+//    std::vector<glm::vec2> uvs{
+//            glm::vec2(0.1, 0.81),
+//            glm::vec2(0.81, 0.1),
+//            glm::vec2(0.1, 0.1),
+//            glm::vec2(0.1, 0.81)
+//    };
 
     // Set the objects we need in the rendering process (namely, VAO, VBO and EBO).
-    GLuint VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
+    GLuint UV, VBO, EBO;
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO);
+    glGenBuffers(1, &UV);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+//    std::cout << sizeof(indices) << " " << sizeof(unsigned short) * indices2.size();
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE0, texture.ID);
+    glUniform1i(glGetUniformLocation(shader.ID, "grassTexture"), 0);
+
 
     // Position attribute.
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (const GLvoid *) 0);
     glEnableVertexAttribArray(0);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, UV);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * uvs.size(), &uvs[0], GL_STATIC_DRAW);
 
-    // Unbind VAO.
-    glBindVertexArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (const GLvoid *) 0);
+    glEnableVertexAttribArray(1);
+
+
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 void Terrain::setShader() {
     shader = ResourceManager::GetShader("plane");
     shader.Use();
 }
+
+

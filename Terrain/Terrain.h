@@ -21,9 +21,17 @@ private:
 
     void setShader();
 
+    void generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices);
+
+    Texture2D texture;
+
     int width;
     int height;
     Shader shader;
+    std::vector<glm::vec3> vertices;
+    std::vector<GLuint> indices;
+    std::vector<glm::vec2> uvs;
+    int n = 100;
 };
 
 
