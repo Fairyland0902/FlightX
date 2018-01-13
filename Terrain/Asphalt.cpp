@@ -23,6 +23,8 @@ Asphalt::Asphalt(int width, int height) : Terrain(width, height)
 
     paint = new Paint(width, height);
     paint->init();
+    cross = new Cross(width, height);
+    cross->init();
 }
 
 void Asphalt::Draw()
@@ -64,6 +66,8 @@ void Asphalt::Draw()
 
         paint->setMVP(trans, view, projection);
         paint->Draw();
+        cross->setMVP(trans, view, projection);
+        cross->Draw();
     }
 
     // Reset activated texture to default.

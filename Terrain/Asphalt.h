@@ -7,6 +7,7 @@
 
 #include "Terrain.h"
 #include "Paint.h"
+#include "Cross.h"
 
 class Asphalt : public Terrain
 {
@@ -17,6 +18,7 @@ public:
 
 private:
     Paint *paint;
+    Cross *cross;
 };
 
 
