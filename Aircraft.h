@@ -13,7 +13,6 @@ class Aircraft :
 	glm::vec3 airspeed;
 	float ias;
 	float controlx, controly;
-	GLuint HUDVAO;
 	float getLength(const glm::vec3&);
 	glm::vec3 getAcceleration();
 public:

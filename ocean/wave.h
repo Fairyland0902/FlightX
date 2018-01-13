@@ -1,6 +1,7 @@
 #ifndef _WAVE_H
 #define _WAVE_H
-
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <random>
 #include <complex>
 #include <glm/glm.hpp>
