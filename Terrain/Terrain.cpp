@@ -81,8 +81,6 @@ void Terrain::Draw() {
     glBindTexture(GL_TEXTURE_2D, texture.ID);
     glUniform1i(glGetUniformLocation(shader.ID, "grassTexture"), 0);
 
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
