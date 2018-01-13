@@ -8,6 +8,7 @@
 #include <iostream>
 #include "Terrain.h"
 
+
 void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices)
 {
 
@@ -16,7 +17,8 @@ void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::v
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
         {
-            vertices.emplace_back(i * slice * (2000) - 1000, -200, j * slice * (2000) - 1000);
+            vertices.emplace_back(i * slice * (chunk_width) - chunk_width / 2, absolute_height,
+                                  j * slice * (chunk_height) - chunk_height / 2);
             uvs.emplace_back(i % 2, j % 2);
             if (i < n - 1 && j < n - 1)
             {
@@ -34,47 +36,11 @@ void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::v
 Terrain::Terrain(int width, int height) : width(width), height(height)
 {
     // Load PBR material textures.
-    grassAlbedo = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-albedo3.png", true,
-                                                 "grassAlbedo");
-    grassNormal = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-normal2.png", true,
-                                                 "grassNormal");
-    grassMetallic = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-height.png", true,
-                                                   "grassMetallic");
-    grassRoughness = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-rough.png", true,
-                                                    "grassRoughness");
-    grassAO = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-ao.png", true, "grassAO");
-
-    generateCoord(vertices, uvs, indices);
-
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    // Set the objects we need in the rendering process (namely, VAO, VBO and EBO).
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    glGenBuffers(1, &UV);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-//    std::cout << sizeof(indices) << " " << sizeof(unsigned short) * indices2.size();
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Position attribute.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (const GLvoid *) 0);
-    glEnableVertexAttribArray(0);
-
-    // TexCoord attribute.
-    glBindBuffer(GL_ARRAY_BUFFER, UV);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * uvs.size(), &uvs[0], GL_STATIC_DRAW);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (const GLvoid *) 0);
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
+    Albedo = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-albedo3.png", true, "grassAlbedo");
+    Normal = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-normal2.png", true, "grassNormal");
+    Metallic = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-height.png", true, "grassMetallic");
+    Roughness = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-rough.png", true, "grassRoughness");
+    AO = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-ao.png", true, "grassAO");
 }
 
 void Terrain::setMVP()
@@ -102,15 +68,15 @@ void Terrain::Draw()
 
     // Activate PBR textures.
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, grassAlbedo.ID);
+    glBindTexture(GL_TEXTURE_2D, Albedo.ID);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, grassNormal.ID);
+    glBindTexture(GL_TEXTURE_2D, Normal.ID);
     glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, grassMetallic.ID);
+    glBindTexture(GL_TEXTURE_2D, Metallic.ID);
     glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, grassRoughness.ID);
+    glBindTexture(GL_TEXTURE_2D, Roughness.ID);
     glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, grassAO.ID);
+    glBindTexture(GL_TEXTURE_2D, AO.ID);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -132,4 +98,33 @@ void Terrain::setShader()
     shader.SetInteger("aoMap", 4);
 }
 
+void Terrain::init()
+{
+    generateCoord(vertices, uvs, indices);
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
+    // Set the objects we need in the rendering process (namely, VAO, VBO and EBO).
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    glGenBuffers(1, &UV);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Position attribute.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (const GLvoid *) 0);
+    glEnableVertexAttribArray(0);
+    // TexCoords attribute.
+    glBindBuffer(GL_ARRAY_BUFFER, UV);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * uvs.size(), &uvs[0], GL_STATIC_DRAW);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (const GLvoid *) 0);
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+}

@@ -35,6 +35,9 @@ void Game::Init(int width, int height)
     ocean->Init();
 
     terrain = new Terrain(width, height);
+    terrain->init();
+    asphalt = new Asphalt(width, height);
+    asphalt->init();
 
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
@@ -48,9 +51,11 @@ void Game::Render(int width, int height, float deltaTime)
     aircraft.Draw(ResourceManager::GetShader("aircraft"));
     aircraft.Update(deltaTime);
 
-    ocean->Draw(deltaTime);
+//    ocean->Draw(deltaTime);
 
     terrain->Draw();
+    asphalt->Draw();
+//    ocean->Draw(deltaTime);
 
     //For Test:
     aircraft.DrawHUD();
@@ -116,10 +121,6 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/lens flare/cubemap.frag",
                                 "",
                                 "cubemap");
-    ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
-                                _SHADER_PREFIX_"/ocean/ggxIntegrate.frag",
-                                "",
-                                "GGX");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/ocean/ocean.vert",
                                 _SHADER_PREFIX_"/ocean/ocean.frag",
                                 "",

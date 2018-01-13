@@ -1,12 +1,14 @@
 #ifndef _GAME_H
 #define _GAME_H
 
+#include "Terrain/Asphalt.h"
 #include "camera.h"
 #include "cloud/cloudRender.h"
 #include "flare/flareRender.h"
 #include "ocean/ocean.h"
 #include "Aircraft.h"
 #include "Terrain/Terrain.h"
+#include "Terrain/Asphalt.h"
 
 extern Camera *currentcamera;
 
@@ -31,6 +33,7 @@ private:
     FlareRender *flareRender;
     Ocean *ocean;
     Terrain *terrain;
+    Asphalt *asphalt;
 
     // Build and compile our shader program.
     void loadShaders();
