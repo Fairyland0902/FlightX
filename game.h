@@ -6,7 +6,7 @@
 #include "flare/flareRender.h"
 #include "ocean/ocean.h"
 #include "Aircraft.h"
-#include "plane.h"
+#include "Terrain/Terrain.h"
 
 extern Camera *currentcamera;
 
@@ -30,7 +30,7 @@ private:
     CloudRender *cloudRender;
     FlareRender *flareRender;
     Ocean *ocean;
-    Plane *plane;
+    Terrain *terrain;
 
     // Build and compile our shader program.
     void loadShaders();

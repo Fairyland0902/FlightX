@@ -7,7 +7,7 @@
 extern bool keys[1024];
 
 Game::Game() :
-        camera(glm::vec3(0.0f, 10.0f, 0.0f))
+        camera(glm::vec3(0.0f, -195.0f, 0.0f))
 {
     currentcamera = &camera;
 }
@@ -34,7 +34,7 @@ void Game::Init(int width, int height)
     ocean = new Ocean(width, height, &camera);
     ocean->Init();
 
-    plane = new Plane();
+    terrain = new Terrain(width, height);
 
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
@@ -65,6 +65,8 @@ void Game::Render(int width, int height, float deltaTime)
 //
 //    plane->Draw();
     ocean->Draw(deltaTime);
+
+    terrain->Draw();
 }
 
 void Game::loadShaders()

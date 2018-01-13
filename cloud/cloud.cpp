@@ -206,7 +206,7 @@ void Cloud::buffer_init()
         particleIndexBuffer[i] = i;
     glGenBuffers(1, &ibo_cloudParticleRendering);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_cloudParticleRendering);
-    // dynamic draw! often writen, often rendered, never read (http://wiki.delphigl.com/index.php/glBufferData)
+    // dynamic Draw! often writen, often rendered, never read (http://wiki.delphigl.com/index.php/glBufferData)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 2 * maxNumCloudParticles, particleIndexBuffer.get(), GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
