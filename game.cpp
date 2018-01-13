@@ -35,7 +35,6 @@ void Game::Init(int width, int height)
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
 
-    terrain->Draw();
 }
 
 void Game::Render(int width, int height, float deltaTime)

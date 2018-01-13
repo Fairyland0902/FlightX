@@ -78,4 +78,8 @@ private:
     static Texture3D loadTexture3DFromFile(const string &file);
 };
 
+namespace util {
+	GLuint genVAO(); 
+	GLuint genBuf();
+}
 #endif

@@ -106,8 +106,6 @@ void Aircraft::ProcessMouseScroll(GLfloat yoffset) {
 }
 
 
-GLuint _AIRCRAFT_UTIL_getVAO() { GLuint a; glGenVertexArrays(1, &a); return a; }
-GLuint _AIRCRAFT_UTIL_getBuf() { GLuint a; glGenBuffers(1, &a); return a; }
 inline void _AIRCRAFT_UTIL_push_line_display(float xStart,float yStart, float xEnd, float yEnd, float xLeft, float xRight, float yUp, float yDown, std::vector<glm::vec2>& pos) {
 	pos.emplace_back(xStart*xRight + xLeft * (1 - xStart), yStart*yUp + yDown * (1 - yStart));
 	pos.emplace_back(xEnd*xRight + xLeft * (1 - xEnd), yEnd*yUp + yDown * (1 - yEnd));
@@ -188,8 +186,8 @@ void _AIRCRAFT_UTIL_push_digit_display(int digit,float xLeft,float xRight,float 
 	}
 }
 void Aircraft::DrawHUD() {
-	static GLuint VAO = _AIRCRAFT_UTIL_getVAO();
-	static GLuint vert_buf = _AIRCRAFT_UTIL_getBuf();
+	static GLuint VAO = util::genVAO();
+	static GLuint vert_buf = util::genBuf();
 	glBindVertexArray(VAO);
 	glDisable(GL_DEPTH_TEST);
 	ResourceManager::GetShader("hudline").Use();
