@@ -1,18 +1,20 @@
 #ifndef _FLARERENDER_H
 #define _FLARERENDER_H
 
-#include "../camera.h"
-#include "../cloud/screenAlignedTriangle.h"
+#include <camera.h>
+#include <cloud/screenAlignedTriangle.h>
 #include "hdrTextureCube.h"
-#include "framebuffer.h"
+#include <framebuffer.h>
 #include "skybox.h"
 
 #define MAX_DOWNSCALE_FBO 4
 
+extern Camera *currentcamera;
+
 class FlareRender
 {
 public:
-    FlareRender(int width_, int height_, Camera *camera_);
+    FlareRender(int width_, int height_);
 
     ~FlareRender();
 
@@ -33,7 +35,6 @@ private:
 
     int width, height;
 
-    Camera *camera;
     SkyBox *skyBox;
     HDRTextureCube *hdrTextureCube;
     // A full-screen triangle used for frame buffer rendering.

@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include "screenAlignedTriangle.h"
-#include "../shader.h"
+#include <shader.h>
 
 /* References:
  * http://dl.acm.org/citation.cfm?id=1730831

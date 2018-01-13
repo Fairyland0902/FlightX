@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "cloud/cloudRender.h"
 #include "flare/flareRender.h"
+#include "ocean/ocean.h"
 #include "Aircraft.h"
 #include "Terrain/Terrain.h"
 
@@ -29,6 +30,7 @@ public:
 private:
     CloudRender *cloudRender;
     FlareRender *flareRender;
+    Ocean *ocean;
     Terrain *terrain;
     Asphalt *asphalt;
 

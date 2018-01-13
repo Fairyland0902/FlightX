@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <GL/glew.h>
-#include "../shader.h"
-#include "../cloud/screenAlignedTriangle.h"
+#include <shader.h>
+#include <cloud/screenAlignedTriangle.h>
 #include "hdrTextureCube.h"
 
 class SkyBox

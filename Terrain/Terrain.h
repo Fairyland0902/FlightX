@@ -5,13 +5,14 @@
 #ifndef FLIGHTX_TERRAIN_H
 #define FLIGHTX_TERRAIN_H
 
-#include "camera.h"
+#include <camera.h>
 #include <shader.h>
 #include <vector>
 
 extern Camera *currentcamera;
 
-class Terrain {
+class Terrain
+{
 public:
     Terrain(int width, int height);
 
@@ -28,7 +29,8 @@ protected:
 
 
     Texture2D texture;
-
+	GLuint VAO;
+    GLuint UV, VBO, EBO;
     int width;
     int height;
     int chunk_width = 512;

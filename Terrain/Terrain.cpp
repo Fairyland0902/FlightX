@@ -64,6 +64,9 @@ void Terrain::setShader() {
 void Terrain::init() {
     generateCoord(vertices, uvs, indices);
     glGenVertexArrays(1, &VAO);
+
+    generateCoord(vertices, uvs, indices);
+	glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
     // Set the objects we need in the rendering process (namely, VAO, VBO and EBO).
     glGenBuffers(1, &VBO);
@@ -75,6 +78,7 @@ void Terrain::init() {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
     // Position attribute.
@@ -89,5 +93,7 @@ void Terrain::init() {
 
     glBindVertexArray(0);
 }
+
+
 
 

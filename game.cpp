@@ -55,6 +55,8 @@ void Game::Render(int width, int height, float deltaTime)
 
     terrain->Draw();
     asphalt->Draw();
+    ocean->Draw(deltaTime);
+
     //For Test:
     aircraft.DrawHUD();
 }

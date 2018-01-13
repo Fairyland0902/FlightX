@@ -4,12 +4,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include "flareRender.h"
-#include "../resource_manager.h"
+#include <resource_manager.h>
 
-FlareRender::FlareRender(int width_, int height_, Camera *camera_) :
+FlareRender::FlareRender(int width_, int height_) :
         width(width_),
-        height(height_),
-        camera(camera_)
+        height(height_)
 {}
 
 FlareRender::~FlareRender()
@@ -183,16 +182,17 @@ void FlareRender::brightPass(float threshold)
 void FlareRender::skyLightPass()
 {
     glm::mat4 model;
-    glm::mat4 view = camera->GetViewMatrix();
-    glm::mat4 projection = glm::perspective(camera->Zoom, (float) width / (float) height,
-                                            camera->NearClippingPlaneDistance, camera->FarClippingPlaneDistance);
+    glm::mat4 view = currentcamera->GetViewMatrix();
+    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
+                                            currentcamera->NearClippingPlaneDistance,
+                                            currentcamera->FarClippingPlaneDistance);
 
     glm::mat4 mvp = projection * view * model;
 
     Shader shader = ResourceManager::GetShader("cubemap");
     shader.Use();
     shader.SetMatrix4("mvp", mvp);
-    shader.SetVector3f("camPosition", camera->GetViewPosition());
+    shader.SetVector3f("camPosition", currentcamera->GetViewPosition());
     hdrTextureCube->Draw();
 }
 
