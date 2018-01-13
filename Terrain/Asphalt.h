@@ -7,11 +7,15 @@
 
 
 #include "Terrain.h"
+#include "Paint.h"
 
 class Asphalt: public Terrain {
 public:
     Asphalt(int width, int height);
-    void Draw() override ;
+    void Draw() override;
+
+private:
+    Paint *paint;
 };
 
 

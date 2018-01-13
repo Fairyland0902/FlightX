@@ -11,6 +11,8 @@ Asphalt::Asphalt(int width, int height) : Terrain(width, height) {
     chunk_height = 128;
     absolute_height = -199.9;
     texture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/asphalt.jpg", 0, "asphalt");
+    paint = new Paint(width, height);
+    paint->init();
 }
 
 void Asphalt::Draw() {
@@ -32,6 +34,7 @@ void Asphalt::Draw() {
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+        paint->setMVP(trans, view, projection);
+        paint->Draw();
     }
-
 }
