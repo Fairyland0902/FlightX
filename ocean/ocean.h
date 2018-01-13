@@ -13,10 +13,12 @@
 #define MESH_RESOLUTION 320
 #define MAX_FBO_ATTACHMENTS 5
 
+extern Camera *currentcamera;
+
 class Ocean
 {
 public:
-    Ocean(int width, int height, Camera *camera);
+    Ocean(int width, int height);
 
     ~Ocean();
 

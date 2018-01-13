@@ -9,14 +9,14 @@
 #include "screenAlignedTriangle.h"
 #include "cloud.h"
 
+extern Camera *currentcamera;
+
 class CloudRender
 {
 public:
-    CloudRender(int width, int height, Camera &camera);
+    CloudRender(int width, int height);
 
     ~CloudRender();
-
-    void ChangeCamera(Camera &camera);
 
     void Draw(float deltaTime);
 
@@ -26,14 +26,10 @@ private:
     int backBufferResolutionX;
     int backBufferResolutionY;
 
-
     // Global UBO.
     GLuint screenUBO;
     GLuint viewUBO;
     GLuint timingsUBO;
-
-    // Camera matrix.
-    Camera *camera;
 
     glm::mat4 projectionMatrix;
 

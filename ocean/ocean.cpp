@@ -4,10 +4,9 @@
 #include "ocean.h"
 #include "../resource_manager.h"
 
-Ocean::Ocean(int width, int height, Camera *camera) :
+Ocean::Ocean(int width, int height) :
         width(width),
-        height(height),
-        camera(camera)
+        height(height)
 {
     /*
      * Constants initialization.
@@ -82,7 +81,7 @@ void Ocean::Draw(float deltaTime)
     ocean.Use();
 
     ocean.SetVector3f("light.direction", glm::vec3(0.0f, -1.0f, 3.0f));
-    ocean.SetVector3f("viewPos", camera->GetViewPosition());
+    ocean.SetVector3f("viewPos", currentcamera->GetViewPosition());
     ocean.SetFloat("heightMin", heightMin);
     ocean.SetFloat("heightMax", heightMax);
     // Set lights properties
@@ -91,9 +90,10 @@ void Ocean::Draw(float deltaTime)
     ocean.SetVector3f("light.specular", 1.0f, 0.9f, 0.7f);
 
     // Create camera transformations
-    glm::mat4 view = camera->GetViewMatrix();
-    glm::mat4 projection = glm::perspective(camera->Zoom, (GLfloat) width / (GLfloat) height,
-                                            camera->NearClippingPlaneDistance, camera->FarClippingPlaneDistance);
+    glm::mat4 view = currentcamera->GetViewMatrix();
+    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (GLfloat) width / (GLfloat) height,
+                                            currentcamera->NearClippingPlaneDistance,
+                                            currentcamera->FarClippingPlaneDistance);
     ocean.SetMatrix4("view", view);
     ocean.SetMatrix4("projection", projection);
 

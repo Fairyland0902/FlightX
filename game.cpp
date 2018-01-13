@@ -24,14 +24,14 @@ void Game::Init(int width, int height)
     loadShaders();
 
     // Initialize cloud renderer.
-    cloudRender = new CloudRender(width, height, camera);
+    cloudRender = new CloudRender(width, height);
 
     // Initialize flare render.
-    flareRender = new FlareRender(width, height, &camera);
+    flareRender = new FlareRender(width, height);
     flareRender->Init();
 
     // Initialize ocean.
-    ocean = new Ocean(width, height, &camera);
+    ocean = new Ocean(width, height);
     ocean->Init();
 
     terrain = new Terrain(width, height);
@@ -136,12 +136,10 @@ void Game::CameraControl()
     if (currentcamera != &aircraft && keys[GLFW_KEY_1])
     {
         currentcamera = &aircraft;
-        cloudRender->ChangeCamera(*currentcamera);
     }
     if (currentcamera != &camera && keys[GLFW_KEY_2])
     {
         currentcamera = &camera;
-        cloudRender->ChangeCamera(*currentcamera);
     }
 }
 
