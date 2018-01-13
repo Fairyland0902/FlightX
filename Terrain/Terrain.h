@@ -7,6 +7,7 @@
 
 #include "camera.h"
 #include <shader.h>
+#include <vector>
 
 extern Camera *currentcamera;
 
@@ -14,24 +15,30 @@ class Terrain {
 public:
     Terrain(int width, int height);
 
-    void Draw();
+	virtual void Draw();
 
-private:
-    void setMVP();
+	virtual void init();
 
-    void setShader();
+protected:
+	virtual void setMVP();
 
-    void generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices);
+	virtual void setShader();
+
+	virtual void generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices);
+
 
     Texture2D texture;
 
     int width;
     int height;
+    int chunk_width = 512;
+    int chunk_height = 512;
+	float absolute_height = -200;
     Shader shader;
     std::vector<glm::vec3> vertices;
     std::vector<GLuint> indices;
     std::vector<glm::vec2> uvs;
-    int n = 100;
+    int n = 10;
 };
 
 

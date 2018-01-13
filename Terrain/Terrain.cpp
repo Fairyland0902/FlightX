@@ -14,7 +14,7 @@ void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::v
 
     for (int  i = 0; i < n; i++)
         for (int j = 0; j < n; j++){
-            vertices.emplace_back(i * slice * (2000) - 1000, -200, j * slice * (2000) - 1000);
+            vertices.emplace_back(i * slice * (chunk_width) - chunk_width / 2, absolute_height, j * slice * (chunk_height) - chunk_height / 2);
             uvs.emplace_back(i % 2,j % 2);
             if (i < n - 1 && j < n - 1) {
                 indices.emplace_back(i * n + j);
@@ -30,19 +30,6 @@ void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::v
 
 Terrain::Terrain(int width, int height) : width(width), height(height) {
     texture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass.jpg", 0, "grass");
-
-    generateCoord(vertices, uvs, indices);
-//
-//    for (glm::vec3 i : vertices) {
-//        std::cout << i.x << ' ' << i.y << ' ' << i.z << std::endl;
-//    }
-//
-//    for (glm::vec2 i : uvs) {
-//        std::cout << i.x << ' ' << i.y  << std::endl;
-//    }
-//    for (GLushort i : indices) {
-//        std::cout << i << std::endl;
-//    }
 }
 
 void Terrain::setMVP() {
@@ -61,24 +48,33 @@ void Terrain::setMVP() {
 void Terrain::Draw() {
     setShader();
     setMVP();
+    glBindTexture(GL_TEXTURE_2D, texture.ID);
+    glUniform1i(glGetUniformLocation(shader.ID, "planeTexture"), 0);
 
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+void Terrain::setShader() {
+    shader = ResourceManager::GetShader("plane");
+    shader.Use();
+}
+
+void Terrain::init() {
+    generateCoord(vertices, uvs, indices);
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
     // Set the objects we need in the rendering process (namely, VAO, VBO and EBO).
-    GLuint UV, VBO, EBO;
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
     glGenBuffers(1, &UV);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-//    std::cout << sizeof(indices) << " " << sizeof(unsigned short) * indices2.size();
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glBindTexture(GL_TEXTURE_2D, texture.ID);
-    glUniform1i(glGetUniformLocation(shader.ID, "grassTexture"), 0);
 
 
     // Position attribute.
@@ -91,13 +87,7 @@ void Terrain::Draw() {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), (const GLvoid *) 0);
     glEnableVertexAttribArray(1);
 
-
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-}
-
-void Terrain::setShader() {
-    shader = ResourceManager::GetShader("plane");
-    shader.Use();
+    glBindVertexArray(0);
 }
 
 

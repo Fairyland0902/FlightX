@@ -24,18 +24,23 @@ void Game::Init(int width, int height)
     loadShaders();
 
     // Initialize cloud renderer.
-    cloudRender = new CloudRender(width, height, camera);
+    cloudRender = new CloudRender(width, height);
 
     // Initialize flare render.
-    flareRender = new FlareRender(width, height, &camera);
+    flareRender = new FlareRender(width, height);
     flareRender->Init();
 
+    // Initialize ocean.
+    ocean = new Ocean(width, height);
+    ocean->Init();
+
     terrain = new Terrain(width, height);
+    terrain->init();
+    asphalt = new Asphalt(width, height);
+    asphalt->init();
 
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
-
-    terrain->Draw();
 }
 
 void Game::Render(int width, int height, float deltaTime)
@@ -45,10 +50,13 @@ void Game::Render(int width, int height, float deltaTime)
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"));
     aircraft.Update(deltaTime);
-    //For Test:
-    aircraft.DrawHUD();
+
+//    ocean->Draw(deltaTime);
 
     terrain->Draw();
+    asphalt->Draw();
+    //For Test:
+    aircraft.DrawHUD();
 }
 
 void Game::loadShaders()
@@ -75,9 +83,10 @@ void Game::loadShaders()
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/sky/skybox.frag", "",
                                 "skybox");
-	ResourceManager::LoadShader(_SHADER_PREFIX_"/hudline.vert",
-		_SHADER_PREFIX_"/hudline.frag", "",
-		"hudline");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/hudline.vert",
+                                _SHADER_PREFIX_"/hudline.frag",
+                                "",
+                                "hudline");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/lens flare/brightpass.frag",
                                 "",
@@ -110,6 +119,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/lens flare/cubemap.frag",
                                 "",
                                 "cubemap");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/ocean/ocean.vert",
+                                _SHADER_PREFIX_"/ocean/ocean.frag",
+                                "",
+                                "ocean");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/aircraft.vert",
                                 _SHADER_PREFIX_"/aircraft.frag",
                                 "",
@@ -127,12 +140,10 @@ void Game::CameraControl()
     if (currentcamera != &aircraft && keys[GLFW_KEY_1])
     {
         currentcamera = &aircraft;
-        cloudRender->ChangeCamera(*currentcamera);
     }
     if (currentcamera != &camera && keys[GLFW_KEY_2])
     {
         currentcamera = &camera;
-        cloudRender->ChangeCamera(*currentcamera);
     }
 }
 

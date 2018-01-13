@@ -1,6 +1,7 @@
 #ifndef _GAME_H
 #define _GAME_H
 
+#include "Terrain/Asphalt.h"
 #include "camera.h"
 #include "cloud/cloudRender.h"
 #include "flare/flareRender.h"
@@ -29,6 +30,7 @@ private:
     CloudRender *cloudRender;
     FlareRender *flareRender;
     Terrain *terrain;
+    Asphalt *asphalt;
 
     // Build and compile our shader program.
     void loadShaders();
