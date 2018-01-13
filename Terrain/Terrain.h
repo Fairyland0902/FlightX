@@ -25,6 +25,7 @@ private:
 
     Texture2D texture;
 	GLuint VAO;
+    GLuint UV, VBO, EBO;
     int width;
     int height;
     Shader shader;
