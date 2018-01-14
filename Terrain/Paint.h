@@ -16,6 +16,7 @@ public:
     void Draw() override;
 
     void setMVP(glm::mat4 trans, glm::mat4 view, glm::mat4 projection);
+    void setShader() override ;
 
 protected:
     glm::mat4 trans, view, projection;
