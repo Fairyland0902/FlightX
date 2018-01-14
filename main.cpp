@@ -52,7 +52,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_SAMPLES, 4);
-#undef FULL_SCREEN
+//#undef FULL_SCREEN
 #ifdef FULL_SCREEN
     // Create a "Windowed full screen" window in the primary monitor.
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -173,6 +173,7 @@ void do_movement()
         currentcamera->ProcessKeyboard(LEFT, deltaTime);
     if (keys[GLFW_KEY_D])
         currentcamera->ProcessKeyboard(RIGHT, deltaTime);
+	if (currentcamera != &game.aircraft)currentcamera->KeyBoardControl(keys, deltaTime);
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)

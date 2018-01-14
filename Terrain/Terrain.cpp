@@ -47,9 +47,7 @@ void Terrain::setMVP()
 {
     glm::mat4 trans;
     glm::mat4 view = currentcamera->GetViewMatrix();
-    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
-                                            currentcamera->NearClippingPlaneDistance,
-                                            currentcamera->FarClippingPlaneDistance);
+	glm::mat4 projection = currentcamera->GetProjectionMatrix();
     shader.SetMatrix4("model", trans);
     shader.SetMatrix4("view", view);
     shader.SetMatrix4("projection", projection);

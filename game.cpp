@@ -39,21 +39,24 @@ void Game::Init(int width, int height)
     asphalt = new Asphalt(width, height);
     asphalt->init();
 
+    aircraft.Init();
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
-    aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
+    aircraft.setAirspeed(glm::vec3(3.0, 0, 0));
 }
 
 void Game::Render(int width, int height, float deltaTime)
 {
     flareRender->Draw();
+
+    terrain->Draw();
+    asphalt->Draw();
+    //    ocean->Draw(deltaTime);
     cloudRender->Draw(deltaTime);
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"));
     aircraft.Update(deltaTime);
 
-//    terrain->Draw();
-//    asphalt->Draw();
-    ocean->Draw(deltaTime);
+//    ocean->Draw(deltaTime);
 
     //For Test:
     aircraft.DrawHUD();
@@ -148,6 +151,10 @@ void Game::CameraControl()
     if (currentcamera != &camera && keys[GLFW_KEY_2])
     {
         currentcamera = &camera;
+    }
+    if (currentcamera != aircraft.AroundCam && keys[GLFW_KEY_3])
+    {
+        currentcamera = aircraft.AroundCam;
     }
 }
 

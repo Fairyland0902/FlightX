@@ -94,9 +94,7 @@ void Ocean::Draw(float deltaTime)
 
     // Create camera transformations
     glm::mat4 view = currentcamera->GetViewMatrix();
-    glm::mat4 projection = glm::perspective(currentcamera->Zoom, (GLfloat) width / (GLfloat) height,
-                                            currentcamera->NearClippingPlaneDistance,
-                                            currentcamera->FarClippingPlaneDistance);
+	glm::mat4 projection = currentcamera->GetProjectionMatrix();
     ocean.SetMatrix4("ViewMatrix", view);
     ocean.SetMatrix4("ProjMatrix", projection);
     ocean.SetVector3f("CameraPos", currentcamera->GetViewPosition());
