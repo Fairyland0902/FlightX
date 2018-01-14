@@ -7,6 +7,7 @@ class Aircraft :
 	public Model,
 	public Camera
 {
+	
 	bool inAir;
 	float thrust;
 	float target_thrust;
@@ -15,6 +16,7 @@ class Aircraft :
 	float controlx, controly;
 	float getLength(const glm::vec3&);
 	glm::vec3 getAcceleration();
+	int _getHDG() const;
 public:
 	Aircraft();
 	~Aircraft();
@@ -24,9 +26,22 @@ public:
 	void Draw(Shader& shader) override;
 	void setAirspeed(const glm::vec3&);
 	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)override;
-	void KeyBoardControl(bool *keys, GLfloat deltaTime);
+	void KeyBoardControl(bool *keys, GLfloat deltaTime)override;
 	void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLfloat xpos, GLfloat ypos, GLboolean constrainPitch = true)override;
 	void ProcessMouseScroll(GLfloat yoffset)override;
 	void DrawHUD();
+	Camera* AroundCam;
 };
 
+class AroundCamera:public Camera {
+	glm::vec3* pos, *front;
+	float distance;
+public:
+	AroundCamera(glm::vec3* pos,glm::vec3* front);
+	void ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)override;
+	void KeyBoardControl(bool *keys, GLfloat deltaTime)override;
+	void ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLfloat xpos, GLfloat ypos, GLboolean constrainPitch = true)override;
+	void ProcessMouseScroll(GLfloat yoffset)override;
+	virtual glm::mat4 GetViewMatrix() const;
+	virtual glm::vec3 GetViewPosition();
+};

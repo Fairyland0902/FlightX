@@ -40,7 +40,7 @@ void Game::Init(int width, int height)
     asphalt->init();
 
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
-    aircraft.setAirspeed(glm::vec3(1.0, 0, 0));
+    aircraft.setAirspeed(glm::vec3(3.0, 0, 0));
 }
 
 void Game::Render(int width, int height, float deltaTime)
@@ -151,6 +151,10 @@ void Game::CameraControl()
     {
         currentcamera = &camera;
     }
+	if (currentcamera != aircraft.AroundCam && keys[GLFW_KEY_3])
+	{
+		currentcamera = aircraft.AroundCam;
+	}
 }
 
 void Game::loadTextures()

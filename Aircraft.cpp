@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "resource_manager.h"
+#include <corecrt_math_defines.h>
 
 extern GLuint width, height;
 extern int WIDTH, HEIGHT;
@@ -35,12 +36,13 @@ Aircraft::Aircraft() : Model(), Camera(), inAir(1), target_thrust(20), thrust(20
     Up = glm::vec3(0, 1, 0);
     Right = glm::cross(Front, Up);
     airspeed = glm::vec3(0, 0, 0);
+	AroundCam = new AroundCamera(&Position,&Front);
 }
 
 
 Aircraft::~Aircraft()
 {
-
+	delete AroundCam;
 }
 
 void Aircraft::loadModel(string path)
@@ -51,14 +53,13 @@ void Aircraft::loadModel(string path)
 
 void Aircraft::Update(float dt)
 {
-    glm::vec3 acc(-airspeed * 0.4f * glm::clamp(abs(glm::dot(Up, WorldUp)), 0.3f, 0.75f) +
-                  thrust * Front * 0.025f * glm::clamp(1.0f - Position.y / 300.0f, 0.1f, 1.0f));
-    acc += Up * ias * glm::clamp(ias, 0.0f, 4.0f) * glm::clamp(glm::dot(Up, WorldUp), 0.1f, 1.0f) * 0.05f;
-    auto yaw = glm::dot(acc, Right) / (ias > 0.5 ? ias : 0.5) / 5 * dt;
+    glm::vec3 acc(Up * ias * glm::clamp(ias, 0.0f, 6.0f) * glm::clamp(glm::dot(Up, WorldUp), 0.2f, 1.0f) * 0.06f);
+    auto yaw = -glm::dot(acc,glm::normalize(glm::vec3(Right.x,0.0f,Right.z))) / (ias > 0.5 ? ias : 0.5)*4.0f*dt;
+	acc += -airspeed * 0.4f * glm::clamp(abs(glm::dot(Up, WorldUp)), 0.3f, 0.75f)+ thrust * Front * 0.02f * glm::clamp(1.0f - Position.y / 200.0f, 0.1f, 1.0f);
     WorldUpRotate(Up, yaw);
     WorldUpRotate(Front, yaw);
     WorldUpRotate(Right, yaw);
-    acc.y -= 1.0f;
+    acc.y -= 0.8f;
     if (!inAir)
     {
         if (acc.y < 0)acc.y = 0;
@@ -240,6 +241,13 @@ void _AIRCRAFT_UTIL_show_number(int value, float xRight, float yCenter, float wi
     }
 }
 
+int Aircraft::_getHDG() const{
+	glm::vec2 dir=glm::normalize(glm::vec2(Front.x, Front.z));
+	if(dir.y<0) {
+		return int(asin(dir.x) * 180 / 3.14159265358979323846+270);
+	}else
+		return int(90 - asin(dir.x) * 180 / 3.14159265358979323846);
+}
 void Aircraft::DrawHUD()
 {
     static GLuint VAO = util::genVAO();
@@ -292,7 +300,7 @@ void Aircraft::DrawHUD()
 	vpos.emplace_back(posx.x, posx.y);
 	posx = vpMatrix * (Infpos - rv);
 	vpos.emplace_back(posx.x, posx.y);
-	printf("%f %f\n",posx.x, posx.y);
+	_AIRCRAFT_UTIL_show_number(_getHDG(), 0.1, -0.9, 0.05, 0.2, vpos);
     int tgtthr = target_thrust, thr = thrust;
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vert_buf);
@@ -302,4 +310,29 @@ void Aircraft::DrawHUD()
     glDisableVertexAttribArray(0);
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(0);
+}
+
+AroundCamera::AroundCamera(glm::vec3* pos, glm::vec3* front):pos(pos),front(front),distance(2.0) {}
+void AroundCamera::ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime) {}
+void AroundCamera::KeyBoardControl(bool *keys, GLfloat deltaTime) {
+	if (keys[GLFW_KEY_A])Yaw += 40.0f*deltaTime;
+	if (keys[GLFW_KEY_D])Yaw -= 40.0f*deltaTime;
+	if (keys[GLFW_KEY_W])Pitch += 40.0f*deltaTime;
+	if (keys[GLFW_KEY_S])Pitch -= 40.0f*deltaTime;
+	if (Pitch< -89)Pitch = -89;
+	if (Pitch > 89)Pitch = +89;
+	updateCameraVectors();
+}
+
+void AroundCamera::ProcessMouseMovement(GLfloat xoffset, GLfloat yoffset, GLfloat xpos, GLfloat ypos, GLboolean constrainPitch) {}
+void AroundCamera::ProcessMouseScroll(GLfloat yoffset) {
+	distance -= yoffset;
+	if (distance < 0.4)distance = 0.4;
+}
+glm::mat4 AroundCamera::GetViewMatrix() const {
+	return glm::lookAt(*pos + Front*distance, *pos, Up);
+}
+
+glm::vec3 AroundCamera::GetViewPosition() {
+	return *pos + Front*distance*0.8f;
 }

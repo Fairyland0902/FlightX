@@ -66,6 +66,8 @@ glm::vec3 Camera::GetViewPosition()
     return Position+offset;
 }
 
+void Camera::KeyBoardControl(bool* keys, GLfloat deltaTime) {}
+
 // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
 void Camera::ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
 {

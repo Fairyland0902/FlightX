@@ -173,6 +173,7 @@ void do_movement()
         currentcamera->ProcessKeyboard(LEFT, deltaTime);
     if (keys[GLFW_KEY_D])
         currentcamera->ProcessKeyboard(RIGHT, deltaTime);
+	if (currentcamera != &game.aircraft)currentcamera->KeyBoardControl(keys, deltaTime);
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
