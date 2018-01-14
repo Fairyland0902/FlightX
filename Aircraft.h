@@ -16,7 +16,7 @@ class Aircraft :
 	float controlx, controly;
 	float getLength(const glm::vec3&);
 	glm::vec3 getAcceleration();
-	int _getHDG() const;
+	float _getHDG() const;
 public:
 	Aircraft();
 	~Aircraft();

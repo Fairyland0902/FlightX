@@ -53,8 +53,9 @@ void Aircraft::loadModel(string path)
 
 void Aircraft::Update(float dt)
 {
-    glm::vec3 acc(Up * ias * glm::clamp(ias, 0.0f, 6.0f) * glm::clamp(glm::dot(Up, WorldUp), 0.2f, 1.0f) * 0.06f);
-    auto yaw = -glm::dot(acc,glm::normalize(glm::vec3(Right.x,0.0f,Right.z))) / (ias > 0.5 ? ias : 0.5)*4.0f*dt;
+    glm::vec3 acc(Up * ias * glm::clamp(ias, 0.0f, 6.0f) * 0.06f);
+	double yaw = -glm::dot(acc, glm::normalize(glm::vec3(Right.x, 0, Right.z))) / (ias > 0.5 ? ias : 0.5)*3.0f*dt*(glm::dot(Up, WorldUp) > 0 ? 1.0f: -0.8f);
+	acc *= glm::clamp(glm::dot(Up, WorldUp), 0.2f, 1.0f);
 	acc += -airspeed * 0.4f * glm::clamp(abs(glm::dot(Up, WorldUp)), 0.3f, 0.75f)+ thrust * Front * 0.02f * glm::clamp(1.0f - Position.y / 200.0f, 0.1f, 1.0f);
     WorldUpRotate(Up, yaw);
     WorldUpRotate(Front, yaw);
@@ -64,7 +65,7 @@ void Aircraft::Update(float dt)
     {
         if (acc.y < 0)acc.y = 0;
     }
-    float controlval = 0.003f * (4.0f + glm::clamp(ias,0.0f,5.0f) * 1.1f);
+    float controlval = 0.002f * (4.0f + glm::clamp(ias,0.0f,3.0f) * 1.1f);
 	glm::vec3 frontOrig = Front;
     Front = glm::normalize(Front + controlval * controly * Up);
     Up += controlval * controlx * Right;
@@ -243,7 +244,7 @@ void _AIRCRAFT_UTIL_show_number(int value, float xRight, float yCenter, float wi
 }
 void _AIRCRAFT_HUD_show_THR(float thr,float tgtthr,std::vector<glm::vec2> &pos) {
 	static std::vector<glm::vec2> rollpos;
-#define AIRCRAFT_HUD_THR(x, y, z, w) _AIRCRAFT_UTIL_push_line_display(x,y,z,w,-1.0,-0.8,-0.6,-1.0,pos)
+#define AIRCRAFT_HUD_THR(x, y, z, w) _AIRCRAFT_UTIL_push_line_display(x,y,z,w,-0.7,-0.5,-0.55,-0.95,pos)
 	if (rollpos.empty()) {
 		AIRCRAFT_HUD_THR(0.5, 0.5, 0.98, 0.5);
 		for (int i = 0; i < 99; i++) {
@@ -258,14 +259,14 @@ void _AIRCRAFT_HUD_show_THR(float thr,float tgtthr,std::vector<glm::vec2> &pos) 
 	}
 	AIRCRAFT_HUD_THR(0.48*cos(0.044*i) + 0.5, 0.5 - 0.48*sin(0.044*i), 0.48*cos(0.044*tgtthr) + 0.5, 0.5 - 0.48*sin(0.044*tgtthr));
 	AIRCRAFT_HUD_THR(0.45*cos(0.044*tgtthr) + 0.5, 0.5 - 0.45*sin(0.044*tgtthr), 0.48*cos(0.044*tgtthr) + 0.5, 0.5 - 0.48*sin(0.044*tgtthr));
-	_AIRCRAFT_UTIL_show_number(thr, -0.81, -0.7, 0.03, 0.12, pos);
+	_AIRCRAFT_UTIL_show_number(thr, -0.51, -0.65, 0.03, 0.12, pos);
 }
-int Aircraft::_getHDG() const{
+float Aircraft::_getHDG() const{
 	glm::vec2 dir=glm::normalize(glm::vec2(Front.x, Front.z));
 	if(dir.y<0) {
-		return int(asin(dir.x) * 180 / 3.14159265358979323846+270);
+		return (asin(dir.x) * 180 / 3.14159265358979323846+270);
 	}else
-		return int(90 - asin(dir.x) * 180 / 3.14159265358979323846);
+		return (90 - asin(dir.x) * 180 / 3.14159265358979323846);
 }
 void Aircraft::DrawHUD()
 {
@@ -314,12 +315,23 @@ void Aircraft::DrawHUD()
 	glm::vec4 Infpos = glm::vec4(GetViewPosition() + glm::normalize(frontv),1);
 	Infpos.y -= Front.y;
 	glm::vec4 rv(frontv.z,0,-frontv.x, 0);
-	glm::vec4 posx;
+	glm::vec4 posx;  
 	posx = vpMatrix * (Infpos + rv);
 	vpos.emplace_back(posx.x, posx.y);
 	posx = vpMatrix * (Infpos - rv);
 	vpos.emplace_back(posx.x, posx.y);
-	_AIRCRAFT_UTIL_show_number(_getHDG(), 0.1, -0.9, 0.05, 0.2, vpos);
+
+	//Compass
+	float hdg = _getHDG();
+	for(int i=0;i<359;i+=5) {
+		float len = (i % 10) ? 0.05 : (i % 30 ? 0.08 : (i % 90 ? 0.12:0.2));
+			float ytop = -2 + 1.2*cos(glm::radians(i - hdg));
+			if (ytop < -1)continue;
+			_AIRCRAFT_UTIL_push_line(0.6*(1.2-len)*sin(glm::radians(i - hdg)), -2 + (1.2-len)*cos(glm::radians(i - hdg)), 0.72f*sin(glm::radians(i - hdg)), ytop, vpos);
+
+	}
+	_AIRCRAFT_UTIL_show_number(hdg, 0.045, -0.74, 0.03, 0.12, vpos);
+	//Thrust
 	_AIRCRAFT_HUD_show_THR(thrust, target_thrust, vpos);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vert_buf);
