@@ -51,11 +51,9 @@ void Game::Render(int width, int height, float deltaTime)
     aircraft.Draw(ResourceManager::GetShader("aircraft"));
     aircraft.Update(deltaTime);
 
-//    ocean->Draw(deltaTime);
-
-    terrain->Draw();
-    asphalt->Draw();
-//    ocean->Draw(deltaTime);
+//    terrain->Draw();
+//    asphalt->Draw();
+    ocean->Draw(deltaTime);
 
     //For Test:
     aircraft.DrawHUD();
