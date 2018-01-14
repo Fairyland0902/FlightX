@@ -218,6 +218,7 @@ void _AIRCRAFT_UTIL_push_digit_display(int digit, float xLeft, float xRight, flo
             AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.9, 0.3);
             break;
     }
+#undef AIRCRAFT_UTIL_DIG
 }
 
 void _AIRCRAFT_UTIL_show_number(int value, float xRight, float yCenter, float width, float height,
@@ -240,7 +241,25 @@ void _AIRCRAFT_UTIL_show_number(int value, float xRight, float yCenter, float wi
         pos.emplace_back(xptr - 0.1 * width, yCenter);
     }
 }
-
+void _AIRCRAFT_HUD_show_THR(float thr,float tgtthr,std::vector<glm::vec2> &pos) {
+	static std::vector<glm::vec2> rollpos;
+#define AIRCRAFT_HUD_THR(x, y, z, w) _AIRCRAFT_UTIL_push_line_display(x,y,z,w,-1.0,-0.8,-0.6,-1.0,pos)
+	if (rollpos.empty()) {
+		AIRCRAFT_HUD_THR(0.5, 0.5, 0.98, 0.5);
+		for (int i = 0; i < 99; i++) {
+			AIRCRAFT_HUD_THR(0.45*cos(0.044*i) + 0.5, 0.5-0.45*sin(0.044*i), 0.45*cos(0.044*i+0.044) + 0.5, 0.5 - 0.45*sin(0.044*i+0.044));
+		}
+	}
+	AIRCRAFT_HUD_THR(0.45*cos(0.044*thr) + 0.5, 0.5 - 0.45*sin(0.044*thr), 0.5, 0.5);
+	for (const glm::vec2&p : rollpos)pos.push_back(p);
+	int i;
+	for (i = 0; i < tgtthr-1; i++) {
+		AIRCRAFT_HUD_THR(0.48*cos(0.044*i) + 0.5, 0.5 - 0.48*sin(0.044*i), 0.48*cos(0.044*i + 0.044) + 0.5, 0.5 - 0.48*sin(0.044*i + 0.044));
+	}
+	AIRCRAFT_HUD_THR(0.48*cos(0.044*i) + 0.5, 0.5 - 0.48*sin(0.044*i), 0.48*cos(0.044*tgtthr) + 0.5, 0.5 - 0.48*sin(0.044*tgtthr));
+	AIRCRAFT_HUD_THR(0.45*cos(0.044*tgtthr) + 0.5, 0.5 - 0.45*sin(0.044*tgtthr), 0.48*cos(0.044*tgtthr) + 0.5, 0.5 - 0.48*sin(0.044*tgtthr));
+	_AIRCRAFT_UTIL_show_number(thr, -0.81, -0.7, 0.03, 0.12, pos);
+}
 int Aircraft::_getHDG() const{
 	glm::vec2 dir=glm::normalize(glm::vec2(Front.x, Front.z));
 	if(dir.y<0) {
@@ -301,7 +320,7 @@ void Aircraft::DrawHUD()
 	posx = vpMatrix * (Infpos - rv);
 	vpos.emplace_back(posx.x, posx.y);
 	_AIRCRAFT_UTIL_show_number(_getHDG(), 0.1, -0.9, 0.05, 0.2, vpos);
-    int tgtthr = target_thrust, thr = thrust;
+	_AIRCRAFT_HUD_show_THR(thrust, target_thrust, vpos);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vert_buf);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * vpos.size(), &vpos[0], GL_STATIC_DRAW);
