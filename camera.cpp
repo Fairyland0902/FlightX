@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 extern int WIDTH, HEIGHT;
+extern GLuint width, height;
 // Constructor with vectors
 Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) :
 	Front(glm::vec3(0.0f, 0.0f, -1.0f)),
@@ -47,10 +48,22 @@ glm::mat4 Camera::GetViewMatrix() const
     return glm::lookAt(this->Position+offset, this->Position+offset + this->Front, this->Up);
 }
 
+glm::mat4 Camera::GetProjectionMatrix() const {
+	return glm::perspective(Zoom, (float)width / (float)height, NearClippingPlaneDistance, FarClippingPlaneDistance);
+}
+
+glm::mat4 Camera::getVPMatrix() const {
+	return GetProjectionMatrix()*GetViewMatrix();
+}
+
 // Return the position of the camera.
 glm::vec3 Camera::GetViewPosition()
 {
-    return Position;
+	glm::vec3 offset;
+	offset += Front * Offset.x;
+	offset += Up * Offset.y;
+	offset += Right * Offset.z;
+    return Position+offset;
 }
 
 // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)

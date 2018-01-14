@@ -56,6 +56,8 @@ public:
 
     // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
     glm::mat4 GetViewMatrix() const;
+    glm::mat4 GetProjectionMatrix() const;
+	glm::mat4 getVPMatrix() const;
     // Return the position of the camera.
     glm::vec3 GetViewPosition();
 

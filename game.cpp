@@ -45,16 +45,16 @@ void Game::Init(int width, int height)
 
 void Game::Render(int width, int height, float deltaTime)
 {
-    flareRender->Draw();
-    cloudRender->Draw(deltaTime);
+	flareRender->Draw();
+	
+	terrain->Draw();
+	asphalt->Draw();
+	//    ocean->Draw(deltaTime);
+	cloudRender->Draw(deltaTime);
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"));
     aircraft.Update(deltaTime);
 
-//    ocean->Draw(deltaTime);
-
-    terrain->Draw();
-    asphalt->Draw();
 //    ocean->Draw(deltaTime);
 
     //For Test:

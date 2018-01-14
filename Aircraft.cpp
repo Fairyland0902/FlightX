@@ -46,7 +46,7 @@ Aircraft::~Aircraft()
 void Aircraft::loadModel(string path)
 {
     Model::loadModel(path);
-    Offset = glm::vec3(-2.0f, 0.3f, 0);
+    Offset = glm::vec3(-0.4f, 0.06f, 0);
 }
 
 void Aircraft::Update(float dt)
@@ -63,12 +63,14 @@ void Aircraft::Update(float dt)
     {
         if (acc.y < 0)acc.y = 0;
     }
-    float controlval = 0.005f * (4.0f + ias * 1.1f);
+    float controlval = 0.003f * (4.0f + glm::clamp(ias,0.0f,5.0f) * 1.1f);
+	glm::vec3 frontOrig = Front;
     Front = glm::normalize(Front + controlval * controly * Up);
     Up += controlval * controlx * Right;
     Up = glm::normalize(Up - glm::dot(Up, Front) * Front);
     Right = glm::cross(Front, Up);
     Position += airspeed * dt;
+	airspeed += (Front - frontOrig)*ias*0.8f;
     airspeed += acc * dt;
     thrust += ((target_thrust > 20 ? target_thrust : 20) - thrust) * dt * 0.45;
     ias = glm::dot(airspeed, Front);
@@ -81,10 +83,7 @@ const glm::vec3 &&Aircraft::getAirspeed()
 
 void Aircraft::Draw(Shader &shader)
 {
-    glm::mat4 vp = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
-                                    currentcamera->NearClippingPlaneDistance,
-                                    currentcamera->FarClippingPlaneDistance)
-                   * currentcamera->GetViewMatrix();
+	glm::mat4 vp = currentcamera->getVPMatrix();
 //	if (currentcamera == this)DrawHUD();
     glm::mat4 model = {
             Front.x, Front.y, Front.z, 0,
@@ -93,7 +92,7 @@ void Aircraft::Draw(Shader &shader)
             Position.x, Position.y, Position.z, 1
     };
     shader.Use();
-    shader.SetMatrix4("Model", model);
+	shader.SetMatrix4("Model", glm::scale(model,glm::vec3(0.2f,0.2f,0.2f)));
     shader.SetMatrix4("VP", vp);
     Model::Draw(shader);
 }
@@ -252,6 +251,8 @@ void Aircraft::DrawHUD()
     // Two major lines
     _AIRCRAFT_UTIL_push_line(-0.5, -0.5, -0.5, 0.5, vpos);
     _AIRCRAFT_UTIL_push_line(0.5, -0.5, 0.5, 0.5, vpos);
+    _AIRCRAFT_UTIL_push_line(-0.05, -0.05, 0, 0, vpos);
+    _AIRCRAFT_UTIL_push_line(0.05, -0.05, 0, 0, vpos);
     _AIRCRAFT_UTIL_push_line(-0.5, 0, -0.6, 0, vpos);
     _AIRCRAFT_UTIL_push_line(0.5, 0, 0.6, 0, vpos);
     // Airspeed and its block
@@ -280,8 +281,18 @@ void Aircraft::DrawHUD()
         _AIRCRAFT_UTIL_show_number(i * 100 + 20000, 0.60, position, 0.015, 0.06, vpos, 1);
     }
     _AIRCRAFT_UTIL_show_number(airspeed.y * 6000, 0.48f, -0.54, 0.02, 0.08, vpos, 1);
-
-
+	glm::mat4 vpMatrix = getVPMatrix();
+	glm::vec3 frontv = Front;
+	frontv.y = 0;
+	glm::vec4 Infpos = glm::vec4(GetViewPosition() + glm::normalize(frontv),1);
+	Infpos.y -= Front.y;
+	glm::vec4 rv(frontv.z,0,-frontv.x, 0);
+	glm::vec4 posx;
+	posx = vpMatrix * (Infpos + rv);
+	vpos.emplace_back(posx.x, posx.y);
+	posx = vpMatrix * (Infpos - rv);
+	vpos.emplace_back(posx.x, posx.y);
+	printf("%f %f\n",posx.x, posx.y);
     int tgtthr = target_thrust, thr = thrust;
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vert_buf);
