@@ -10,7 +10,6 @@ class Aircraft :
         public Model,
         public Camera
 {
-
     bool inAir;
     float thrust;
     float target_thrust;
@@ -22,7 +21,7 @@ class Aircraft :
 
     glm::vec3 getAcceleration();
 
-    int _getHDG() const;
+    float _getHDG() const;
 
     GLuint glossyEnvmap;
 
