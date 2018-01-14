@@ -8,7 +8,6 @@
 #include <iostream>
 #include "Terrain.h"
 
-
 void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices)
 {
 
@@ -17,9 +16,11 @@ void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::v
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++)
         {
-            vertices.emplace_back(i * slice * (chunk_width) - chunk_width / 2, absolute_height,
+            float height = absolute_height;
+            std::cout << i << ' ' << j << std::endl;
+            vertices.emplace_back(i * slice * (chunk_width) - chunk_width / 2, height,
                                   j * slice * (chunk_height) - chunk_height / 2);
-            uvs.emplace_back(i % 2, j % 2);
+            uvs.emplace_back(float(i) / n * 40, float(j) / n * 40);
             if (i < n - 1 && j < n - 1)
             {
                 indices.emplace_back(i * n + j);
@@ -35,6 +36,7 @@ void Terrain::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::v
 
 Terrain::Terrain(int width, int height) : width(width), height(height)
 {
+//    std::cout << heightMap.channels() << std::endl;
     // Load PBR material textures.
     Albedo = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-albedo3.png", true, "grassAlbedo");
     Normal = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-normal2.png", true, "grassNormal");
@@ -126,3 +128,4 @@ void Terrain::init()
 
     glBindVertexArray(0);
 }
+

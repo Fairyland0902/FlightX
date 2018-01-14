@@ -34,10 +34,12 @@ void Game::Init(int width, int height)
     ocean = new Ocean(width, height);
     ocean->Init();
 
-    terrain = new Terrain(width, height);
-    terrain->init();
-    asphalt = new Asphalt(width, height);
-    asphalt->init();
+//    terrain = new Terrain(width, height);
+//    terrain->init();
+//    asphalt = new Asphalt(width, height);
+//    asphalt->init();
+    mount = new Mount(width, height);
+    mount->init();
 
     aircraft.Init();
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
@@ -48,8 +50,9 @@ void Game::Render(int width, int height, float deltaTime)
 {
     flareRender->Draw();
 
-    terrain->Draw();
-    asphalt->Draw();
+    mount->Draw();
+//    terrain->Draw();
+//    asphalt->Draw();
     //    ocean->Draw(deltaTime);
     cloudRender->Draw(deltaTime);
 
@@ -138,7 +141,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_ "/PBR.frag",
                                 "",
                                 "PBR");
-
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/mount.vert",
+                                _SHADER_PREFIX_ "/mount.frag",
+                                "",
+                                "mount");
     std::cout << "Done" << std::endl;
 }
 

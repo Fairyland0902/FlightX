@@ -8,6 +8,7 @@
 #include <camera.h>
 #include <shader.h>
 #include <vector>
+#include "HeightGenerator.h"
 
 extern Camera *currentcamera;
 
@@ -48,7 +49,10 @@ protected:
     std::vector<glm::vec3> vertices;
     std::vector<GLuint> indices;
     std::vector<glm::vec2> uvs;
-    int n = 10;
+    int n = 128;
+
+    float MAX_HEIGHT = 20;
+
 };
 
 

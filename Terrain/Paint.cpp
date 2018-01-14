@@ -33,7 +33,6 @@ void Paint::Draw()
         shader.SetMatrix4("projection", projection);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.ID);
-        glUniform1i(glGetUniformLocation(shader.ID, "planeTexture"), 0);
 //        std::cout <<  texture.ID << std::endl;
 
         glBindVertexArray(VAO);
@@ -46,4 +45,6 @@ void Paint::Draw()
 void Paint::setShader() {
     shader = ResourceManager::GetShader("plane");
     shader.Use();
+
+    shader.SetInteger("planeTexture", 0);
 }
