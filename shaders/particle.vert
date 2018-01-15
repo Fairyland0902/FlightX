@@ -9,6 +9,7 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform vec2 offset;
 uniform vec4 color;
+uniform vec3 camPos;
 
 void main()
 {

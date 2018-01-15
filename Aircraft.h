@@ -2,7 +2,7 @@
 
 #include "model.h"
 #include "camera.h"
-#include "flame/particle_generator.h"
+#include "flame/flame.h"
 #include <glm/detail/type_mat.hpp>
 #include <vector>
 #include <string>
@@ -28,7 +28,7 @@ class Aircraft :
 
     GLuint loadCubemap(std::vector<std::string> faces);
 
-    ParticleGenerator *flame;
+    std::vector<Flame *> flames;
 
 public:
     Aircraft();

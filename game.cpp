@@ -120,7 +120,7 @@ void Game::Render(int width, int height, float deltaTime)
     asphalt->Draw(depthMap, lightSpaceMatrix);
 //    mounts->Draw();
 
-    //    ocean->Draw(deltaTime);
+//        ocean->Draw(deltaTime);
 
     cloudRender->Draw(deltaTime);
 
@@ -222,10 +222,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/depthMap.frag",
                                 "",
                                 "debug");
-    ResourceManager::LoadShader(_SHADER_PREFIX_"/particle.vert",
-                                _SHADER_PREFIX_"/particle.frag",
-                                "",
-                                "particle");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/flame/particle.vert",
+                                _SHADER_PREFIX_"/flame/particle.frag",
+                                _SHADER_PREFIX_"/flame/particle.geom",
+                                "flame");
 
     ResourceManager::LoadShader(_SHADER_PREFIX_"/mount.vert",
                                 _SHADER_PREFIX_ "/mount.frag",
