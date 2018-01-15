@@ -9,7 +9,7 @@
 #include <camera.h>
 
 // Definition of the maximum number of particles.
-#define NUMBEROFPARTICLES 1500
+#define NUMBEROFPARTICLES 10000
 
 extern Camera *currentcamera;
 

@@ -16,26 +16,26 @@ void main()
     vec3 up = vec3(0.0, 1.0, 0.0);
     vec3 right = cross(toCamera, up);
 
-    pos -= (right * 0.0025);
+    pos -= (right * 0.02);
     gl_Position = projection * vec4(pos, 1.0);
     texCoord = vec2(0, 0);
     eyePosition = vec4(pos, 1.0);
     EmitVertex();
 
-    pos.y += 0.005;
+    pos.y += 0.04;
     gl_Position = projection * vec4(pos, 1.0);
     texCoord = vec2(0, 1.0);
     eyePosition = vec4(pos, 1.0);
     EmitVertex();
 
-    pos.y -= 0.005;
-    pos += (right * 0.005);
+    pos.y -= 0.04;
+    pos += (right * 0.04);
     gl_Position = projection * vec4(pos, 1.0);
     texCoord = vec2(1.0, 0);
     eyePosition = vec4(pos, 1.0);
     EmitVertex();
 
-    pos.y += 0.005;
+    pos.y += 0.04;
     gl_Position = projection * vec4(pos, 1.0);
     texCoord = vec2(1.0, 1.0);
     eyePosition = vec4(pos, 1.0);

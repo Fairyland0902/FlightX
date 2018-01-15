@@ -278,7 +278,7 @@ void Flame::Update(glm::vec3 direction, float deltaTime)
 void Flame::Draw(glm::mat4 &model)
 {
     // Disable the depth mask in order to stop depth writes and thus blending artifacts while keeping the flame from drawing over other objects.
-    glDepthMask(GL_FALSE);
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Ready the shader for drawing.
@@ -298,7 +298,7 @@ void Flame::Draw(glm::mat4 &model)
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);
     // Re-enable the depth mask.
-    glDepthMask(GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
     // Don't forget to reset to default blending mode.
     glDisable(GL_BLEND);
 }

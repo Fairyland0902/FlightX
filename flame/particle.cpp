@@ -7,9 +7,9 @@ Particle::Particle()
 {
     m_lifetime = 10.0f;
     m_velocity = glm::vec3(0, 0, 0);
-    m_position = glm::vec3((((float) rand() / (float) RAND_MAX) - 0.5) / 10,
+    m_position = glm::vec3((((float) rand() / (float) RAND_MAX) - 0.5) / 100,
                            -0.1f,
-                           (((float) rand() / (float) RAND_MAX) - 0.5) / 10);
+                           (((float) rand() / (float) RAND_MAX) - 0.5) / 100);
 }
 
 /*
