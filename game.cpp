@@ -219,6 +219,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/depthMap.frag",
                                 "",
                                 "debug");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/particle.vert",
+                                _SHADER_PREFIX_"/particle.frag",
+                                "",
+                                "particle");
 
     std::cout << "Done" << std::endl;
 }

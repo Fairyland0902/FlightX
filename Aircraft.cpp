@@ -61,6 +61,10 @@ void Aircraft::Init()
                     _TEXTURE_PREFIX_"/skybox/TropicalSunnyDayFront_blur.png"
             };
     glossyEnvmap = loadCubemap(faces);
+
+    // Initialize particle generator.
+    flame = new ParticleGenerator(ResourceManager::GetShader("particle"),
+                                  ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/flame.png", GL_TRUE, "flame"), 500);
 }
 
 void Aircraft::loadModel(string path)
@@ -97,6 +101,9 @@ void Aircraft::Update(float dt)
     airspeed += acc * dt;
     thrust += ((target_thrust > 20 ? target_thrust : 20) - thrust) * dt * 0.45;
     ias = glm::dot(airspeed, Front);
+
+    // Update tail flame.
+    flame->Update(dt, Position, airspeed, 2, -Front);
 }
 
 const glm::vec3 &&Aircraft::getAirspeed()
@@ -148,6 +155,14 @@ void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix
     // Reset texture info.
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    // Render tail flame.
+    glDepthMask(GL_FALSE);
+    // The model matrix is set according to the aircraft's position.
+    Shader particle = ResourceManager::GetShader("particle");
+    particle.Use();
+    flame->Draw();
+    glDepthMask(GL_TRUE);
 }
 
 void Aircraft::DrawDepth(Shader &shader)
