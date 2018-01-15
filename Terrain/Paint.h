@@ -12,9 +12,9 @@ class Paint final : public AbstractTerrain {
 public:
     Paint(int width, int height);
 
-    void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix) override;
+    void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix) ;
 
-    void DrawDepth(Shader &shader) override;
+    void DrawDepth(Shader &shader);
 
     void setMVP(glm::mat4 trans, glm::mat4 view, glm::mat4 projection);
 

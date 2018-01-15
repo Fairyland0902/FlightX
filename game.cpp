@@ -118,7 +118,7 @@ void Game::Render(int width, int height, float deltaTime)
 
     terrain->Draw(depthMap, lightSpaceMatrix);
     asphalt->Draw(depthMap, lightSpaceMatrix);
-    mounts->Draw();
+//    mounts->Draw();
 
     //    ocean->Draw(deltaTime);
 
@@ -214,7 +214,6 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_ "/PBR.frag",
                                 "",
                                 "PBR");
-<<<<<<< HEAD
     ResourceManager::LoadShader(_SHADER_PREFIX_"/shadowMapping.vert",
                                 _SHADER_PREFIX_"/shadowMapping.frag",
                                 "",
@@ -224,12 +223,10 @@ void Game::loadShaders()
                                 "",
                                 "debug");
 
-=======
     ResourceManager::LoadShader(_SHADER_PREFIX_"/mount.vert",
                                 _SHADER_PREFIX_ "/mount.frag",
                                 "",
                                 "mount");
->>>>>>> wbx
     std::cout << "Done" << std::endl;
 }
 

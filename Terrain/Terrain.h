@@ -19,7 +19,6 @@ public:
     virtual void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix);
 
     virtual void DrawDepth(Shader &shader);
-    virtual void Draw() override;
 
 
 protected:

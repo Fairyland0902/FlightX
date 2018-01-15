@@ -17,7 +17,7 @@ public:
 
     HeightGenerator *generator;
 
-    void Draw() override;
+    void Draw();
 
     static const int n;
     static const int chunk_width;

@@ -13,9 +13,9 @@ class Asphalt final : public AbstractTerrain {
 public:
     Asphalt(int width, int height);
 
-    void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix) override;
+    void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix);
 
-    void DrawDepth(Shader &shader) override;
+    void DrawDepth(Shader &shader);
 
 private:
     void setShader() override;

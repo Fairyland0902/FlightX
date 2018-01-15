@@ -18,8 +18,6 @@ class AbstractTerrain {
 public:
     AbstractTerrain(int width, int height);
 
-    virtual void Draw() = 0;
-
     virtual void init();
 
 protected:
