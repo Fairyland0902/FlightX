@@ -170,7 +170,8 @@ void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix
 //    glDepthMask(GL_FALSE);
 //    flame->Draw(glm::vec3(1.0f, 1.0f, 1.0f));
 //    glDepthMask(GL_TRUE);
-    model = glm::translate(model, glm::vec3(0.0f, 0.02f, 0.0f));
+    model = glm::translate(model, 0.2f * glm::normalize(-Front));
+    model = glm::translate(model, 0.08f * glm::normalize(Up));
     for (auto f: flames)
     {
         f->Draw(model);

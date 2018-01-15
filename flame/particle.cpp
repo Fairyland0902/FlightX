@@ -5,7 +5,7 @@
 // Contructor giving a random starting position (within range).
 Particle::Particle()
 {
-    m_lifetime = 10.0f;
+    m_lifetime = 1.0f;
     m_velocity = glm::vec3(0, 0, 0);
     m_position = glm::vec3((((float) rand() / (float) RAND_MAX) - 0.5) / 100,
                            -0.1f,
@@ -38,7 +38,7 @@ void Particle::Update(std::vector<Particle *> &_particlesInRange, glm::vec3 dire
         }
     }
     // Accelerate the particle.
-    m_velocity += acceleration * _deltaTime / 100.0f;
+    m_velocity += acceleration * _deltaTime / 10.0f;
     // Move the particle.
     m_position += m_velocity * _deltaTime;
 }
