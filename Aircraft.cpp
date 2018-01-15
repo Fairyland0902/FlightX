@@ -50,7 +50,7 @@ Aircraft::~Aircraft()
 
 void Aircraft::Init()
 {
-    // Generate glossy environemnt map.
+    // Generate glossy environment map.
     std::vector<std::string> faces
             {
                     _TEXTURE_PREFIX_"/skybox/TropicalSunnyDayRight_blur.png",
@@ -103,7 +103,7 @@ const glm::vec3 &&Aircraft::getAirspeed()
     return std::move(airspeed);
 }
 
-void Aircraft::Draw(Shader &shader)
+void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix)
 {
     glm::mat4 vp = currentcamera->getVPMatrix();
 //	if (currentcamera == this)DrawHUD();
@@ -136,11 +136,31 @@ void Aircraft::Draw(Shader &shader)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_CUBE_MAP, glossyEnvmap);
 
+    // Shadow setting.
+    shader.SetInteger("shadowMap", 2);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, shadowMap);
+    shader.SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+
     Model::Draw(shader);
 
     // Reset texture info.
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
+void Aircraft::DrawDepth(Shader &shader)
+{
+    glm::mat4 model = {
+            Front.x, Front.y, Front.z, 0,
+            Up.x, Up.y, Up.z, 0,
+            Right.x, Right.y, Right.z, 0,
+            Position.x, Position.y, Position.z, 1
+    };
+    shader.Use();
+    shader.SetMatrix4("model", glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)));
+
+    Model::Draw(shader);
 }
 
 void Aircraft::setAirspeed(const glm::vec3 &v)

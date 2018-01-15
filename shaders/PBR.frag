@@ -2,6 +2,7 @@
 out vec4 FragColor;
 in vec2 TexCoords;
 in vec3 WorldPos;
+in vec4 FragPosLightSpace;
 in vec3 Normal;
 
 // material parameters
@@ -11,6 +12,9 @@ uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D aoMap;
 
+// shadow map
+uniform sampler2D shadowMap;
+
 // lights
 uniform vec3 lightDirection;
 uniform vec3 lightColor;
@@ -18,6 +22,33 @@ uniform vec3 lightColor;
 uniform vec3 camPos;
 
 const float PI = 3.14159265359;
+
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
+{
+    // Perspective division.
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    // Change the range to [0, 1].
+    projCoords = projCoords * 0.5 + 0.5;
+    // The fragment is farther than the fat plane of light.
+    if (projCoords.z > 1.0)
+        return 1.0;
+    // Fetch the current depth in light space.
+    float currentDepth = projCoords.z;
+    // Test whether the current fragment is in shadow.
+    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.005);
+    // PCF.
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for (int x = -1; x <= 1; ++x) {
+        for (int y = -1; y <= 1; ++y) {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
+}
 
 // ----------------------------------------------------------------------------
 // Easy trick to get tangent-normals to world-space to keep PBR code simplified.
@@ -141,7 +172,9 @@ void main()
     // this ambient lighting with environment lighting).
     vec3 ambient = vec3(0.03) * albedo * ao;
 
-    vec3 color = ambient + Lo;
+    float shadow = ShadowCalculation(FragPosLightSpace, N, L);
+
+    vec3 color = ambient + (1 - shadow) * Lo;
 
     // HDR tonemapping
     color = color / (color + vec3(1.0));
@@ -149,4 +182,7 @@ void main()
     color = pow(color, vec3(1.0 / 2.2));
 
     FragColor = vec4(color * 3.0, 1.0);
+
+    // FragColor = (shadow == 1.0) ? vec4(0.0, 0.0, 0.0, 1.0) : vec4(1.0, 1.0, 1.0, 1.0);
+    // FragColor = vec4(shadow, 0.0, 0.0, 1.0);
 }

@@ -40,7 +40,9 @@ public:
 
     const glm::vec3 &&getAirspeed();
 
-    void Draw(Shader &shader) override;
+    void Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix);
+
+    void DrawDepth(Shader &shader);
 
     void setAirspeed(const glm::vec3 &);
 
