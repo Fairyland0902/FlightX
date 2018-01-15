@@ -8,8 +8,7 @@
 
 #include "Terrain.h"
 
-class Paint : public Terrain
-{
+class Paint final : public AbstractTerrain {
 public:
     Paint(int width, int height);
 
@@ -20,6 +19,8 @@ public:
     void setMVP(glm::mat4 trans, glm::mat4 view, glm::mat4 projection);
 
     void setShader() override;
+
+    Texture2D texture;
 
 protected:
     glm::mat4 trans, view, projection;

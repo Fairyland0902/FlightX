@@ -1,7 +1,7 @@
 #ifndef RESOURCE_MANAGER_H
 #define RESOURCE_MANAGER_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 
 #include <GL/glew.h>
@@ -28,13 +28,13 @@ class ResourceManager
 {
 public:
     // Resource storage
-    static std::map<string, Shader> Shaders;
-    static std::map<string, Texture2D> Texture2Ds;
-    static std::map<string, Texture3D> Texture3Ds;
-    static std::map<string, Model *> Models;
-    static std::map<string, GLuint> VAOmap;
-    static std::map<string, int> VAOSizeMap;
-    static std::map<string, glm::vec3> modelSizeMap;
+    static std::unordered_map<string, Shader> Shaders;
+    static std::unordered_map<string, Texture2D> Texture2Ds;
+    static std::unordered_map<string, Texture3D> Texture3Ds;
+    static std::unordered_map<string, Model *> Models;
+    static std::unordered_map<string, GLuint> VAOmap;
+    static std::unordered_map<string, int> VAOSizeMap;
+    static std::unordered_map<string, glm::vec3> modelSizeMap;
 
     // Loads (and generates) a shader program from file loading vertex, fragment (and geometry) shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader.
     static Shader

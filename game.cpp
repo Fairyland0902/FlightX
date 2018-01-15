@@ -74,6 +74,7 @@ void Game::Init(int width, int height)
     terrain->init();
     asphalt = new Asphalt(width, height);
     asphalt->init();
+    mounts = new Mounts(width, height);
 
     aircraft.Init();
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
@@ -117,8 +118,10 @@ void Game::Render(int width, int height, float deltaTime)
 
     terrain->Draw(depthMap, lightSpaceMatrix);
     asphalt->Draw(depthMap, lightSpaceMatrix);
+    mounts->Draw();
 
     //    ocean->Draw(deltaTime);
+
     cloudRender->Draw(deltaTime);
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
@@ -211,6 +214,7 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_ "/PBR.frag",
                                 "",
                                 "PBR");
+<<<<<<< HEAD
     ResourceManager::LoadShader(_SHADER_PREFIX_"/shadowMapping.vert",
                                 _SHADER_PREFIX_"/shadowMapping.frag",
                                 "",
@@ -220,6 +224,12 @@ void Game::loadShaders()
                                 "",
                                 "debug");
 
+=======
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/mount.vert",
+                                _SHADER_PREFIX_ "/mount.frag",
+                                "",
+                                "mount");
+>>>>>>> wbx
     std::cout << "Done" << std::endl;
 }
 

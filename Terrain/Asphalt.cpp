@@ -6,8 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Asphalt.h"
 
-Asphalt::Asphalt(int width, int height) : Terrain(width, height)
-{
+
+
+Asphalt::Asphalt(int width, int height) : AbstractTerrain(width, height) {
     chunk_width = 128;
     chunk_height = 128;
     absolute_height = -199.9;
@@ -29,29 +30,11 @@ Asphalt::Asphalt(int width, int height) : Terrain(width, height)
 
 void Asphalt::Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix)
 {
-//    setShader();
     glm::mat4 view = currentcamera->GetViewMatrix();
     glm::mat4 projection = glm::perspective(currentcamera->Zoom, (float) width / (float) height,
                                             currentcamera->NearClippingPlaneDistance,
                                             currentcamera->FarClippingPlaneDistance);
-//    shader.SetMatrix4("view", view);
-//    shader.SetMatrix4("projection", projection);
-//    // Uniform variables setting.
-//    shader.SetVector3f("camPos", currentcamera->GetViewPosition());
-//    shader.SetVector3f("lightDirection", 0.0f, 1.0f, 0.0f);
-//    shader.SetVector3f("lightColor", 1.0f, 1.0f, 1.0f);
 
-//    // Activate PBR textures.
-//    glActiveTexture(GL_TEXTURE0);
-//    glBindTexture(GL_TEXTURE_2D, Albedo.ID);
-//    glActiveTexture(GL_TEXTURE1);
-//    glBindTexture(GL_TEXTURE_2D, Normal.ID);
-//    glActiveTexture(GL_TEXTURE2);
-//    glBindTexture(GL_TEXTURE_2D, Metallic.ID);
-//    glActiveTexture(GL_TEXTURE3);
-//    glBindTexture(GL_TEXTURE_2D, Roughness.ID);
-//    glActiveTexture(GL_TEXTURE4);
-//    glBindTexture(GL_TEXTURE_2D, AO.ID);
 
     glm::mat4 trans;
     trans = glm::translate(trans, glm::vec3(0, 0, -256 - 64));
@@ -113,4 +96,15 @@ void Asphalt::DrawDepth(Shader &shader)
         paint->DrawDepth(shader);
         cross->DrawDepth(shader);
     }
+}
+
+void Asphalt::setShader() {
+    shader = ResourceManager::GetShader("PBR");
+    shader.Use();
+
+    shader.SetInteger("albedoMap", 0);
+    shader.SetInteger("normalMap", 1);
+    shader.SetInteger("metallicMap", 2);
+    shader.SetInteger("roughnessMap", 3);
+    shader.SetInteger("aoMap", 4);
 }

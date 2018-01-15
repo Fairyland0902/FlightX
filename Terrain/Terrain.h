@@ -8,28 +8,23 @@
 #include <camera.h>
 #include <shader.h>
 #include <vector>
+#include "HeightGenerator.h"
+#include "AbstractTerrain.h"
 
-extern Camera *currentcamera;
 
-class Terrain
-{
+class Terrain final : public AbstractTerrain {
 public:
     Terrain(int width, int height);
 
     virtual void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix);
 
     virtual void DrawDepth(Shader &shader);
+    virtual void Draw() override;
 
-    virtual void init();
 
 protected:
-    virtual void setMVP();
 
-    virtual void setShader();
-
-    virtual void
-    generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices);
-
+    virtual void setShader() override;
 
     Texture2D Albedo;
     Texture2D Normal;
@@ -37,20 +32,6 @@ protected:
     Texture2D Roughness;
     Texture2D AO;
 
-    Texture2D texture;
-
-    GLuint VAO;
-    GLuint UV, VBO, EBO;
-    int width;
-    int height;
-    int chunk_width = 512;
-    int chunk_height = 512;
-    float absolute_height = -200;
-    Shader shader;
-    std::vector<glm::vec3> vertices;
-    std::vector<GLuint> indices;
-    std::vector<glm::vec2> uvs;
-    int n = 10;
 };
 
 
