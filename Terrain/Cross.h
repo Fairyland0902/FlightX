@@ -8,10 +8,14 @@
 
 #include "Paint.h"
 
-class Cross: public Paint {
+class Cross : public Paint
+{
 public:
     Cross(int width, int height);
-    void Draw() override;
+
+    void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix) override;
+
+    void DrawDepth(Shader &shader) override;
 };
 
 

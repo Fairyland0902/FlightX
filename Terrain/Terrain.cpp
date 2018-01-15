@@ -47,14 +47,14 @@ void Terrain::setMVP()
 {
     glm::mat4 trans;
     glm::mat4 view = currentcamera->GetViewMatrix();
-	glm::mat4 projection = currentcamera->GetProjectionMatrix();
+    glm::mat4 projection = currentcamera->GetProjectionMatrix();
     shader.SetMatrix4("model", trans);
     shader.SetMatrix4("view", view);
     shader.SetMatrix4("projection", projection);
 }
 
 
-void Terrain::Draw()
+void Terrain::Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix)
 {
     setShader();
     setMVP();
@@ -75,6 +75,10 @@ void Terrain::Draw()
     glBindTexture(GL_TEXTURE_2D, Roughness.ID);
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, AO.ID);
+    // Activate shadow map.
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D, shadowMap);
+    shader.SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -82,6 +86,16 @@ void Terrain::Draw()
 
     // Reset activated texture to default.
     glActiveTexture(GL_TEXTURE0);
+}
+
+void Terrain::DrawDepth(Shader &shader)
+{
+    glm::mat4 trans;
+    shader.SetMatrix4("model", trans);
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 }
 
 void Terrain::setShader()
@@ -94,6 +108,7 @@ void Terrain::setShader()
     shader.SetInteger("metallicMap", 2);
     shader.SetInteger("roughnessMap", 3);
     shader.SetInteger("aoMap", 4);
+    shader.SetInteger("shadowMap", 5);
 }
 
 void Terrain::init()

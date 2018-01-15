@@ -14,7 +14,9 @@ class Asphalt : public Terrain
 public:
     Asphalt(int width, int height);
 
-    void Draw() override;
+    void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix) override;
+
+    void DrawDepth(Shader &shader) override;
 
 private:
     Paint *paint;

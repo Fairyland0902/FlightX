@@ -1,10 +1,43 @@
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include "game.h"
 #include "resource_manager.h"
 
 extern bool keys[1024];
+
+// RenderQuad() Renders a 1x1 quad in NDC, best used for framebuffer color targets
+// and post-processing effects.
+GLuint quadVAO = 0;
+GLuint quadVBO;
+
+void RenderQuad()
+{
+    if (quadVAO == 0)
+    {
+        GLfloat quadVertices[] = {
+                // Positions        // Texture Coords
+                -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+                1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // Setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *) 0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
 
 Game::Game() :
         camera(glm::vec3(0.0f, -195.0f, 0.0f))
@@ -22,6 +55,9 @@ void Game::Init(int width, int height)
 {
     // Build and compile our shader program.
     loadShaders();
+
+    // Initialize depth mapping frame buffer.
+    initDepthMap();
 
     // Initialize cloud renderer.
     cloudRender = new CloudRender(width, height);
@@ -46,20 +82,57 @@ void Game::Init(int width, int height)
 
 void Game::Render(int width, int height, float deltaTime)
 {
+    // 1. Render depth of scene to texture (from light's perspective)
+    // - Get light projection/view matrix.
+    glm::mat4 lightProjection, lightView;
+    glm::mat4 lightSpaceMatrix;
+    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
+    lightView = glm::lookAt(aircraft.Position + glm::vec3(0.0f, 100.0f, 0.0f), aircraft.Position,
+                            glm::vec3(0.0, 0.0, 1.0));
+//    std::cout << glm::to_string(aircraft.Position) << std::endl;
+    lightSpaceMatrix = lightProjection * lightView;
+
+    // - Render scene from light's point of view.
+    Shader shadow = ResourceManager::GetShader("shadow");
+    shadow.Use();
+    shadow.SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
+
+    // Down sample.
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
+//    glCullFace(GL_FRONT);
+    aircraft.DrawDepth(shadow);
+//    glCullFace(GL_BACK);
+    terrain->DrawDepth(shadow);
+    asphalt->DrawDepth(shadow);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Reset viewport.
+    glViewport(0, 0, width, height);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // 2. Render scene as normal.
     flareRender->Draw();
 
-    terrain->Draw();
-    asphalt->Draw();
+    terrain->Draw(depthMap, lightSpaceMatrix);
+    asphalt->Draw(depthMap, lightSpaceMatrix);
+
     //    ocean->Draw(deltaTime);
     cloudRender->Draw(deltaTime);
 
-    aircraft.Draw(ResourceManager::GetShader("aircraft"));
+    aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
     aircraft.Update(deltaTime);
-
-//    ocean->Draw(deltaTime);
-
     //For Test:
     aircraft.DrawHUD();
+
+    // 3. DEBUG: visualize depth map by rendering it to plane
+//    Shader debug = ResourceManager::GetShader("debug");
+//    debug.Use();
+//    debug.SetInteger("depthMap", 0);
+//    glActiveTexture(GL_TEXTURE0);
+//    glBindTexture(GL_TEXTURE_2D, depthMap);
+//    RenderQuad();
 }
 
 void Game::loadShaders()
@@ -138,6 +211,14 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_ "/PBR.frag",
                                 "",
                                 "PBR");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/shadowMapping.vert",
+                                _SHADER_PREFIX_"/shadowMapping.frag",
+                                "",
+                                "shadow");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/depthMap.vert",
+                                _SHADER_PREFIX_"/depthMap.frag",
+                                "",
+                                "debug");
 
     std::cout << "Done" << std::endl;
 }
@@ -161,4 +242,29 @@ void Game::CameraControl()
 void Game::loadTextures()
 {
 //    ResourceManager::LoadTexture3D("../noisegen/noise3.ex5", "cloud");
+}
+
+void Game::initDepthMap()
+{
+    // Configure depth map FBO.
+    glGenFramebuffers(1, &depthMapFBO);
+    // Create depth texture.
+    glGenTextures(1, &depthMap);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT,
+                 NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    GLfloat borderColor[] = {1.0, 1.0, 1.0, 1.0};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Framebuffer not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

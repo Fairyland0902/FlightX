@@ -13,10 +13,13 @@ class Paint : public Terrain
 public:
     Paint(int width, int height);
 
-    void Draw() override;
+    void Draw(GLuint shadowMap, glm::mat4 &lightSpaceMatrix) override;
+
+    void DrawDepth(Shader &shader) override;
 
     void setMVP(glm::mat4 trans, glm::mat4 view, glm::mat4 projection);
-    void setShader() override ;
+
+    void setShader() override;
 
 protected:
     glm::mat4 trans, view, projection;

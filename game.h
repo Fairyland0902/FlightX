@@ -35,11 +35,18 @@ private:
     Terrain *terrain;
     Asphalt *asphalt;
 
+    const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+    GLuint depthMapFBO;
+    GLuint depthMap;
+
     // Build and compile our shader program.
     void loadShaders();
 
     // Load textures.
     void loadTextures();
+
+    // Init depth mapping frame buffer.
+    void initDepthMap();
 };
 
 #endif

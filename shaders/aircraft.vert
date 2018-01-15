@@ -5,8 +5,10 @@ layout(location = 2) in vec2 uv_Ws;
 
 uniform mat4 VP;
 uniform mat4 Model;
+uniform mat4 lightSpaceMatrix;
 
 out vec4 pos;
+out vec4 FragPosLightSpace;
 out vec3 norm;
 out vec2 uv;
 
@@ -16,4 +18,5 @@ void main()
     gl_Position = VP * pos;
     norm = normalize(transpose(inverse(mat3(Model))) * norm_Ws);
     uv = uv_Ws;
+    FragPosLightSpace = lightSpaceMatrix * pos;
 }
