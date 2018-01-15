@@ -1,7 +1,8 @@
 #ifndef _GAME_H
 #define _GAME_H
 
-#include <Terrain/Mount.h>
+#include "Terrain/Mount.h"
+#include "Terrain/Mounts.h"
 #include "Terrain/Asphalt.h"
 #include "camera.h"
 #include "cloud/cloudRender.h"
@@ -35,7 +36,7 @@ private:
     Ocean *ocean;
     Terrain *terrain;
     Asphalt *asphalt;
-    Mount *mount;
+    Mounts *mounts;
 
     // Build and compile our shader program.
     void loadShaders();

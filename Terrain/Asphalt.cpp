@@ -6,7 +6,19 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Asphalt.h"
 
-Asphalt::Asphalt(int width, int height) : Terrain(width, height) {
+
+//const Texture2D Asphalt::Albedo = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/dry-dirt/dry-dirt1-albedo.png", true,
+//                                                           "dirtAlbedo");
+//const Texture2D Asphalt::Normal = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/dry-dirt/dry-dirt1-normal2.png", true,
+//                                                           "dirtNormal");
+//const Texture2D Asphalt::Metallic = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/dry-dirt/dry-dirt1-metalness.png", true,
+//                                                             "dirtMetallic");
+//const Texture2D Asphalt::Roughness = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/dry-dirt/dry-dirt1-roughness.png",
+//                                                              true,
+//                                                              "dirtRoughness");
+//const Texture2D Asphalt::AO = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/dry-dirt/dry-dirt1-ao.png", true, "dirtAO");
+
+Asphalt::Asphalt(int width, int height) : AbstractTerrain(width, height) {
     chunk_width = 128;
     chunk_height = 128;
     absolute_height = -199.9;
@@ -91,4 +103,15 @@ void Asphalt::Draw() {
 
     // Reset activated texture to default.
     glActiveTexture(GL_TEXTURE0);
+}
+
+void Asphalt::setShader() {
+    shader = ResourceManager::GetShader("PBR");
+    shader.Use();
+
+    shader.SetInteger("albedoMap", 0);
+    shader.SetInteger("normalMap", 1);
+    shader.SetInteger("metallicMap", 2);
+    shader.SetInteger("roughnessMap", 3);
+    shader.SetInteger("aoMap", 4);
 }

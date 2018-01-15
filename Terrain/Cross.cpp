@@ -7,11 +7,13 @@
 #include "resource_manager.h"
 #include "Cross.h"
 
-Cross::Cross(int width, int height) : Paint(width, height) {
+
+Cross::Cross(int width, int height) : AbstractTerrain(width, height) {
     chunk_width = 8;
     chunk_height = 36;
     absolute_height = -199.8;
     texture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/asphalt3.jpg", true, "asphalt3");
+
 }
 
 void Cross::Draw() {
@@ -29,4 +31,17 @@ void Cross::Draw() {
         glBindVertexArray(0);
         trans = glm::translate(trans, glm::vec3(16, 0, 0));
     }
+}
+
+void Cross::setMVP(glm::mat4 trans, glm::mat4 view, glm::mat4 projection) {
+    this->trans = trans;
+    this->view = view;
+    this->projection = projection;
+}
+
+void Cross::setShader() {
+    shader = ResourceManager::GetShader("plane");
+    shader.Use();
+
+    shader.SetInteger("planeTexture", 0);
 }

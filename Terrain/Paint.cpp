@@ -7,7 +7,8 @@
 #include "resource_manager.h"
 #include "Paint.h"
 
-Paint::Paint(int width, int height) : Terrain(width, height)
+
+Paint::Paint(int width, int height) : AbstractTerrain(width, height)
 {
     chunk_width = 4;
     chunk_height = 32;
@@ -33,7 +34,6 @@ void Paint::Draw()
         shader.SetMatrix4("projection", projection);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture.ID);
-//        std::cout <<  texture.ID << std::endl;
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

@@ -9,10 +9,6 @@ HeightGenerator::HeightGenerator() {
     std::uniform_int_distribution<int> distribution{0, static_cast<int>(1e9)};
     std::random_device rd;
     seed = distribution(rd);
-//    std::cout << seed << std::endl;
-//    std::cout << getNoise(5, 14) << std::endl;
-//    std::cout << getNoise(5, 14) << std::endl;
-//    std::cout << getNoise(6, 14) << std::endl;
 }
 
 float HeightGenerator::getNoise(int x, int z) {
@@ -42,7 +38,7 @@ float HeightGenerator::generateHeight(int x, int z) {
 }
 
 float HeightGenerator::interpolate(float a, float b, float blend) {
-    double theta = blend * M_1_PI;
+    double theta = blend * M_PI;
     float f = (float) (1.f - cos(theta)) * 0.5f;
     return a * (1.f - f) + b * f;
 }

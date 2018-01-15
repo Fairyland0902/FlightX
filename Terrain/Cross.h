@@ -8,10 +8,20 @@
 
 #include "Paint.h"
 
-class Cross: public Paint {
+class Cross final : public AbstractTerrain {
 public:
     Cross(int width, int height);
+
     void Draw() override;
+
+    void setMVP(glm::mat4 trans, glm::mat4 view, glm::mat4 projection);
+
+    void setShader() override;
+
+    Texture2D texture;
+
+protected:
+    glm::mat4 trans, view, projection;
 };
 
 

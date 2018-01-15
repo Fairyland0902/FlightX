@@ -14,21 +14,23 @@
 #include "stb_image.h"
 
 // Instantiate static variables.
-std::map<std::string, Shader>    ResourceManager::Shaders;
-std::map<std::string, Texture2D> ResourceManager::Texture2Ds;
-std::map<std::string, Texture3D> ResourceManager::Texture3Ds;
-std::map<std::string, Model *>   ResourceManager::Models;
-std::map<std::string, GLuint>    ResourceManager::VAOmap;
-std::map<std::string, int>       ResourceManager::VAOSizeMap;
-std::map<std::string, glm::vec3> ResourceManager::modelSizeMap;
+std::unordered_map<std::string, Shader>    ResourceManager::Shaders;
+std::unordered_map<std::string, Texture2D> ResourceManager::Texture2Ds;
+std::unordered_map<std::string, Texture3D> ResourceManager::Texture3Ds;
+std::unordered_map<std::string, Model *>   ResourceManager::Models;
+std::unordered_map<std::string, GLuint>    ResourceManager::VAOmap;
+std::unordered_map<std::string, int>       ResourceManager::VAOSizeMap;
+std::unordered_map<std::string, glm::vec3> ResourceManager::modelSizeMap;
 
 Shader ResourceManager::LoadShader(const string &vShaderFile, const string &fShaderFile, const string &gShaderFile,
                                    std::string name, const GLchar **transformFeedbackVaryings,
                                    unsigned int numTransformFeedbackVaryings, bool interleavedTransformFeedbackAttribs)
 {
-    Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile, transformFeedbackVaryings,
+    if (Shaders.find(name) != Shaders.end()) {
+        return Shaders[name];
+    }
+    return Shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile, transformFeedbackVaryings,
                                        numTransformFeedbackVaryings, interleavedTransformFeedbackAttribs);
-    return Shaders[name];
 }
 
 Shader& ResourceManager::GetShader(std::string name)
@@ -101,14 +103,18 @@ ResourceManager::loadShaderFromFile(const string &vShaderFile, const string &fSh
 
 Texture2D ResourceManager::LoadTexture2D(const string &file, GLboolean alpha, std::string name)
 {
-    Texture2Ds[name] = loadTexture2DFromFile(file, alpha);
-    return Texture2Ds[name];
+    if (Texture2Ds.find(name) != Texture2Ds.end()) {
+        return Texture2Ds[name];
+    }
+    return Texture2Ds[name] = loadTexture2DFromFile(file, alpha);
 }
 
 Texture3D ResourceManager::LoadTexture3D(const string &file, string name)
 {
-    Texture3Ds[name] = loadTexture3DFromFile(file);
-    return Texture3Ds[name];
+    if (Texture3Ds.find(name) != Texture3Ds.end()) {
+        return Texture3Ds[name];
+    }
+    return Texture3Ds[name] = loadTexture3DFromFile(file);
 }
 
 Texture2D ResourceManager::GetTexture2D(std::string name)
