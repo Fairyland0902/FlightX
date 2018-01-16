@@ -42,6 +42,7 @@ private:
     GLuint depthMapFBO;
     GLuint depthMap;
 	int paused;
+	int crashed;
     // Build and compile our shader program.
     void loadShaders();
 

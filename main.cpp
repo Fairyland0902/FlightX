@@ -37,7 +37,7 @@ GLfloat lastFrame = 0.0f;
 Camera *currentcamera;
 // Game.
 Game game;
-
+GLFWwindow *window;
 // Start our application and run our game loop.
 int main()
 {
@@ -61,9 +61,9 @@ int main()
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-    GLFWwindow *window = glfwCreateWindow(mode->width, mode->height, "FlightX", monitor, nullptr);
+    window = glfwCreateWindow(mode->width, mode->height, "FlightX", monitor, nullptr);
 #else
-    GLFWwindow *window = glfwCreateWindow(width, height, "FlightX", nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "FlightX", nullptr, nullptr);
 #endif
     glfwMakeContextCurrent(window);
 
@@ -132,8 +132,6 @@ int main()
 // Is called whenever a key is pressed/released via GLFW.
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
