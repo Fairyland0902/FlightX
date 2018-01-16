@@ -11,18 +11,13 @@ extern GLFWwindow *window;
 // and post-processing effects.
 GLuint quadVAO = 0;
 GLuint quadVBO;
-<<<<<<< HEAD
+
 int scene = 0;
-void RenderQuad()
-{
-    if (quadVAO == 0) {
-=======
 
 void RenderQuad()
 {
     if (quadVAO == 0)
     {
->>>>>>> fded35362a8a7c137ed9f0d86ff7bfa6971db4d9
         GLfloat quadVertices[] = {
                 // Positions        // Texture Coords
                 -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -46,15 +41,9 @@ void RenderQuad()
     glBindVertexArray(0);
 }
 
-Game::Game() :
-<<<<<<< HEAD
-        camera(glm::vec3(0.0f, -195.0f, 0.0f)), paused(0), crashed(0) {
-    currentcamera = &aircraft;
-=======
-        camera(glm::vec3(0.0f, -195.0f, 0.0f)), paused(0), crashed(0)
+Game::Game() : camera(glm::vec3(0.0f, -195.0f, 0.0f)), paused(0), crashed(0)
 {
-    currentcamera = &camera;
->>>>>>> fded35362a8a7c137ed9f0d86ff7bfa6971db4d9
+    currentcamera = &aircraft;
 }
 
 Game::~Game()
@@ -117,7 +106,7 @@ void Game::getSamplePoint(std::vector<glm::vec3> &points)
 void Game::Render(int width, int height, float deltaTime)
 {
     std::vector<glm::vec3> points;
-    if(scene==0)
+    if (scene == 0)
     {
         getSamplePoint(points);
         if (aircraft.Position.y < mounts->getHeight(aircraft.Position.x, aircraft.Position.z))
@@ -133,7 +122,11 @@ void Game::Render(int width, int height, float deltaTime)
                 paused = 3;
             }
         }
-    }else if(aircraft.Position.y<-200.0f){crashed=1;paused=3;}
+    } else if (aircraft.Position.y < -200.0f)
+    {
+        crashed = 1;
+        paused = 3;
+    }
     if (paused || crashed)deltaTime = 0;
     // 1. Render depth of scene to texture (from light's perspective)
     // - Get light projection/view matrix.
@@ -168,13 +161,14 @@ void Game::Render(int width, int height, float deltaTime)
     // 2. Render scene as normal.
     flareRender->Draw();
 
-if(scene==2){
-   terrain->Draw(depthMap, lightSpaceMatrix);
-   asphalt->Draw(depthMap, lightSpaceMatrix);
-}else if(scene==0)
-    mounts->Draw();
-else if(scene==1) 
-ocean->Draw(deltaTime);
+    if (scene == 2)
+    {
+        terrain->Draw(depthMap, lightSpaceMatrix);
+        asphalt->Draw(depthMap, lightSpaceMatrix);
+    } else if (scene == 0)
+        mounts->Draw();
+    else if (scene == 1)
+        ocean->Draw(deltaTime);
 
     cloudRender->Draw(deltaTime);
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
@@ -358,11 +352,11 @@ void Game::CameraControl()
     }
     if (keys[GLFW_KEY_R])paused = 2;
     if (keys[GLFW_KEY_ESCAPE])paused = 4;
-    if(keys[GLFW_KEY_0])
+    if (keys[GLFW_KEY_0])
         scene = 0;
-        if(keys[GLFW_KEY_9])
+    if (keys[GLFW_KEY_9])
         scene = 1;
-        if(keys[GLFW_KEY_8])
+    if (keys[GLFW_KEY_8])
         scene = 2;
 }
 
