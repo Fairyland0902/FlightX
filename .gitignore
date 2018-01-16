@@ -21,6 +21,7 @@
 !*.png
 !*.bmp
 !*.hdr
+!*.tga
 # README
 !*.md
 # Folders

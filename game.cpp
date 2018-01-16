@@ -96,7 +96,7 @@ void Game::getSamplePoint(std::vector<glm::vec3> &points)
             float x = worldX + 0.01f * i;
             float z = worldZ + 0.01f * j;
             float height = mounts->getHeight(x, z);
-            std::cout << worldX << " " << height << " " << aircraft.Position.y << " " << worldZ << std::endl;
+//            std::cout << worldX << " " << height << " " << aircraft.Position.y << " " << worldZ << std::endl;
             points.emplace_back(x, height, z);
         }
     }
