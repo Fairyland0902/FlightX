@@ -9,11 +9,14 @@
 #include "HeightGenerator.h"
 #include "Paint.h"
 
-class Mount final: public AbstractTerrain {
+#define NUM_N 128
+
+class Mount final : public AbstractTerrain
+{
 public:
     Mount(int width, int height, int id, int x_offset, int z_offset, HeightGenerator *generator);
 
-    Texture2D highTexture, lowTexture, middleTexture;
+    Texture2D highTexture, lowTexture, middleTexture, baseTexture;
 
     HeightGenerator *generator;
 
@@ -23,12 +26,14 @@ public:
     static const int chunk_width;
     static const int chunk_height;
     static const float absolute_height;
-
-    int left, right, down, up;
+    static const float mesh_width;
+    static const float mesh_height;
 
     int id;
 
     int x_offset, z_offset;
+
+    float heights[NUM_N][NUM_N];
 
 protected:
     void
@@ -39,7 +44,6 @@ protected:
     void setMVP() override;
 
 };
-
 
 
 #endif //FLIGHTX_GRASS_H

@@ -14,7 +14,8 @@
 
 extern Camera *currentcamera;
 
-class AbstractTerrain {
+class AbstractTerrain
+{
 public:
     AbstractTerrain(int width, int height);
 
@@ -28,8 +29,10 @@ protected:
     virtual void
     generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices);
 
+    virtual void generateNormal(std::vector<glm::vec3> &normals);
+
     GLuint VAO;
-    GLuint UV, VBO, EBO;
+    GLuint UV, VBO, EBO, Normal;
     int width;
     int height;
     int chunk_width = 512;
@@ -37,6 +40,7 @@ protected:
     float absolute_height = -200;
     Shader shader;
     std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normals;
     std::vector<GLuint> indices;
     std::vector<glm::vec2> uvs;
     int n = 128;

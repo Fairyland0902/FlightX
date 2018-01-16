@@ -10,28 +10,33 @@
 #include "Mount.h"
 #include <unordered_map>
 
-struct KeyHash {
-    std::size_t operator()(const std::pair<int, int>& k) const
+struct KeyHash
+{
+    std::size_t operator()(const std::pair<int, int> &k) const
     {
         return std::hash<int>()(k.first) ^
                (std::hash<int>()(k.second) << 1);
     }
 };
 
-struct KeyEqual {
-    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) const
+struct KeyEqual
+{
+    bool operator()(const std::pair<int, int> &lhs, const std::pair<int, int> &rhs) const
     {
         return lhs.first == rhs.first && lhs.second == rhs.second;
     }
 };
 
-class Mounts {
+class Mounts
+{
 public:
     Mounts(int width, int height);
 
     bool isRendering = false;
 
     void Draw();
+
+    float getHeight(float worldX, float worldZ);
 
 protected:
     int width, height;

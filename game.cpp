@@ -83,8 +83,42 @@ void Game::Init(int width, int height)
 
 int drawbb = 0;
 
+
+void Game::getSamplePoint(std::vector<glm::vec3> &points)
+{
+    int sample_num = 5;
+    float worldX = aircraft.Position.x;
+    float worldZ = aircraft.Position.z;
+    for (int i = -sample_num; i <= sample_num; i++)
+    {
+        for (int j = -sample_num; j <= sample_num; j++)
+        {
+            float x = worldX + 0.01f * i;
+            float z = worldZ + 0.01f * j;
+            float height = mounts->getHeight(x, z);
+            std::cout << worldX << " " << height << " " << aircraft.Position.y << " " << worldZ << std::endl;
+            points.emplace_back(x, height, z);
+        }
+    }
+}
+
 void Game::Render(int width, int height, float deltaTime)
 {
+    std::vector<glm::vec3> points;
+    getSamplePoint(points);
+    if (aircraft.Position.y < mounts->getHeight(aircraft.Position.x, aircraft.Position.z))
+    {
+        crashed = 1;
+        paused = 3;
+    }
+    for (auto &point: points)
+    {
+        if (aircraft.detechCrash(point))
+        {
+            crashed = 1;
+            paused = 3;
+        }
+    }
     if (paused || crashed)deltaTime = 0;
     // 1. Render depth of scene to texture (from light's perspective)
     // - Get light projection/view matrix.
@@ -122,8 +156,8 @@ void Game::Render(int width, int height, float deltaTime)
 //    terrain->Draw(depthMap, lightSpaceMatrix);
 //    asphalt->Draw(depthMap, lightSpaceMatrix);
     mounts->Draw();
-//
-    ocean->Draw(deltaTime);
+
+//    ocean->Draw(deltaTime);
 
     cloudRender->Draw(deltaTime);
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);

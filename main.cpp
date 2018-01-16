@@ -38,6 +38,7 @@ Camera *currentcamera;
 // Game.
 Game game;
 GLFWwindow *window;
+
 // Start our application and run our game loop.
 int main()
 {
@@ -171,7 +172,8 @@ void do_movement()
         currentcamera->ProcessKeyboard(LEFT, deltaTime);
     if (keys[GLFW_KEY_D])
         currentcamera->ProcessKeyboard(RIGHT, deltaTime);
-	if (currentcamera != &game.aircraft)currentcamera->KeyBoardControl(keys, deltaTime);
+    if (currentcamera != &game.aircraft)
+        currentcamera->KeyBoardControl(keys, deltaTime);
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)

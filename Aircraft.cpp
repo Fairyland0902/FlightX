@@ -35,7 +35,7 @@ glm::vec3 Aircraft::getAcceleration()
 
 Aircraft::Aircraft() : Model(), Camera(), inAir(1), target_thrust(20), thrust(20), controlx(0), controly(0)
 {
-    Position = glm::vec3(0.0f);
+    Position = glm::vec3(0.0f, -100.f, 0.f);
     WorldUp = glm::vec3(0, 1, 0);
     Front = glm::vec3(1, 0, 0);
     Up = glm::vec3(0, 1, 0);
@@ -118,10 +118,10 @@ void Aircraft::Update(float dt)
 //                            ((rand() % 100) - 50) / 50.0f,
 //                            ((rand() % 100) - 50) / 50.0f));
     for (auto f : bb)f->Update();
-    for (auto f: flames)
-    {
-        f->Update(Position, -Front, -Front, dt);
-    }
+//    for (auto f: flames)
+//    {
+//        f->Update(Position, -Front, -Front, dt);
+//    }
     _updateModel();
 }
 
@@ -185,12 +185,12 @@ void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix
 //    glDepthMask(GL_FALSE);
 //    flame->Draw(glm::vec3(1.0f, 1.0f, 1.0f));
 //    glDepthMask(GL_TRUE);
-    model = glm::translate(model, 0.2f * -Front);
-    model = glm::translate(model, 0.08f * Up);
-    for (auto f: flames)
-    {
-        f->Draw();
-    }
+//    model = glm::translate(model, 0.2f * -Front);
+//    model = glm::translate(model, 0.08f * Up);
+//    for (auto f: flames)
+//    {
+//        f->Draw();
+//    }
 }
 
 void Aircraft::DrawDepth(Shader &shader)
@@ -596,7 +596,7 @@ void Aircraft::DrawHUD(int drawId)
         for (int i = Position.y - 6; i <= Position.y + 5; ++i)
         {
             float position = (i - Position.y) / 11;
-            if (position < -0.5)continue;
+            if (position < -0.5) continue;
             _AIRCRAFT_UTIL_push_line(0.52, position, 0.5, position, vpos);
             _AIRCRAFT_UTIL_show_number(i * 100 + 20000, 0.60, position, 0.015, 0.06, vpos, 1);
         }
@@ -615,14 +615,15 @@ void Aircraft::DrawHUD(int drawId)
         posx = vpMatrix * (Infpos - rv);
         auto posg = glm::normalize(glm::vec2((posx.x - x1) * width / height, posx.y - y1));
         float aoa = acos(glm::dot(glm::normalize(frontv), Front));
-        if (Front.y < 0)aoa = -aoa;
+        if (Front.y < 0)
+            aoa = -aoa;
         aoa = aoa / 3.1415926535897932384626 * 180;
         int aoav = aoa;
         for (int i = aoav - (aoav % 5) - 20; i <= aoav + 15; i += 5)
         {
-            if (i < -90 || i > 90)continue;
+            if (i < -90 || i > 90) continue;
             float spx = (i - aoa) * 0.0624763f;
-            if (spx < -0.6 || spx >= +0.6)continue;
+            if (spx < -0.6 || spx >= +0.6) continue;
             float length = (i == 0 ? 3.0 : i % 30 == 0 ? 1.5 : (i % 10 == 0 ? 1.0 : 0.5)) / 5;
             _AIRCRAFT_HUD_ctr_line_rotation(-length, spx, length, spx, -posg.y, posg.x, i, vpos);
         }
@@ -637,7 +638,6 @@ void Aircraft::DrawHUD(int drawId)
             _AIRCRAFT_UTIL_push_line(0.6 * (1.2 - len) * sin(glm::radians(i - hdg)),
                                      -2 + (1.2 - len) * cos(glm::radians(i - hdg)), 0.72f * sin(glm::radians(i - hdg)),
                                      ytop, vpos);
-
         }
         _AIRCRAFT_UTIL_show_number(hdg, 0.045, -0.74, 0.025, 0.1, vpos);
         //Thrust
