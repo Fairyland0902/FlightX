@@ -38,7 +38,7 @@ private:
     const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
     GLuint depthMapFBO;
     GLuint depthMap;
-
+	int paused;
     // Build and compile our shader program.
     void loadShaders();
 

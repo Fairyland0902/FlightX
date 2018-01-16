@@ -515,5 +515,5 @@ glm::mat4 AroundCamera::GetViewMatrix() const
 
 glm::vec3 AroundCamera::GetViewPosition()
 {
-    return *pos + Front * distance * 0.8f;
+    return *pos + Front * distance;
 }

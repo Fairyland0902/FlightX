@@ -40,7 +40,7 @@ void RenderQuad()
 }
 
 Game::Game() :
-        camera(glm::vec3(0.0f, -195.0f, 0.0f))
+        camera(glm::vec3(0.0f, -195.0f, 0.0f)),paused(0)
 {
     currentcamera = &camera;
 }
@@ -79,9 +79,9 @@ void Game::Init(int width, int height)
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(3.0, 0, 0));
 }
-
 void Game::Render(int width, int height, float deltaTime)
 {
+	if (paused)deltaTime = 0;
     // 1. Render depth of scene to texture (from light's perspective)
     // - Get light projection/view matrix.
     glm::mat4 lightProjection, lightView;
@@ -122,7 +122,7 @@ void Game::Render(int width, int height, float deltaTime)
     cloudRender->Draw(deltaTime);
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
-    aircraft.Update(deltaTime);
+	if(!paused)aircraft.Update(deltaTime);
     //For Test:
     aircraft.DrawHUD();
 
@@ -237,6 +237,11 @@ void Game::CameraControl()
     {
         currentcamera = aircraft.AroundCam;
     }
+	static bool keyPpressed = false;
+	if(keys[GLFW_KEY_P]) {
+		if (!keyPpressed)keyPpressed = true, paused = !paused;
+	}
+	else keyPpressed = false;
 }
 
 void Game::loadTextures()
