@@ -128,7 +128,10 @@ void Game::Render(int width, int height, float deltaTime)
 	if(!paused)aircraft.Update(deltaTime);
     //For Test:
     aircraft.DrawHUD();
-
+	auto p = aircraft.Position;
+	p.y = -200;
+	if(aircraft.detechCrash(p))
+	printf("CRASH DETECTED\n");
     // 3. DEBUG: visualize depth map by rendering it to plane
 //    Shader debug = ResourceManager::GetShader("debug");
 //    debug.Use();

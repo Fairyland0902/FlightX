@@ -59,7 +59,7 @@ public:
     void ProcessMouseScroll(GLfloat yoffset) override;
 
     void DrawHUD();
-
+	int detechCrash(const glm::vec3& wpos);
     Camera *AroundCam;
 };
 

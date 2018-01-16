@@ -495,6 +495,13 @@ void Aircraft::DrawHUD()
     glBindVertexArray(0);
 }
 
+int Aircraft::detechCrash(const glm::vec3& wpos) {
+	for(auto f:bb) {
+		if (f->inBox(wpos))return 1;
+	}
+	return 0;
+}
+
 GLuint Aircraft::loadCubemap(std::vector<std::string> faces)
 {
     GLuint textureID;
