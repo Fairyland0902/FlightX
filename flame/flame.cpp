@@ -293,7 +293,7 @@ void Flame::Draw(glm::mat4 &model)
     // Bind the VAO and draw it.
     glBindVertexArray(m_VAO);
     glEnableVertexAttribArray(0);
-    glDrawArrays(GL_POINTS, 0, NUMBEROFPARTICLES);
+    //glDrawArrays(GL_POINTS, 0, m_particles.size());
     // Unbind appropriate data.
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);

@@ -6,7 +6,7 @@
 #include <glm/detail/type_mat.hpp>
 #include <vector>
 #include <string>
-
+class BoundingBox;
 class Aircraft :
         public Model,
         public Camera
@@ -17,9 +17,9 @@ class Aircraft :
     glm::vec3 airspeed;
     float ias;
     float controlx, controly;
-
+	glm::mat4 modelMatrix;
     float getLength(const glm::vec3 &);
-
+	void _updateModel();
     glm::vec3 getAcceleration();
 
     float _getHDG() const;
@@ -29,7 +29,7 @@ class Aircraft :
     GLuint loadCubemap(std::vector<std::string> faces);
 
     std::vector<Flame *> flames;
-
+	std::vector<BoundingBox*> bb;
 public:
     Aircraft();
 

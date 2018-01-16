@@ -4,8 +4,8 @@
 #include <iostream>
 #include "resource_manager.h"
 #include "stb_image.h"
-
-#ifdef __WIN32__
+#include <BoundingBox.h>
+#ifdef _WIN32
 #include <corecrt_math_defines.h>
 #endif
 
@@ -41,6 +41,11 @@ Aircraft::Aircraft() : Model(), Camera(), inAir(1), target_thrust(20), thrust(20
     Right = glm::cross(Front, Up);
     airspeed = glm::vec3(0, 0, 0);
     AroundCam = new AroundCamera(&Position, &Front);
+	_updateModel();
+	bb.push_back(new BoundingBox(&modelMatrix,glm::vec3(0.01,0,0),glm::vec3(0.21,0.032,0.032)));
+	bb.push_back(new BoundingBox(&modelMatrix,glm::vec3(-0.037,0,0),glm::vec3(0.056,0.005,0.15)));
+	bb.push_back(new BoundingBox(&modelMatrix,glm::vec3(-0.165,0,0),glm::vec3(0.035,0.005,0.09)));
+	bb.push_back(new BoundingBox(&modelMatrix,glm::vec3(-0.16,0.05,0),glm::vec3(0.05,0.05,0.005)));
 }
 
 Aircraft::~Aircraft()
@@ -110,27 +115,32 @@ void Aircraft::Update(float dt)
 //                  glm::vec3(((rand() % 100) - 50) / 50.0f,
 //                            ((rand() % 100) - 50) / 50.0f,
 //                            ((rand() % 100) - 50) / 50.0f));
+	for (auto f : bb)f->Update();
     for (auto f: flames)
     {
         f->Update(-Front, dt);
     }
+	_updateModel();
 }
 
 const glm::vec3 &&Aircraft::getAirspeed()
 {
     return std::move(airspeed);
 }
-
+inline void Aircraft::_updateModel() {
+	modelMatrix = {
+		Front.x, Front.y, Front.z, 0,
+		Up.x, Up.y, Up.z, 0,
+		Right.x, Right.y, Right.z, 0,
+		Position.x, Position.y, Position.z, 1
+	};
+}
 void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix)
 {
     glm::mat4 vp = currentcamera->getVPMatrix();
 //	if (currentcamera == this)DrawHUD();
-    glm::mat4 model = {
-            Front.x, Front.y, Front.z, 0,
-            Up.x, Up.y, Up.z, 0,
-            Right.x, Right.y, Right.z, 0,
-            Position.x, Position.y, Position.z, 1
-    };
+   
+	auto model = modelMatrix;
     shader.Use();
     shader.SetMatrix4("Model", glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)));
     shader.SetMatrix4("VP", vp);
@@ -161,7 +171,7 @@ void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix
     shader.SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
 
     Model::Draw(shader);
-
+	
     // Reset texture info.
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -170,8 +180,10 @@ void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix
 //    glDepthMask(GL_FALSE);
 //    flame->Draw(glm::vec3(1.0f, 1.0f, 1.0f));
 //    glDepthMask(GL_TRUE);
+	
     model = glm::translate(model, 0.2f * glm::normalize(-Front));
     model = glm::translate(model, 0.08f * glm::normalize(Up));
+	for (auto f : bb)f->Draw();
     for (auto f: flames)
     {
         f->Draw(model);

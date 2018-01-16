@@ -166,6 +166,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/hudline.frag",
                                 "",
                                 "hudline");
+	ResourceManager::LoadShader(_SHADER_PREFIX_"/boundingbox.vert",
+								_SHADER_PREFIX_"/boundingbox.frag",
+								"",
+								"boundingbox");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/lens flare/brightpass.frag",
                                 "",

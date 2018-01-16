@@ -38,7 +38,7 @@ float HeightGenerator::generateHeight(int x, int z) {
 }
 
 float HeightGenerator::interpolate(float a, float b, float blend) {
-    double theta = blend * M_PI;
+    double theta = blend * 3.1415926535897932384626;
     float f = (float) (1.f - cos(theta)) * 0.5f;
     return a * (1.f - f) + b * f;
 }
