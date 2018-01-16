@@ -1,6 +1,8 @@
 #ifndef _GAME_H
 #define _GAME_H
 
+#include "Terrain/Mount.h"
+#include "Terrain/Mounts.h"
 #include "Terrain/Asphalt.h"
 #include "camera.h"
 #include "cloud/cloudRender.h"
@@ -34,6 +36,7 @@ private:
     Ocean *ocean;
     Terrain *terrain;
     Asphalt *asphalt;
+    Mounts *mounts;
 
     const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
     GLuint depthMapFBO;
