@@ -117,20 +117,23 @@ void Game::getSamplePoint(std::vector<glm::vec3> &points)
 void Game::Render(int width, int height, float deltaTime)
 {
     std::vector<glm::vec3> points;
-    getSamplePoint(points);
-    if (aircraft.Position.y < mounts->getHeight(aircraft.Position.x, aircraft.Position.z))
+    if(scene==0)
     {
-        crashed = 1;
-        paused = 3;
-    }
-    for (auto &point: points)
-    {
-        if (aircraft.detechCrash(point))
+        getSamplePoint(points);
+        if (aircraft.Position.y < mounts->getHeight(aircraft.Position.x, aircraft.Position.z))
         {
             crashed = 1;
             paused = 3;
         }
-    }
+        for (auto &point: points)
+        {
+            if (aircraft.detechCrash(point))
+            {
+                crashed = 1;
+                paused = 3;
+            }
+        }
+    }else if(aircraft.Position.y<-200.0f){crashed=1;paused=3;}
     if (paused || crashed)deltaTime = 0;
     // 1. Render depth of scene to texture (from light's perspective)
     // - Get light projection/view matrix.
