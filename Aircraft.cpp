@@ -544,9 +544,12 @@ void Aircraft::DrawHUD(int drawId)
 	static GLuint vert_buf = util::genBuf();
 	glBindVertexArray(VAO);
 	glDisable(GL_DEPTH_TEST);
-	ResourceManager::GetShader("hudline").Use();
+	if (drawId == 0)
+		ResourceManager::GetShader("hudline").SetVector3f("line", 0, 0.86, 0.25,true);
+	else
+		ResourceManager::GetShader("hudline").SetVector3f("line", 0.88, 0.1, 0.25,true);
 	std::vector<glm::vec2> vpos;
-	_AIRCRAFT_UTIL_show_string("ABCDEFGHIJKLMNOPQRSTUVWXYZ", -1, -0.9, 0.05, 0.2, vpos);
+	//_AIRCRAFT_UTIL_show_string("ABCDEFGHIJKLMNOPQRSTUVWXYZ", -1, -0.9, 0.05, 0.2, vpos);
 	if (drawId == 0)
 	{
 		// Two major lines
