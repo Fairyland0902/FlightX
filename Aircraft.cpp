@@ -34,7 +34,7 @@ glm::vec3 Aircraft::getAcceleration()
 
 Aircraft::Aircraft() : Model(), Camera(), inAir(1), target_thrust(20), thrust(20), controlx(0), controly(0)
 {
-    Position = glm::vec3(0.0f);
+    Position = glm::vec3(0.0f, -100.f, 0.f);
     WorldUp = glm::vec3(0, 1, 0);
     Front = glm::vec3(1, 0, 0);
     Up = glm::vec3(0, 1, 0);

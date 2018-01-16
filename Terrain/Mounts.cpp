@@ -43,7 +43,7 @@ pair<int, int> getRightTopChunk(pair<int, int> chunk) {
 void Mounts::Draw() {
 
     current_chunk = getChunk();
-    std::cout << getHeight(currentcamera->Position.x, currentcamera->Position.z) << std::endl;
+//    std::cout << getHeight(currentcamera->Position.x, currentcamera->Position.z) << std::endl;
     mounts[chunk_map[current_chunk]].Draw();
 
 

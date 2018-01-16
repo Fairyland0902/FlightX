@@ -51,6 +51,8 @@ private:
 
     // Init depth mapping frame buffer.
     void initDepthMap();
+
+    void getSamplePoint(std::vector<glm::vec3>& points);
 };
 
 #endif
