@@ -11,11 +11,18 @@ extern GLFWwindow *window;
 // and post-processing effects.
 GLuint quadVAO = 0;
 GLuint quadVBO;
+<<<<<<< HEAD
+int scene = 0;
+void RenderQuad()
+{
+    if (quadVAO == 0) {
+=======
 
 void RenderQuad()
 {
     if (quadVAO == 0)
     {
+>>>>>>> fded35362a8a7c137ed9f0d86ff7bfa6971db4d9
         GLfloat quadVertices[] = {
                 // Positions        // Texture Coords
                 -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -40,9 +47,14 @@ void RenderQuad()
 }
 
 Game::Game() :
+<<<<<<< HEAD
+        camera(glm::vec3(0.0f, -195.0f, 0.0f)), paused(0), crashed(0) {
+    currentcamera = &aircraft;
+=======
         camera(glm::vec3(0.0f, -195.0f, 0.0f)), paused(0), crashed(0)
 {
     currentcamera = &camera;
+>>>>>>> fded35362a8a7c137ed9f0d86ff7bfa6971db4d9
 }
 
 Game::~Game()
@@ -153,11 +165,18 @@ void Game::Render(int width, int height, float deltaTime)
     // 2. Render scene as normal.
     flareRender->Draw();
 
-//    terrain->Draw(depthMap, lightSpaceMatrix);
-//    asphalt->Draw(depthMap, lightSpaceMatrix);
+if(scene==2){
+   terrain->Draw(depthMap, lightSpaceMatrix);
+   asphalt->Draw(depthMap, lightSpaceMatrix);
+}else if(scene==0)
     mounts->Draw();
+<<<<<<< HEAD
+else if(scene==1) 
+ocean->Draw(deltaTime);
+=======
 
 //    ocean->Draw(deltaTime);
+>>>>>>> fded35362a8a7c137ed9f0d86ff7bfa6971db4d9
 
     cloudRender->Draw(deltaTime);
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
@@ -341,6 +360,12 @@ void Game::CameraControl()
     }
     if (keys[GLFW_KEY_R])paused = 2;
     if (keys[GLFW_KEY_ESCAPE])paused = 4;
+    if(keys[GLFW_KEY_0])
+        scene = 0;
+        if(keys[GLFW_KEY_9])
+        scene = 1;
+        if(keys[GLFW_KEY_8])
+        scene = 2;
 }
 
 void Game::loadTextures()
