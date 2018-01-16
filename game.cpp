@@ -6,7 +6,7 @@
 #include "resource_manager.h"
 
 extern bool keys[1024];
-
+extern GLFWwindow *window;
 // RenderQuad() Renders a 1x1 quad in NDC, best used for framebuffer color targets
 // and post-processing effects.
 GLuint quadVAO = 0;
@@ -40,7 +40,7 @@ void RenderQuad()
 }
 
 Game::Game() :
-        camera(glm::vec3(0.0f, -195.0f, 0.0f))
+        camera(glm::vec3(0.0f, -195.0f, 0.0f)), paused(0), crashed(0)
 {
     currentcamera = &camera;
 }
@@ -81,8 +81,11 @@ void Game::Init(int width, int height)
     aircraft.setAirspeed(glm::vec3(3.0, 0, 0));
 }
 
+int drawbb = 0;
+
 void Game::Render(int width, int height, float deltaTime)
 {
+    if (paused || crashed)deltaTime = 0;
     // 1. Render depth of scene to texture (from light's perspective)
     // - Get light projection/view matrix.
     glm::mat4 lightProjection, lightView;
@@ -118,17 +121,17 @@ void Game::Render(int width, int height, float deltaTime)
 
     terrain->Draw(depthMap, lightSpaceMatrix);
     asphalt->Draw(depthMap, lightSpaceMatrix);
-//    mounts->Draw();
+    mounts->Draw();
 
-//        ocean->Draw(deltaTime);
+    ocean->Draw(deltaTime);
 
     cloudRender->Draw(deltaTime);
-
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
-    aircraft.Update(deltaTime);
-    //For Test:
-    aircraft.DrawHUD();
-
+    if (drawbb)aircraft.DrawBoundingBox();
+    if (!paused && !crashed)aircraft.Update(deltaTime);
+    printf("%d\n", paused);
+    if (paused > 0)aircraft.DrawHUD(paused);
+    if (currentcamera == &aircraft)aircraft.DrawHUD(0);
     // 3. DEBUG: visualize depth map by rendering it to plane
 //    Shader debug = ResourceManager::GetShader("debug");
 //    debug.Use();
@@ -166,6 +169,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/hudline.frag",
                                 "",
                                 "hudline");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/boundingbox.vert",
+                                _SHADER_PREFIX_"/boundingbox.frag",
+                                "",
+                                "boundingbox");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/lens flare/brightpass.frag",
                                 "",
@@ -248,6 +255,54 @@ void Game::CameraControl()
     {
         currentcamera = aircraft.AroundCam;
     }
+    static bool keyPpressed = false;
+    if (keys[GLFW_KEY_P])
+    {
+        if (!keyPpressed)
+        {
+            keyPpressed = true;
+            if (paused < 2)paused = !paused;
+        }
+    } else keyPpressed = false;
+    static bool keyBpressed = false;
+    if (keys[GLFW_KEY_B])
+    {
+        if (!keyBpressed)
+        {
+            keyBpressed = true;
+            drawbb = !drawbb;
+        }
+    } else keyBpressed = false;
+    if (paused == 2)
+    {
+        if (keys[GLFW_KEY_Y])
+        {
+            paused = 0;
+            aircraft.Position = glm::vec3(0, 0, 0);
+            aircraft.WorldUp = glm::vec3(0, 1, 0);
+            aircraft.Front = glm::vec3(1, 0, 0);
+            aircraft.Up = glm::vec3(0, 1, 0);
+            aircraft.setAirspeed(glm::vec3(4, 0, 0));
+        } else if (keys[GLFW_KEY_N])
+        {
+            if (crashed)paused = 3;
+            else paused = 0;
+
+        }
+    }
+    if (paused == 4)
+    {
+        if (keys[GLFW_KEY_Y])
+        {
+            glfwSetWindowShouldClose(window, GL_TRUE);
+        } else if (keys[GLFW_KEY_N])
+        {
+            if (crashed)paused = 3;
+            else paused = 0;
+        }
+    }
+    if (keys[GLFW_KEY_R])paused = 2;
+    if (keys[GLFW_KEY_ESCAPE])paused = 4;
 }
 
 void Game::loadTextures()
