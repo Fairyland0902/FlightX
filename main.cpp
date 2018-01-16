@@ -35,6 +35,9 @@ bool firstMouse = true;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 Camera *currentcamera;
+
+Mounts* mounts_debug;
+
 // Game.
 Game game;
 GLFWwindow *window;
@@ -53,7 +56,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_SAMPLES, 4);
-#undef FULL_SCREEN
+
 #ifdef FULL_SCREEN
     // Create a "Windowed full screen" window in the primary monitor.
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -81,6 +84,9 @@ int main()
     // Define the viewport dimensions.
     glfwGetFramebufferSize(window, &WIDTH, &HEIGHT);
     glViewport(0, 0, WIDTH, HEIGHT);
+
+    width = WIDTH;
+    height = HEIGHT;
 
     std::cout << "GLFW version                : " << glfwGetVersionString() << std::endl;
     std::cout << "GL_VERSION                  : " << glGetString(GL_VERSION) << std::endl;

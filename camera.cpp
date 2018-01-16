@@ -1,8 +1,11 @@
 #include "camera.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <Terrain/Mounts.h>
+
 extern int WIDTH, HEIGHT;
 extern GLuint width, height;
+extern Mounts* mounts_debug;
 // Constructor with vectors
 Camera::Camera(glm::vec3 position, glm::vec3 up, GLfloat yaw, GLfloat pitch) :
 	Front(glm::vec3(0.0f, 0.0f, -1.0f)),
@@ -80,6 +83,7 @@ void Camera::ProcessKeyboard(Camera_Movement direction, GLfloat deltaTime)
         this->Position -= this->Right * velocity;
     if (direction == RIGHT)
         this->Position += this->Right * velocity;
+//    Position.y = mounts_debug->getHeight(Position.x, Position.z);
 }
 
 // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

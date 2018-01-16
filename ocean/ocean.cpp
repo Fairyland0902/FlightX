@@ -16,8 +16,8 @@ Ocean::Ocean(int width, int height) :
     // Mesh resolution
     N = MESH_RESOLUTION;
     M = MESH_RESOLUTION;
-    L_x = 384;
-    L_z = 384;
+    L_x = 1024;
+    L_z = 1024;
 
     A = 3e-7f;
     // Wind speed
@@ -109,7 +109,7 @@ void Ocean::Draw(float deltaTime)
     glBindTexture(GL_TEXTURE_CUBE_MAP, GlossyEnvmap);
 
     glm::mat4 model = glm::mat4();
-    model = glm::translate(model, glm::vec3(0.0f, -205.0f, 0.0f));
+    model = glm::translate(model, glm::vec3(0.0f, -200.0f, 0.0f));
     ocean.SetMatrix4("ModelMatrix", model);
 
     // Draw mesh.

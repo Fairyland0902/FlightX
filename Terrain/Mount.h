@@ -8,8 +8,9 @@
 
 #include "HeightGenerator.h"
 #include "Paint.h"
+#include "Trees.h"
 
-#define NUM_N 128
+#define NUM_N 64
 
 class Mount final : public AbstractTerrain
 {
@@ -34,6 +35,8 @@ public:
     int x_offset, z_offset;
 
     float heights[NUM_N][NUM_N];
+
+//    Trees *tree;
 
 protected:
     void

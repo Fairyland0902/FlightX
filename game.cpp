@@ -13,11 +13,10 @@ GLuint quadVAO = 0;
 GLuint quadVBO;
 
 int scene = 0;
+extern Mounts *mounts_debug;
 
-void RenderQuad()
-{
-    if (quadVAO == 0)
-    {
+void RenderQuad() {
+    if (quadVAO == 0) {
         GLfloat quadVertices[] = {
                 // Positions        // Texture Coords
                 -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -41,19 +40,16 @@ void RenderQuad()
     glBindVertexArray(0);
 }
 
-Game::Game() : camera(glm::vec3(0.0f, -195.0f, 0.0f)), paused(0), crashed(0)
-{
+Game::Game() : camera(glm::vec3(0.0f, -195.0f, 0.0f)), paused(0), crashed(0) {
     currentcamera = &aircraft;
 }
 
-Game::~Game()
-{
+Game::~Game() {
     delete cloudRender;
     delete flareRender;
 }
 
-void Game::Init(int width, int height)
-{
+void Game::Init(int width, int height) {
     // Build and compile our shader program.
     loadShaders();
 
@@ -76,6 +72,10 @@ void Game::Init(int width, int height)
     asphalt = new Asphalt(width, height);
     asphalt->init();
     mounts = new Mounts(width, height);
+//    mounts_debug = mounts;
+    tree = new Trees(width, height);
+    tree->init();
+    tree->height = 0;
 
     aircraft.Init();
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
@@ -85,17 +85,14 @@ void Game::Init(int width, int height)
 int drawbb = 0;
 
 
-void Game::getSamplePoint(std::vector<glm::vec3> &points)
-{
-    int sample_num = 5;
+void Game::getSamplePoint(std::vector<glm::vec3> &points) {
+    int sample_num = 4;
     float worldX = aircraft.Position.x;
     float worldZ = aircraft.Position.z;
-    for (int i = -sample_num; i <= sample_num; i++)
-    {
-        for (int j = -sample_num; j <= sample_num; j++)
-        {
-            float x = worldX + 0.01f * i;
-            float z = worldZ + 0.01f * j;
+    for (int i = -sample_num; i <= sample_num; i++) {
+        for (int j = -sample_num; j <= sample_num; j++) {
+            float x = worldX + 0.05f * i;
+            float z = worldZ + 0.05f * j;
             float height = mounts->getHeight(x, z);
 //            std::cout << worldX << " " << height << " " << aircraft.Position.y << " " << worldZ << std::endl;
             points.emplace_back(x, height, z);
@@ -103,30 +100,25 @@ void Game::getSamplePoint(std::vector<glm::vec3> &points)
     }
 }
 
-void Game::Render(int width, int height, float deltaTime)
-{
+void Game::Render(int width, int height, float deltaTime) {
     std::vector<glm::vec3> points;
-    if (scene == 0)
-    {
-        getSamplePoint(points);
-        if (aircraft.Position.y < mounts->getHeight(aircraft.Position.x, aircraft.Position.z))
-        {
-            crashed = 1;
-            paused = 3;
-        }
-        for (auto &point: points)
-        {
-            if (aircraft.detechCrash(point))
-            {
+    if (!crashed)
+        if (scene == 0) {
+            getSamplePoint(points);
+            if (aircraft.Position.y < mounts->getHeight(aircraft.Position.x, aircraft.Position.z)) {
                 crashed = 1;
                 paused = 3;
             }
+            for (auto &point: points) {
+                if (aircraft.detechCrash(point)) {
+                    crashed = 1;
+                    paused = 3;
+                }
+            }
+        } else if (aircraft.Position.y < -200.0f) {
+            crashed = 1;
+            paused = 3;
         }
-    } else if (aircraft.Position.y < -200.0f)
-    {
-        crashed = 1;
-        paused = 3;
-    }
     if (paused || crashed)deltaTime = 0;
     // 1. Render depth of scene to texture (from light's perspective)
     // - Get light projection/view matrix.
@@ -161,10 +153,10 @@ void Game::Render(int width, int height, float deltaTime)
     // 2. Render scene as normal.
     flareRender->Draw();
 
-    if (scene == 2)
-    {
+    if (scene == 2) {
         terrain->Draw(depthMap, lightSpaceMatrix);
         asphalt->Draw(depthMap, lightSpaceMatrix);
+        tree->Draw();
     } else if (scene == 0)
         mounts->Draw();
     else if (scene == 1)
@@ -190,8 +182,7 @@ void Game::Render(int width, int height, float deltaTime)
 //    RenderQuad();
 }
 
-void Game::loadShaders()
-{
+void Game::loadShaders() {
     const GLchar *transformFeedbackVaryings[] = {"vs_out_position", "vs_out_size_time_rand", "vs_out_depthclipspace"};
     std::cout << "Loading shaders ............. ";
 
@@ -287,71 +278,64 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_ "/mount.frag",
                                 "",
                                 "mount");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/tree.vert",
+                                _SHADER_PREFIX_ "/tree.frag",
+                                "",
+                                "tree");
     std::cout << "Done" << std::endl;
 }
 
-void Game::CameraControl()
-{
-    if (currentcamera != &aircraft && keys[GLFW_KEY_1])
-    {
+void Game::CameraControl() {
+    if (currentcamera != &aircraft && keys[GLFW_KEY_1]) {
         currentcamera = &aircraft;
     }
-    if (currentcamera != &camera && keys[GLFW_KEY_2])
-    {
+    if (currentcamera != &camera && keys[GLFW_KEY_2]) {
         currentcamera = &camera;
     }
-    if (currentcamera != aircraft.AroundCam && keys[GLFW_KEY_3])
-    {
+    if (currentcamera != aircraft.AroundCam && keys[GLFW_KEY_3]) {
         currentcamera = aircraft.AroundCam;
     }
     static bool keyPpressed = false;
-    if (keys[GLFW_KEY_P])
-    {
-        if (!keyPpressed)
-        {
+    if (keys[GLFW_KEY_P]) {
+        if (!keyPpressed) {
             keyPpressed = true;
             if (paused < 2)paused = !paused;
         }
     } else keyPpressed = false;
     static bool keyBpressed = false;
-    if (keys[GLFW_KEY_B])
-    {
-        if (!keyBpressed)
-        {
+    if (keys[GLFW_KEY_B]) {
+        if (!keyBpressed) {
             keyBpressed = true;
             drawbb = !drawbb;
         }
     } else keyBpressed = false;
-    if (paused == 2)
-    {
-        if (keys[GLFW_KEY_Y])
-        {
+    if (paused == 2) {
+        if (keys[GLFW_KEY_Y]) {
             paused = 0;
+            crashed = 0;
             aircraft.Position = glm::vec3(0, 0, 0);
             aircraft.WorldUp = glm::vec3(0, 1, 0);
             aircraft.Front = glm::vec3(1, 0, 0);
             aircraft.Up = glm::vec3(0, 1, 0);
             aircraft.setAirspeed(glm::vec3(4, 0, 0));
-        } else if (keys[GLFW_KEY_N])
-        {
+        } else if (keys[GLFW_KEY_N]) {
             if (crashed)paused = 3;
             else paused = 0;
 
         }
     }
-    if (paused == 4)
-    {
-        if (keys[GLFW_KEY_Y])
-        {
+    if (paused == 4) {
+        if (keys[GLFW_KEY_Y]) {
             glfwSetWindowShouldClose(window, GL_TRUE);
-        } else if (keys[GLFW_KEY_N])
-        {
+        } else if (keys[GLFW_KEY_N]) {
             if (crashed)paused = 3;
             else paused = 0;
         }
     }
-    if (keys[GLFW_KEY_R])paused = 2;
-    if (keys[GLFW_KEY_ESCAPE])paused = 4;
+    if (keys[GLFW_KEY_R])
+        paused = 2;
+    if (keys[GLFW_KEY_ESCAPE])
+        paused = 4;
     if (keys[GLFW_KEY_0])
         scene = 0;
     if (keys[GLFW_KEY_9])
@@ -360,13 +344,11 @@ void Game::CameraControl()
         scene = 2;
 }
 
-void Game::loadTextures()
-{
+void Game::loadTextures() {
 //    ResourceManager::LoadTexture3D("../noisegen/noise3.ex5", "cloud");
 }
 
-void Game::initDepthMap()
-{
+void Game::initDepthMap() {
     // Configure depth map FBO.
     glGenFramebuffers(1, &depthMapFBO);
     // Create depth texture.

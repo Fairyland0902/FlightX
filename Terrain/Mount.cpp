@@ -86,6 +86,8 @@ void Mount::Draw()
     // Reset activated texture to default.
     glActiveTexture(GL_TEXTURE0);
 
+//    tree->Draw();
+
 }
 
 Mount::Mount(int width, int height, int id, int x_offset, int z_offset, HeightGenerator *generator) :
@@ -99,6 +101,7 @@ Mount::Mount(int width, int height, int id, int x_offset, int z_offset, HeightGe
     lowTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/sand.tga", true, "mountDirt");
     middleTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-albedo3.png", true, "mountGrass");
     baseTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/rock.tga", true, "mountRock");
+
 }
 
 void Mount::setMVP()

@@ -37,6 +37,7 @@ private:
     Terrain *terrain;
     Asphalt *asphalt;
     Mounts *mounts;
+    Trees *tree;
 
     const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
     GLuint depthMapFBO;

@@ -8,51 +8,43 @@
 
 using namespace std;
 
-pair<int, int> getLeftChunk(pair<int, int> chunk)
-{
+pair<int, int> getLeftChunk(pair<int, int> chunk) {
     return make_pair(chunk.first - 1, chunk.second);
 }
 
-pair<int, int> getRightChunk(pair<int, int> chunk)
-{
+pair<int, int> getRightChunk(pair<int, int> chunk) {
     return make_pair(chunk.first + 1, chunk.second);
 }
 
-pair<int, int> getTopChunk(pair<int, int> chunk)
-{
+pair<int, int> getTopChunk(pair<int, int> chunk) {
     return make_pair(chunk.first, chunk.second + 1);
 }
 
-pair<int, int> getDownChunk(pair<int, int> chunk)
-{
+pair<int, int> getDownChunk(pair<int, int> chunk) {
     return make_pair(chunk.first, chunk.second - 1);
 }
 
-pair<int, int> getLeftTopChunk(pair<int, int> chunk)
-{
+pair<int, int> getLeftTopChunk(pair<int, int> chunk) {
     return make_pair(chunk.first - 1, chunk.second + 1);
 }
 
-pair<int, int> getLeftDownChunk(pair<int, int> chunk)
-{
+pair<int, int> getLeftDownChunk(pair<int, int> chunk) {
     return make_pair(chunk.first - 1, chunk.second - 1);
 }
 
-pair<int, int> getRightDownChunk(pair<int, int> chunk)
-{
+pair<int, int> getRightDownChunk(pair<int, int> chunk) {
     return make_pair(chunk.first + 1, chunk.second - 1);
 }
 
-pair<int, int> getRightTopChunk(pair<int, int> chunk)
-{
+pair<int, int> getRightTopChunk(pair<int, int> chunk) {
     return make_pair(chunk.first + 1, chunk.second + 1);
 }
 
-void Mounts::Draw()
-{
+void Mounts::Draw() {
 
     current_chunk = getChunk();
-//    std::cout << getHeight(currentcamera->Position.x, currentcamera->Position.z) << std::endl;
+//    int height = getHeight(currentcamera->Position.x, currentcamera->Position.z);
+//    std::cout << (height > currentcamera->Position.y) << std::endl;
     mounts[chunk_map[current_chunk]].Draw();
 
 
@@ -87,25 +79,27 @@ void Mounts::Draw()
 }
 
 
-Mounts::Mounts(int width, int height) : width(width), height(height)
-{
+Mounts::Mounts(int width, int height) : width(width), height(height) {
     generator = new HeightGenerator();
 
     int x_offset = Mount::chunk_width - 1;
     int z_offset = Mount::chunk_height - 1;
 
+    int i, j;
+    i = j = 0;
+    chunk_map[make_pair(i, j)] = mounts.size();
+    mounts.emplace_back(width, height, mounts.size(), i * x_offset, j * z_offset, generator);
+
 
     for (int i = -cache_size; i <= cache_size; i++)
-        for (int j = -cache_size; j <= cache_size; j++)
-        {
+        for (int j = -cache_size; j <= cache_size; j++) {
             chunk_map[make_pair(i, j)] = mounts.size();
             mounts.emplace_back(width, height, mounts.size(), i * x_offset, j * z_offset, generator);
         }
 
 
     std::vector<thread> threads;
-    for (Mount &mount: mounts)
-    {
+    for (Mount &mount: mounts) {
         mount.init();
 //        threads.emplace_back(&Mount::init, std::ref(mount));
 //        cout << mount.id << endl;
@@ -113,8 +107,7 @@ Mounts::Mounts(int width, int height) : width(width), height(height)
 
 }
 
-std::pair<int, int> Mounts::getChunk()
-{
+std::pair<int, int> Mounts::getChunk() {
     float x = currentcamera->Position.x;
     float y = currentcamera->Position.z;
     x += Mount::chunk_width / 2;
@@ -124,13 +117,10 @@ std::pair<int, int> Mounts::getChunk()
                           static_cast<int>(floor(y / Mount::chunk_height)));
 }
 
-void Mounts::DrawChunk(std::pair<int, int> chunk, int x_offset, int z_offset)
-{
-    if (chunk_map.find(chunk) != chunk_map.end())
-    {
+void Mounts::DrawChunk(std::pair<int, int> chunk, int x_offset, int z_offset) {
+    if (chunk_map.find(chunk) != chunk_map.end()) {
         mounts[chunk_map[chunk]].Draw();
-    } else
-    {
+    } else {
         mounts.emplace_back(width, height, mounts.size(),
                             mounts[chunk_map[current_chunk]].x_offset + x_offset,
                             mounts[chunk_map[current_chunk]].z_offset + z_offset,
@@ -141,8 +131,7 @@ void Mounts::DrawChunk(std::pair<int, int> chunk, int x_offset, int z_offset)
     }
 }
 
-float barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos)
-{
+float barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos) {
     float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
     float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
     float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
@@ -151,15 +140,13 @@ float barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos)
 }
 
 
-float Mounts::getHeight(float worldX, float worldZ)
-{
-    float x = worldX + Mount::chunk_width / 2;
-    float y = worldZ + Mount::chunk_height / 2;
-    auto chunk_id = std::make_pair(static_cast<int>(floor(x / Mount::chunk_width)),
-                                   static_cast<int>(floor(y / Mount::chunk_height)));
+float Mounts::getHeight(float worldX, float worldZ) {
+    worldX = worldX + Mount::chunk_width / 2;
+    worldZ = worldZ + Mount::chunk_height / 2;
+    auto chunk_id = std::make_pair(static_cast<int>(floor(worldX / Mount::chunk_width)),
+                                   static_cast<int>(floor(worldZ / Mount::chunk_height)));
 
-    if (chunk_map.find(chunk_id) != chunk_map.end())
-    {
+    if (chunk_map.find(chunk_id) != chunk_map.end()) {
         Mount &mount = mounts[chunk_map[chunk_id]];
 
 
@@ -169,26 +156,25 @@ float Mounts::getHeight(float worldX, float worldZ)
         int gridX = floor(chunkX / Mount::mesh_width);
         int gridZ = floor(chunkZ / Mount::mesh_height);
 
+        float meshX = fmod(chunkX, Mount::mesh_width) / Mount::mesh_width;
+        float meshZ = fmod(chunkZ, Mount::mesh_height) / Mount::mesh_height;
+        if (gridX + 1 == Mount::n || gridZ + 1 == Mount::n) {
+            return -200.f;
+        }
 
-        float meshX = chunkX / Mount::mesh_width - gridX;
-        float meshZ = chunkZ / Mount::mesh_height - gridZ;
-
-        if (meshX <= (1 - meshZ))
-        {
-            return barryCentric(glm::vec3(0, mount.heights[gridX][gridZ], 0),
+        if (meshX <= (1 - meshZ)) {
+            return 0.5f + barryCentric(glm::vec3(0, mount.heights[gridX][gridZ], 0),
                                 glm::vec3(1, mount.heights[gridX + 1][gridZ], 0),
                                 glm::vec3(0, mount.heights[gridX][gridZ + 1], 1),
                                 glm::vec2(meshX, meshZ));
-        } else
-        {
-            return barryCentric(glm::vec3(1, mount.heights[gridX + 1][gridZ], 0),
+        } else {
+            return 0.5f + barryCentric(glm::vec3(1, mount.heights[gridX + 1][gridZ], 0),
                                 glm::vec3(1, mount.heights[gridX + 1][gridZ + 1], 1),
                                 glm::vec3(0, mount.heights[gridX][gridZ + 1], 1),
                                 glm::vec2(meshX, meshZ));
         }
-    } else
-    {
-        return 0;
+    } else {
+        return -200.f;
     }
 }
 
