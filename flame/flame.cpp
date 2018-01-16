@@ -285,6 +285,8 @@ void Flame::Draw(glm::mat4 &model)
     m_shader.Use();
 //    glm::mat4 model;
     m_shader.SetMatrix4("model", model);
+    glm::vec4 worldPosCentre = model * glm::vec4(0.0f, -0.1f, 0.0f, 1.0f);
+    m_shader.SetVector4f("worldPosCentre", worldPosCentre);
     m_shader.SetMatrix4("view", currentcamera->GetViewMatrix());
     m_shader.SetMatrix4("projection", currentcamera->GetProjectionMatrix());
     m_shader.SetInteger("sprite", 0);
@@ -293,7 +295,7 @@ void Flame::Draw(glm::mat4 &model)
     // Bind the VAO and draw it.
     glBindVertexArray(m_VAO);
     glEnableVertexAttribArray(0);
-    glDrawArrays(GL_POINTS, 0, NUMBEROFPARTICLES);
+    glDrawArrays(GL_POINTS, 0, m_particles.size());
     // Unbind appropriate data.
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);
