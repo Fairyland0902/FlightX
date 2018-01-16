@@ -170,13 +170,8 @@ if(scene==2){
    asphalt->Draw(depthMap, lightSpaceMatrix);
 }else if(scene==0)
     mounts->Draw();
-<<<<<<< HEAD
 else if(scene==1) 
 ocean->Draw(deltaTime);
-=======
-
-//    ocean->Draw(deltaTime);
->>>>>>> fded35362a8a7c137ed9f0d86ff7bfa6971db4d9
 
     cloudRender->Draw(deltaTime);
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
