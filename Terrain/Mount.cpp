@@ -7,23 +7,24 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Mount.h"
 
-const int Mount::n = 32;
+const int Mount::n = NUM_N;
 const int Mount::chunk_width = 128;
 const int Mount::chunk_height = 128;
 const float Mount::absolute_height = -200;
+const float Mount::mesh_width = float(chunk_width) / n;
+const float Mount::mesh_height = float(chunk_height) / n;
+
 
 void Mount::generateCoord(std::vector<glm::vec3> &vertices, std::vector<glm::vec2> &uvs, std::vector<GLuint> &indices) {
     const float slice = 1.0 / (float) (n - 1);
 
     for (int i = 0; i < n; i++)
         for (int j = 0; j < n; j++) {
-            int i_offset = (x_offset )/ (chunk_width - 1) * (n - 1) ;
-            int j_offset = (z_offset ) / (chunk_height - 1) * (n - 1) ;
-
-//            std::cout << i_offset << " " << j_offset  << " " << i_offset + i << " " << j_offset + j << std::endl;
+            int i_offset = (x_offset) / (chunk_width - 1) * (n - 1);
+            int j_offset = (z_offset) / (chunk_height - 1) * (n - 1);
 
             float height = absolute_height + generator->generateHeight(i_offset + i, j_offset + j);
-//            std::cout << i << ' ' << j << std::endl;
+            heights[i][j] = height;
             vertices.emplace_back(i * slice * (chunk_width) - chunk_width / 2, height,
                                   j * slice * (chunk_height) - chunk_height / 2);
             uvs.emplace_back(float(i) / n * 40, float(j) / n * 40);
@@ -55,11 +56,11 @@ void Mount::Draw() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, lowTexture.ID);
     glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D,  highTexture.ID);
+    glBindTexture(GL_TEXTURE_2D, highTexture.ID);
     glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D,  middleTexture.ID);
+    glBindTexture(GL_TEXTURE_2D, middleTexture.ID);
     glActiveTexture(GL_TEXTURE5);
-    glBindTexture(GL_TEXTURE_2D,  baseTexture.ID);
+    glBindTexture(GL_TEXTURE_2D, baseTexture.ID);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

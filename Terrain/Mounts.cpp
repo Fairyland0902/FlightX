@@ -43,8 +43,9 @@ pair<int, int> getRightTopChunk(pair<int, int> chunk) {
 void Mounts::Draw() {
 
     current_chunk = getChunk();
-//    std::cout << current_chunk.first << " " << current_chunk.second << std::endl;
+    std::cout << getHeight(currentcamera->Position.x, currentcamera->Position.z) << std::endl;
     mounts[chunk_map[current_chunk]].Draw();
+
 
     int x_offset = Mount::chunk_width - 1;
     int z_offset = Mount::chunk_height - 1;
@@ -121,6 +122,51 @@ void Mounts::DrawChunk(std::pair<int, int> chunk, int x_offset, int z_offset) {
         chunk_map[chunk] = mounts.size() - 1;
         mounts[mounts.size() - 1].init();
         mounts[mounts.size() - 1].Draw();
+    }
+}
+
+float barryCentric(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec2 pos) {
+    float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+    float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+    float l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+    float l3 = 1.0f - l1 - l2;
+    return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+}
+
+
+float Mounts::getHeight(float worldX, float worldZ) {
+    float x = worldX + Mount::chunk_width / 2;
+    float y = worldZ + Mount::chunk_height / 2;
+    auto chunk_id = std::make_pair(static_cast<int>(floor(x / Mount::chunk_width)),
+                                   static_cast<int>(floor(y / Mount::chunk_height)));
+
+    if (chunk_map.find(chunk_id) != chunk_map.end()) {
+        Mount &mount = mounts[chunk_map[chunk_id]];
+
+
+        float chunkX = fmod(worldX, Mount::chunk_width);
+        float chunkZ = fmod(worldZ, Mount::chunk_height);
+
+        int gridX = floor(chunkX / Mount::mesh_width);
+        int gridZ = floor(chunkZ / Mount::mesh_height);
+
+
+        float meshX = chunkX / Mount::mesh_width - gridX;
+        float meshZ = chunkZ / Mount::mesh_height - gridZ;
+
+        if (meshX <= (1 - meshZ)) {
+            return barryCentric(glm::vec3(0, mount.heights[gridX][gridZ], 0),
+                                glm::vec3(1, mount.heights[gridX + 1][gridZ], 0),
+                                glm::vec3(0, mount.heights[gridX][gridZ + 1], 1),
+                                glm::vec2(meshX, meshZ));
+        } else {
+            return barryCentric(glm::vec3(1, mount.heights[gridX + 1][gridZ], 0),
+                                glm::vec3(1, mount.heights[gridX + 1][gridZ + 1], 1),
+                                glm::vec3(0, mount.heights[gridX][gridZ + 1], 1),
+                                glm::vec2(meshX, meshZ));
+        }
+    } else {
+        return 0;
     }
 }
 

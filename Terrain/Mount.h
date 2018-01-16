@@ -9,6 +9,8 @@
 #include "HeightGenerator.h"
 #include "Paint.h"
 
+#define NUM_N 64
+
 class Mount final: public AbstractTerrain {
 public:
     Mount(int width, int height, int id, int x_offset, int z_offset, HeightGenerator *generator);
@@ -23,10 +25,14 @@ public:
     static const int chunk_width;
     static const int chunk_height;
     static const float absolute_height;
+    static const float mesh_width;
+    static const float mesh_height;
 
     int id;
 
     int x_offset, z_offset;
+
+    float heights[NUM_N][NUM_N];
 
 protected:
     void

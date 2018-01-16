@@ -25,6 +25,8 @@ struct KeyEqual {
     }
 };
 
+
+
 class Mounts {
 public:
     Mounts(int width, int height);
@@ -32,6 +34,8 @@ public:
     bool isRendering = false;
 
     void Draw();
+
+    float getHeight(float worldX, float worldZ);
 
 protected:
     int width, height;

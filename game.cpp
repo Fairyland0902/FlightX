@@ -40,7 +40,7 @@ void RenderQuad()
 }
 
 Game::Game() :
-        camera(glm::vec3(0.0f, -195.0f, 0.0f))
+        camera(glm::vec3(0.0f, -195.0f, 0.0f)),paused(0)
 {
     currentcamera = &camera;
 }
@@ -80,9 +80,9 @@ void Game::Init(int width, int height)
     aircraft.loadModel(_MODEL_PREFIX_"/f16/f16.obj");
     aircraft.setAirspeed(glm::vec3(3.0, 0, 0));
 }
-
 void Game::Render(int width, int height, float deltaTime)
 {
+	if (paused)deltaTime = 0;
     // 1. Render depth of scene to texture (from light's perspective)
     // - Get light projection/view matrix.
     glm::mat4 lightProjection, lightView;
@@ -120,12 +120,12 @@ void Game::Render(int width, int height, float deltaTime)
 //    asphalt->Draw(depthMap, lightSpaceMatrix);
     mounts->Draw();
 
-        ocean->Draw(deltaTime);
+//        ocean->Draw(deltaTime);
 
     cloudRender->Draw(deltaTime);
 
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
-    aircraft.Update(deltaTime);
+	if(!paused)aircraft.Update(deltaTime);
     //For Test:
     aircraft.DrawHUD();
 
@@ -166,6 +166,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/hudline.frag",
                                 "",
                                 "hudline");
+	ResourceManager::LoadShader(_SHADER_PREFIX_"/boundingbox.vert",
+								_SHADER_PREFIX_"/boundingbox.frag",
+								"",
+								"boundingbox");
     ResourceManager::LoadShader(_SHADER_PREFIX_"/sky/screenTri.vert",
                                 _SHADER_PREFIX_"/lens flare/brightpass.frag",
                                 "",
@@ -222,6 +226,10 @@ void Game::loadShaders()
                                 _SHADER_PREFIX_"/depthMap.frag",
                                 "",
                                 "debug");
+    ResourceManager::LoadShader(_SHADER_PREFIX_"/flame/particle.vert",
+                                _SHADER_PREFIX_"/flame/particle.frag",
+                                _SHADER_PREFIX_"/flame/particle.geom",
+                                "flame");
 
     ResourceManager::LoadShader(_SHADER_PREFIX_"/mount.vert",
                                 _SHADER_PREFIX_ "/mount.frag",
@@ -244,6 +252,11 @@ void Game::CameraControl()
     {
         currentcamera = aircraft.AroundCam;
     }
+	static bool keyPpressed = false;
+	if(keys[GLFW_KEY_P]) {
+		if (!keyPpressed)keyPpressed = true, paused = !paused;
+	}
+	else keyPpressed = false;
 }
 
 void Game::loadTextures()
