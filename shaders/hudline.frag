@@ -1,5 +1,6 @@
 #version 330 core
 out vec3 color;
+uniform vec3 line;
 void main() {
-	color=vec3(0,0.85,0.34);
+	color=line;
 }
