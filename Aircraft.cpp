@@ -13,7 +13,7 @@ extern GLuint width, height;
 extern int WIDTH, HEIGHT;
 extern bool keys[1024];
 extern Camera *currentcamera;
-
+extern int scene;
 float Aircraft::getLength(const glm::vec3 &v)
 {
     return sqrt(v.x * v.x + v.y * v.y + v.z + v.z);
@@ -626,8 +626,13 @@ void Aircraft::DrawHUD(int drawId)
 		_AIRCRAFT_UTIL_show_number(hdg, 0.045, -0.74, 0.025, 0.1, vpos);
 		//Thrust
 		_AIRCRAFT_HUD_show_THR(thrust + 0.5f, target_thrust, vpos);
-	}else if(drawId==1){
-		_AIRCRAFT_UTIL_show_string("PAUSED", 0.68, 0.88, 0.05, 0.2, vpos);
+        if(scene==0) _AIRCRAFT_UTIL_show_string("MOUNTAIN", -0.98, 0.88, 0.05, 0.2, vpos);
+        if(scene==1) _AIRCRAFT_UTIL_show_string("OCEAN", -0.98, 0.88, 0.05, 0.2, vpos);
+        if(scene==2) _AIRCRAFT_UTIL_show_string("AIRPORT", -0.98, 0.88, 0.05, 0.2, vpos);
+    }
+    else if (drawId == 1)
+    {
+        _AIRCRAFT_UTIL_show_string("PAUSED", 0.68, 0.88, 0.05, 0.2, vpos);
 	}else if (drawId == 2) {		
 		_AIRCRAFT_UTIL_show_string("CONFIRM RESET? Y/N", -0.72,0, 0.08, 0.32, vpos);
 	}else if (drawId == 3) {
