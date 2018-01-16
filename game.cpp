@@ -116,11 +116,11 @@ void Game::Render(int width, int height, float deltaTime)
     // 2. Render scene as normal.
     flareRender->Draw();
 
-    terrain->Draw(depthMap, lightSpaceMatrix);
-    asphalt->Draw(depthMap, lightSpaceMatrix);
-//    mounts->Draw();
+//    terrain->Draw(depthMap, lightSpaceMatrix);
+//    asphalt->Draw(depthMap, lightSpaceMatrix);
+    mounts->Draw();
 
-    //    ocean->Draw(deltaTime);
+        ocean->Draw(deltaTime);
 
     cloudRender->Draw(deltaTime);
 

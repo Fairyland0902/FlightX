@@ -45,6 +45,7 @@ void Mount::setShader() {
     shader.SetInteger("lowTex", 0);
     shader.SetInteger("highTex", 3);
     shader.SetInteger("middleTex", 4);
+    shader.SetInteger("baseTex", 5);
 }
 
 void Mount::Draw() {
@@ -57,6 +58,8 @@ void Mount::Draw() {
     glBindTexture(GL_TEXTURE_2D,  highTexture.ID);
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D,  middleTexture.ID);
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D,  baseTexture.ID);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -74,9 +77,9 @@ Mount::Mount(int width, int height, int id, int x_offset, int z_offset, HeightGe
         z_offset(z_offset),
         generator(generator) {
     highTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/snow.jpg", true, "mountSnow");
-    lowTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/dirt.jpg", true, "mountGrass2");
-    middleTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass2.jpg", true, "mountDirt");
-    left = right = up = down = -1;
+    lowTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/sand.tga", true, "mountDirt");
+    middleTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/grass/grass1-albedo3.png", true, "mountGrass");
+    baseTexture = ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/rock.tga", true, "mountRock");
 }
 
 void Mount::setMVP() {

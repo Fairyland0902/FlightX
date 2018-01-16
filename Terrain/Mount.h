@@ -13,7 +13,7 @@ class Mount final: public AbstractTerrain {
 public:
     Mount(int width, int height, int id, int x_offset, int z_offset, HeightGenerator *generator);
 
-    Texture2D highTexture, lowTexture, middleTexture;
+    Texture2D highTexture, lowTexture, middleTexture, baseTexture;
 
     HeightGenerator *generator;
 
@@ -23,8 +23,6 @@ public:
     static const int chunk_width;
     static const int chunk_height;
     static const float absolute_height;
-
-    int left, right, down, up;
 
     int id;
 
