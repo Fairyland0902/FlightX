@@ -119,19 +119,23 @@ void Game::Render(int width, int height, float deltaTime)
     // 2. Render scene as normal.
     flareRender->Draw();
 
-    terrain->Draw(depthMap, lightSpaceMatrix);
-    asphalt->Draw(depthMap, lightSpaceMatrix);
+//    terrain->Draw(depthMap, lightSpaceMatrix);
+//    asphalt->Draw(depthMap, lightSpaceMatrix);
     mounts->Draw();
-
+//
     ocean->Draw(deltaTime);
 
     cloudRender->Draw(deltaTime);
     aircraft.Draw(ResourceManager::GetShader("aircraft"), depthMap, lightSpaceMatrix);
-    if (drawbb)aircraft.DrawBoundingBox();
-    if (!paused && !crashed)aircraft.Update(deltaTime);
-    printf("%d\n", paused);
-    if (paused > 0)aircraft.DrawHUD(paused);
-    if (currentcamera == &aircraft)aircraft.DrawHUD(0);
+    if (drawbb)
+        aircraft.DrawBoundingBox();
+    if (!paused && !crashed)
+        aircraft.Update(deltaTime);
+//    printf("%d\n", paused);
+    if (paused > 0)
+        aircraft.DrawHUD(paused);
+    if (currentcamera == &aircraft)
+        aircraft.DrawHUD(0);
     // 3. DEBUG: visualize depth map by rendering it to plane
 //    Shader debug = ResourceManager::GetShader("debug");
 //    debug.Use();

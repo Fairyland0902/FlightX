@@ -1,15 +1,18 @@
 #include "particle.h"
 #include <random>
 #include <time.h>
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 // Contructor giving a random starting position (within range).
-Particle::Particle()
+Particle::Particle(glm::vec3 position, glm::vec3 velocity)
 {
-    m_lifetime = 1.0f;
-    m_velocity = glm::vec3(0, 0, 0);
-    m_position = glm::vec3((((float) rand() / (float) RAND_MAX) - 0.5) / 100,
-                           -0.1f,
-                           (((float) rand() / (float) RAND_MAX) - 0.5) / 100);
+    m_lifetime = 100.0f;
+    m_velocity = velocity;
+    m_position = position + glm::vec3((((float) rand() / (float) RAND_MAX) - 0.5) / 100,
+                                      -0.1f,
+                                      (((float) rand() / (float) RAND_MAX) - 0.5) / 100);
+    std::cout << glm::to_string(position) << std::endl;
 }
 
 /*

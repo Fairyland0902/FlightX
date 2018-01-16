@@ -190,7 +190,7 @@ void KDTree::FindParticlesInRange(float _squaredRange, glm::vec3 _position, std:
 }
 
 // Flame constructor.
-Flame::Flame(Shader shader, Texture2D texture) :
+Flame::Flame(Shader shader, Texture2D texture, glm::vec3 position, glm::vec3 velocity) :
         m_shader(shader),
         m_texture(texture)
 {
@@ -205,7 +205,7 @@ Flame::Flame(Shader shader, Texture2D texture) :
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * NUMBEROFPARTICLES * 3, &m_positions[0], GL_STATIC_DRAW);
     m_numParticles = 0;
     // Create the first particle.
-    m_particles.push_back(new Particle);
+    m_particles.push_back(new Particle(position, velocity));
 }
 
 // Flame destructor.
@@ -221,7 +221,7 @@ Flame::~Flame()
 }
 
 // Update function to update particles and regenerate KDTree.
-void Flame::Update(glm::vec3 direction, float deltaTime)
+void Flame::Update(glm::vec3 position, glm::vec3 velocity, glm::vec3 direction, float deltaTime)
 {
     float maxDist = 100000.0f;
     // Fill positions array with -5 in order to not show any unupdated particles above the ground.
@@ -229,9 +229,9 @@ void Flame::Update(glm::vec3 direction, float deltaTime)
     // If it won't go over the maximum number of particles add new particles each frame.
     if (m_particles.size() < NUMBEROFPARTICLES - 6)
     {
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 60; i++)
         {
-            m_particles.push_back(new Particle);
+            m_particles.push_back(new Particle(position, velocity));
         }
     }
     // Generate a new KDTree of all the particles.
@@ -275,7 +275,7 @@ void Flame::Update(glm::vec3 direction, float deltaTime)
     glBindVertexArray(0);
 }
 
-void Flame::Draw(glm::mat4 &model)
+void Flame::Draw()
 {
     // Disable the depth mask in order to stop depth writes and thus blending artifacts while keeping the flame from drawing over other objects.
     glDisable(GL_DEPTH_TEST);
@@ -283,7 +283,7 @@ void Flame::Draw(glm::mat4 &model)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Ready the shader for drawing.
     m_shader.Use();
-//    glm::mat4 model;
+    glm::mat4 model;
     m_shader.SetMatrix4("model", model);
     glm::vec4 worldPosCentre = model * glm::vec4(0.0f, -0.1f, 0.0f, 1.0f);
     m_shader.SetVector4f("worldPosCentre", worldPosCentre);
