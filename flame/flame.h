@@ -63,13 +63,13 @@ private:
     Texture2D m_texture;
 
 public:
-    Flame(Shader shader, Texture2D texture);
+    Flame(Shader shader, Texture2D texture, glm::vec3 position, glm::vec3 velocity);
 
     ~Flame();
 
-    void Update(glm::vec3 direction, float deltaTime);
+    void Update(glm::vec3 position, glm::vec3 velocity, glm::vec3 direction, float deltaTime);
 
-    void Draw(glm::mat4 &model);
+    void Draw();
 };
 
 #endif

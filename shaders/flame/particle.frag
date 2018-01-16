@@ -7,19 +7,19 @@ out vec4 fColour;
 
 uniform sampler2D sprite;
 uniform mat4 view;
+uniform vec4 worldPosCentre;
 
 void main()
 {
-    vec4 worldPosCentre = vec4(0, 0.05, 0, 1);
     vec4 eyeSpaceCentre = view * worldPosCentre;
     vec3 toCentre = eyeSpaceCentre.xyz - eyePosition.xyz;
     float distToCentreSquared = pow(toCentre.x, 2) + pow(toCentre.y, 2) + pow(toCentre.z, 2);
     fColour = texture(sprite, texCoord);
 
-    fColour.b /= clamp(distToCentreSquared * 2, 0, 1);
-    fColour.g /= clamp(distToCentreSquared * 2, 0, 1);
+    // fColour.b /= clamp(distToCentreSquared * 2, 0, 1);
+    // fColour.g /= clamp(distToCentreSquared * 2, 0, 1);
 
-    // float maxDist = 5000.0f;
+    // float maxDist = 60.0f;
     // vec4 a = fColour;
     // vec4 b = vec4(0.2, 0.2, 0.2, 1);
     // float k = min((distToCentreSquared / maxDist), 1);

@@ -5,6 +5,7 @@
 #include "resource_manager.h"
 #include "stb_image.h"
 #include <BoundingBox.h>
+
 #ifdef _WIN32
 #include <corecrt_math_defines.h>
 #endif
@@ -41,11 +42,11 @@ Aircraft::Aircraft() : Model(), Camera(), inAir(1), target_thrust(20), thrust(20
     Right = glm::cross(Front, Up);
     airspeed = glm::vec3(0, 0, 0);
     AroundCam = new AroundCamera(&Position, &Front);
-	_updateModel();
-	bb.push_back(new BoundingBox(&modelMatrix,glm::vec3(0.01,0,0),glm::vec3(0.21,0.032,0.032)));
-	bb.push_back(new BoundingBox(&modelMatrix,glm::vec3(-0.037,0,0),glm::vec3(0.056,0.005,0.15)));
-	bb.push_back(new BoundingBox(&modelMatrix,glm::vec3(-0.165,0,0),glm::vec3(0.035,0.005,0.09)));
-	bb.push_back(new BoundingBox(&modelMatrix,glm::vec3(-0.16,0.05,0),glm::vec3(0.05,0.05,0.005)));
+    _updateModel();
+    bb.push_back(new BoundingBox(&modelMatrix, glm::vec3(0.01, 0, 0), glm::vec3(0.21, 0.032, 0.032)));
+    bb.push_back(new BoundingBox(&modelMatrix, glm::vec3(-0.037, 0, 0), glm::vec3(0.056, 0.005, 0.15)));
+    bb.push_back(new BoundingBox(&modelMatrix, glm::vec3(-0.165, 0, 0), glm::vec3(0.035, 0.005, 0.09)));
+    bb.push_back(new BoundingBox(&modelMatrix, glm::vec3(-0.16, 0.05, 0), glm::vec3(0.05, 0.05, 0.005)));
 }
 
 Aircraft::~Aircraft()
@@ -72,7 +73,8 @@ void Aircraft::Init()
 //                                  ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_
 //                                                                         "/flame.png", GL_TRUE, "flame"), 500);
     flames.push_back(new Flame(ResourceManager::GetShader("flame"),
-                               ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/flame.png", GL_TRUE, "flame")));
+                               ResourceManager::LoadTexture2D(_TEXTURE_PREFIX_"/flame.png", GL_TRUE, "flame"),
+                               Position, -Front));
 }
 
 void Aircraft::loadModel(string path)
@@ -115,32 +117,35 @@ void Aircraft::Update(float dt)
 //                  glm::vec3(((rand() % 100) - 50) / 50.0f,
 //                            ((rand() % 100) - 50) / 50.0f,
 //                            ((rand() % 100) - 50) / 50.0f));
-	for (auto f : bb)f->Update();
-    for (auto f: flames)
-    {
-        f->Update(-Front, dt);
-    }
-	_updateModel();
+    for (auto f : bb)f->Update();
+//    for (auto f: flames)
+//    {
+//        f->Update(Position, -Front, -Front, dt);
+//    }
+    _updateModel();
 }
 
 const glm::vec3 &&Aircraft::getAirspeed()
 {
     return std::move(airspeed);
 }
-inline void Aircraft::_updateModel() {
-	modelMatrix = {
-		Front.x, Front.y, Front.z, 0,
-		Up.x, Up.y, Up.z, 0,
-		Right.x, Right.y, Right.z, 0,
-		Position.x, Position.y, Position.z, 1
-	};
+
+inline void Aircraft::_updateModel()
+{
+    modelMatrix = {
+            Front.x, Front.y, Front.z, 0,
+            Up.x, Up.y, Up.z, 0,
+            Right.x, Right.y, Right.z, 0,
+            Position.x, Position.y, Position.z, 1
+    };
 }
+
 void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix)
 {
     glm::mat4 vp = currentcamera->getVPMatrix();
 //	if (currentcamera == this)DrawHUD();
-   
-	auto model = modelMatrix;
+
+    auto model = modelMatrix;
     shader.Use();
     shader.SetMatrix4("Model", glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f)));
     shader.SetMatrix4("VP", vp);
@@ -171,7 +176,7 @@ void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix
     shader.SetMatrix4("lightSpaceMatrix", lightSpaceMatrix);
 
     Model::Draw(shader);
-	
+
     // Reset texture info.
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -180,13 +185,12 @@ void Aircraft::Draw(Shader &shader, GLuint shadowMap, glm::mat4 lightSpaceMatrix
 //    glDepthMask(GL_FALSE);
 //    flame->Draw(glm::vec3(1.0f, 1.0f, 1.0f));
 //    glDepthMask(GL_TRUE);
-	
-    model = glm::translate(model, 0.2f * glm::normalize(-Front));
-    model = glm::translate(model, 0.08f * glm::normalize(Up));
-    for (auto f: flames)
-    {
-        f->Draw(model);
-    }
+//    model = glm::translate(model, 0.2f * -Front);
+//    model = glm::translate(model, 0.08f * Up);
+//    for (auto f: flames)
+//    {
+//        f->Draw();
+//    }
 }
 
 void Aircraft::DrawDepth(Shader &shader)
@@ -244,7 +248,9 @@ _AIRCRAFT_UTIL_push_line_display(float xStart, float yStart, float xEnd, float y
     pos.emplace_back(xStart * xRight + xLeft * (1 - xStart), yStart * yUp + yDown * (1 - yStart));
     pos.emplace_back(xEnd * xRight + xLeft * (1 - xEnd), yEnd * yUp + yDown * (1 - yEnd));
 }
+
 #define AIRCRAFT_UTIL_DIG(x, y, z, w) _AIRCRAFT_UTIL_push_line_display(x,y,z,w,xLeft,xRight,yUp,yDown,pos)
+
 void _AIRCRAFT_UTIL_push_digit_display(int digit, float xLeft, float xRight, float yUp, float yDown,
                                        std::vector<glm::vec2> &pos)
 {
@@ -322,146 +328,156 @@ void _AIRCRAFT_UTIL_push_digit_display(int digit, float xLeft, float xRight, flo
             break;
     }
 }
-void _AIRCRAFT_UTIL_push_char_display(char c, float xLeft, float xRight, float yUp, float yDown,
-	std::vector<glm::vec2> &pos) {
-	if(c>='0'&&c<='9') {
-		_AIRCRAFT_UTIL_push_digit_display(c - '0', xLeft, xRight, yUp, yDown, pos);
-		return;
-	}
-	switch (c) {
-	case 'A':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.7);
-		AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.1, 0.7);
-		AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.7, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.7, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.9, 0.1);
-		AIRCRAFT_UTIL_DIG(0.1, 0.5, 0.9, 0.5);
-		break;
-	case 'C':
-		AIRCRAFT_UTIL_DIG(0.1, 0.7, 0.1, 0.3);
-		AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.1, 0.3);
-		AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.9, 0.1);
-		AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.1, 0.7);
-		AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.9, 0.9);
 
-		break;
-	case 'D':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.7, 0.9, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.7, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.9, 0.3);
-		AIRCRAFT_UTIL_DIG(0.7, 0.1, 0.9, 0.3);
-		AIRCRAFT_UTIL_DIG(0.7, 0.1, 0.1, 0.1);
-		break;
-	case 'E':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.1, 0.1);
-		AIRCRAFT_UTIL_DIG(0.9, 0.5, 0.1, 0.5);
-		break;
-	case 'F':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.5, 0.1, 0.5);
-		break;
-	case 'H':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.9, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.5, 0.1, 0.5);
-		break;
-	case 'I':
-		AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.7, 0.1);
-		AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.7, 0.9);
-		AIRCRAFT_UTIL_DIG(0.5, 0.9, 0.5, 0.1);
-		break;
-	case 'M':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.9, 0.9);
-		AIRCRAFT_UTIL_DIG(0.1, 0.9, 0.5, 0.1);
-		AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.5, 0.1);
-		break;
-	case 'N':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.9, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.1, 0.9);
-		break;
-	case 'O':
-		AIRCRAFT_UTIL_DIG(0.1, 0.7, 0.1, 0.3);
-		AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.1, 0.3);
-		AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.7, 0.1);
-		AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.7, 0.1);
-		AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.9, 0.7);
-		AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.1, 0.7);
-		AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.7, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.7, 0.9);
-		break;
-	case 'P':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.8, 0.9, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.8, 0.5, 0.1, 0.5);
-		AIRCRAFT_UTIL_DIG(0.8, 0.5, 0.9, 0.7);
-		AIRCRAFT_UTIL_DIG(0.8, 0.9, 0.9, 0.7);
-		break;
-	case 'R':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.8, 0.9, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.8, 0.5, 0.1, 0.5);
-		AIRCRAFT_UTIL_DIG(0.8, 0.5, 0.9, 0.7);
-		AIRCRAFT_UTIL_DIG(0.8, 0.9, 0.9, 0.7);
-		AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.9, 0.1);
-		break;
-	case 'S':
-		AIRCRAFT_UTIL_DIG(0.2, 0.9, 0.9, 0.9);
-		AIRCRAFT_UTIL_DIG(0.2, 0.9, 0.1, 0.7);
-		AIRCRAFT_UTIL_DIG(0.2, 0.5, 0.1, 0.7);
-		AIRCRAFT_UTIL_DIG(0.2, 0.5, 0.8, 0.5);
-		AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.8, 0.5);
-		AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.8, 0.1);
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.8, 0.1);
-		break;
-	case 'T':
-		AIRCRAFT_UTIL_DIG(0.1, 0.9, 0.9, 0.9);
-		AIRCRAFT_UTIL_DIG(0.5, 0.9, 0.5, 0.1);
-		break;
-	case 'U':
-		AIRCRAFT_UTIL_DIG(0.1, 0.9, 0.1, 0.3);
-		AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.1, 0.3);
-		AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.7, 0.1);
-		AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.7, 0.1);
-		AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.9, 0.9);
-		break;
-	case 'X':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.9, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.1, 0.9);
-		break;
-	case 'Y':
-		AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.5, 0.1);
-		AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.9, 0.9);
-		AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.1, 0.9);
-		break;
-	case '/':
-		AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.9, 0.9);
-		break;
-	case '?':
-		AIRCRAFT_UTIL_DIG(0.1, 0.7, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.1, 0.9);
-		AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.9, 0.7);
-		AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.9, 0.7);
-		AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.5, 0.4);
-		AIRCRAFT_UTIL_DIG(0.5, 0.1, 0.5, 0.2);
-	}
+void _AIRCRAFT_UTIL_push_char_display(char c, float xLeft, float xRight, float yUp, float yDown,
+                                      std::vector<glm::vec2> &pos)
+{
+    if (c >= '0' && c <= '9')
+    {
+        _AIRCRAFT_UTIL_push_digit_display(c - '0', xLeft, xRight, yUp, yDown, pos);
+        return;
+    }
+    switch (c)
+    {
+        case 'A':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.7);
+            AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.1, 0.7);
+            AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.7, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.7, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.9, 0.1);
+            AIRCRAFT_UTIL_DIG(0.1, 0.5, 0.9, 0.5);
+            break;
+        case 'C':
+            AIRCRAFT_UTIL_DIG(0.1, 0.7, 0.1, 0.3);
+            AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.1, 0.3);
+            AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.9, 0.1);
+            AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.1, 0.7);
+            AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.9, 0.9);
+
+            break;
+        case 'D':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.7, 0.9, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.7, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.9, 0.3);
+            AIRCRAFT_UTIL_DIG(0.7, 0.1, 0.9, 0.3);
+            AIRCRAFT_UTIL_DIG(0.7, 0.1, 0.1, 0.1);
+            break;
+        case 'E':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.1, 0.1);
+            AIRCRAFT_UTIL_DIG(0.9, 0.5, 0.1, 0.5);
+            break;
+        case 'F':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.5, 0.1, 0.5);
+            break;
+        case 'H':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.9, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.5, 0.1, 0.5);
+            break;
+        case 'I':
+            AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.7, 0.1);
+            AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.7, 0.9);
+            AIRCRAFT_UTIL_DIG(0.5, 0.9, 0.5, 0.1);
+            break;
+        case 'M':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.9, 0.9);
+            AIRCRAFT_UTIL_DIG(0.1, 0.9, 0.5, 0.1);
+            AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.5, 0.1);
+            break;
+        case 'N':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.9, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.1, 0.9);
+            break;
+        case 'O':
+            AIRCRAFT_UTIL_DIG(0.1, 0.7, 0.1, 0.3);
+            AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.1, 0.3);
+            AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.7, 0.1);
+            AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.7, 0.1);
+            AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.9, 0.7);
+            AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.1, 0.7);
+            AIRCRAFT_UTIL_DIG(0.3, 0.9, 0.7, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.7, 0.7, 0.9);
+            break;
+        case 'P':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.8, 0.9, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.8, 0.5, 0.1, 0.5);
+            AIRCRAFT_UTIL_DIG(0.8, 0.5, 0.9, 0.7);
+            AIRCRAFT_UTIL_DIG(0.8, 0.9, 0.9, 0.7);
+            break;
+        case 'R':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.8, 0.9, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.8, 0.5, 0.1, 0.5);
+            AIRCRAFT_UTIL_DIG(0.8, 0.5, 0.9, 0.7);
+            AIRCRAFT_UTIL_DIG(0.8, 0.9, 0.9, 0.7);
+            AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.9, 0.1);
+            break;
+        case 'S':
+            AIRCRAFT_UTIL_DIG(0.2, 0.9, 0.9, 0.9);
+            AIRCRAFT_UTIL_DIG(0.2, 0.9, 0.1, 0.7);
+            AIRCRAFT_UTIL_DIG(0.2, 0.5, 0.1, 0.7);
+            AIRCRAFT_UTIL_DIG(0.2, 0.5, 0.8, 0.5);
+            AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.8, 0.5);
+            AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.8, 0.1);
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.8, 0.1);
+            break;
+        case 'T':
+            AIRCRAFT_UTIL_DIG(0.1, 0.9, 0.9, 0.9);
+            AIRCRAFT_UTIL_DIG(0.5, 0.9, 0.5, 0.1);
+            break;
+        case 'U':
+            AIRCRAFT_UTIL_DIG(0.1, 0.9, 0.1, 0.3);
+            AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.1, 0.3);
+            AIRCRAFT_UTIL_DIG(0.3, 0.1, 0.7, 0.1);
+            AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.7, 0.1);
+            AIRCRAFT_UTIL_DIG(0.9, 0.3, 0.9, 0.9);
+            break;
+        case 'X':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.9, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.1, 0.1, 0.9);
+            break;
+        case 'Y':
+            AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.5, 0.1);
+            AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.9, 0.9);
+            AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.1, 0.9);
+            break;
+        case '/':
+            AIRCRAFT_UTIL_DIG(0.1, 0.1, 0.9, 0.9);
+            break;
+        case '?':
+            AIRCRAFT_UTIL_DIG(0.1, 0.7, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.1, 0.9);
+            AIRCRAFT_UTIL_DIG(0.9, 0.9, 0.9, 0.7);
+            AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.9, 0.7);
+            AIRCRAFT_UTIL_DIG(0.5, 0.5, 0.5, 0.4);
+            AIRCRAFT_UTIL_DIG(0.5, 0.1, 0.5, 0.2);
+    }
 }
+
 #undef AIRCRAFT_UTIL_DIG
-void _AIRCRAFT_UTIL_show_string(const char* s,float xLeft, float yCenter, float width, float height,
-	std::vector<glm::vec2> &pos) {
-	int ptr = 0; float nextLeft;
-	while(s[ptr]) {
-		nextLeft = xLeft + width;
-		_AIRCRAFT_UTIL_push_char_display(s[ptr], xLeft, nextLeft, yCenter + height / 2, yCenter - height / 2, pos);
-		xLeft = nextLeft;
-		ptr++;
-	}
+
+void _AIRCRAFT_UTIL_show_string(const char *s, float xLeft, float yCenter, float width, float height,
+                                std::vector<glm::vec2> &pos)
+{
+    int ptr = 0;
+    float nextLeft;
+    while (s[ptr])
+    {
+        nextLeft = xLeft + width;
+        _AIRCRAFT_UTIL_push_char_display(s[ptr], xLeft, nextLeft, yCenter + height / 2, yCenter - height / 2, pos);
+        xLeft = nextLeft;
+        ptr++;
+    }
 }
+
 void _AIRCRAFT_UTIL_show_number(int value, float xRight, float yCenter, float width, float height,
                                 std::vector<glm::vec2> &pos, int displayoption = 0)
 {
@@ -642,24 +658,29 @@ void Aircraft::DrawHUD(int drawId)
 		_AIRCRAFT_UTIL_show_string("CONFIRM EXIT ? Y/N", -0.72, 0, 0.08, 0.32, vpos);
 	}
     glEnableVertexAttribArray(0);
+
     glBindBuffer(GL_ARRAY_BUFFER, vert_buf);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * vpos.size(), &vpos[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(0);
     glDrawArrays(GL_LINES, 0, vpos.size());
-    glDisableVertexAttribArray(0);
+//    glDisableVertexAttribArray(0);
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(0);
 }
 
-void Aircraft::DrawBoundingBox() {
-	for (auto f : bb)f->Draw();
+void Aircraft::DrawBoundingBox()
+{
+    for (auto f : bb)f->Draw();
 }
 
-int Aircraft::detechCrash(const glm::vec3& wpos) {
-	for(auto f:bb) {
-		if (f->inBox(wpos))return 1;
-	}
-	return 0;
+int Aircraft::detechCrash(const glm::vec3 &wpos)
+{
+    for (auto f:bb)
+    {
+        if (f->inBox(wpos))return 1;
+    }
+    return 0;
 }
 
 GLuint Aircraft::loadCubemap(std::vector<std::string> faces)

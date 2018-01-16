@@ -15,7 +15,7 @@ private:
     float m_lifetime;
     glm::vec3 m_velocity;
 public:
-    Particle();
+    Particle(glm::vec3 position, glm::vec3 velocity);
 
     void Update(std::vector<Particle *> &_particlesInRange, glm::vec3 direction, float _deltaTime);
 

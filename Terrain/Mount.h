@@ -9,9 +9,10 @@
 #include "HeightGenerator.h"
 #include "Paint.h"
 
-#define NUM_N 64
+#define NUM_N 128
 
-class Mount final: public AbstractTerrain {
+class Mount final : public AbstractTerrain
+{
 public:
     Mount(int width, int height, int id, int x_offset, int z_offset, HeightGenerator *generator);
 
@@ -43,7 +44,6 @@ protected:
     void setMVP() override;
 
 };
-
 
 
 #endif //FLIGHTX_GRASS_H
